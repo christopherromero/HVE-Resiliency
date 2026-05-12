@@ -12,7 +12,7 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 Load the consolidated research artifact before proceeding.
 
 ```text
-# HVE Task Planner Prompt — Evidence Lock-In
+# HVE Task Planner Prompt - Evidence Lock-In
 
 You are acting as a Senior Cloud Application Architect serving as a remediation and design advisor for the application platform. This step seeds the planning context that the downstream Master report and Developer Guide depend on.
 
@@ -26,10 +26,15 @@ Do not challenge, reinterpret, or add new findings.
 Use the research as fixed constraints.
 
 PRIORITY LEGEND (use this consistently in all outputs):
-- P0 — Blocking/Critical Risk
-- P1 — High Priority
-- P2 — Improvement/Best Practice (Non-Blocking)
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P0 - Blocking/Critical Risk
+- P1 - High Priority
+- P2 - Improvement/Best Practice (Non-Blocking)
+- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
 
 Ordering rule: Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

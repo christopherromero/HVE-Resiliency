@@ -4,7 +4,7 @@ description: "Appends Section 2 P0 and P1 Resilient Focused Recommendations to t
 argument-hint: "serviceName=..."
 ---
 
-# Resiliency Report Generator — Part B: P0 and P1 Findings
+# Resiliency Report Generator - Part B: P0 and P1 Findings
 
 Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-planner-context.instructions.md).
 
@@ -16,9 +16,9 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 
 Read **only** the following before generating. Keep context minimal.
 
-* `.copilot-tracking/plans/` — locate `{serviceName}-Master.md`. Read the P0 and P1 sections only (skip P2, P3, Open Questions, and External Provider Considerations).
-* `.copilot-tracking/plans/` — locate `{serviceName}-Developer-Guide.md`. Read the P0 and P1 sections only (skip P2 and P3). This is the primary source for all code blocks.
-* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` — read the existing file to understand the current state and append after the last line.
+* `.copilot-tracking/plans/` - locate `{serviceName}-Master.md`. Read the P0 and P1 sections only (skip P2, P3, Open Questions, and External Provider Considerations).
+* `.copilot-tracking/plans/` - locate `{serviceName}-Developer-Guide.md`. Read the P0 and P1 sections only (skip P2 and P3). This is the primary source for all code blocks.
+* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the existing file to understand the current state and append after the last line.
 
 Do **not** read the consolidated research, subagent files, or the Developer Guide P2/P3 sections for this prompt.
 
@@ -32,9 +32,9 @@ All section headers, H3 group names, finding titles, and repo references must us
 
 The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
 
-* **Primary region** — the current production region
-* **Secondary region** or **failover region** — the target active/active peer
-* **Both regions** — when referring to symmetric requirements
+* **Primary region** - the current production region
+* **Secondary region** or **failover region** - the target active/active peer
+* **Both regions** - when referring to symmetric requirements
 
 In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic names rather than region-specific hostnames.
 
@@ -42,7 +42,7 @@ In code examples and fix blocks, use placeholder values like `{primaryRegion}`, 
 
 **Append** the following to the existing `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` file. Do not overwrite or regenerate the header or Section 1.
 
-### Section 2 — Resilient Focused Recommendations (P0 and P1 only)
+### Section 2 - Resilient Focused Recommendations (P0 and P1 only)
 
 Begin with `# 2. Resilient Focused Recommendations`.
 
@@ -50,9 +50,9 @@ This prompt generates **only P0 and P1** findings under Section 2. P2 and P3 res
 
 #### Hierarchy
 
-* **H2** — priority block with finding count: `## P0 — Critical Resiliency Risks (N)` and `## P1 — High Priority Resiliency (N)`.
-* **H3** — shared-service group derived from findings: `### Azure SQL / Data Integrity`, `### Azure Key Vault / Secrets Sync`, `### Deployment Infrastructure / CI-CD`, `### Health Probes / GLB Readiness`, `### Resilience Patterns / Connection Management`, `### Shared Dependencies / Cross-Team Coordination`, `### AKS / Pod Lifecycle`, etc. Use generic names; do not hardcode vendor names in H3 headings. Derive group names from the actual dependency categories found in the Master Report.
-* **H4** — individual finding: `#### P0-001: Short Title`
+* **H2** - priority block with finding count: `## P0 - Critical Resiliency Risks (N)` and `## P1 - High Priority Resiliency (N)`.
+* **H3** - shared-service group derived from findings: `### Azure SQL / Data Integrity`, `### Azure Key Vault / Secrets Sync`, `### Deployment Infrastructure / CI-CD`, `### Health Probes / GLB Readiness`, `### Resilience Patterns / Connection Management`, `### Shared Dependencies / Cross-Team Coordination`, `### AKS / Pod Lifecycle`, etc. Use generic names; do not hardcode vendor names in H3 headings. Derive group names from the actual dependency categories found in the Master Report.
+* **H4** - individual finding: `#### P0-001: Short Title`
 
 #### Finding ID Assignment
 
@@ -66,17 +66,17 @@ Use the `PX-NNN` IDs from the Master Report **directly and unchanged**. Do not r
 
 Every P0 and P1 finding uses this exact format (field order must be preserved):
 
-1. `#### PX-NNN: Short Title` — H4 heading
-2. `**Priority: PX — {Priority Label}**` — on its own line
+1. `#### PX-NNN: Short Title` - H4 heading
+2. `**Priority: PX - {Priority Label}**` - on its own line
 3. `**Resiliency Related:** Yes`
-4. `**Issue:**` — description of the problem. For P0/P1: explain how the issue is introduced or worsened by the transition from single-region to active/active.
-5. `**What does this solve:**` — one sentence, the outcome achieved
-6. `**Resiliency Impact:**` — 1–3 sentences framed in terms of zone failure or regional failover impact
-7. `**Recommended Fix:**` — concrete narrative action, specific enough for the application's developers to implement independently
-8. `**File:** file/path.ext:line` — followed by a fenced code block with the current problematic code (must include a language identifier). Pull from Developer Guide.
-9. `**Fix:**` — followed by a separate fenced code block with the corrected implementation (must include a language identifier). Pull from Developer Guide.
-10. `**Notes:**` — context, rationale, or implementation guidance
-11. `<span style="font-size: 14px;">**MSFT Reference:** [Pattern Name](URL)</span>` — when a WAF pattern or Azure guidance page applies
+4. `**Issue:**` - description of the problem. For P0/P1: explain how the issue is introduced or worsened by the transition from single-region to active/active.
+5. `**What does this solve:**` - one sentence, the outcome achieved
+6. `**Resiliency Impact:**` - 1–3 sentences framed in terms of zone failure or regional failover impact
+7. `**Recommended Fix:**` - concrete narrative action, specific enough for the application's developers to implement independently
+8. `**File:** file/path.ext:line` - followed by a fenced code block with the current problematic code (must include a language identifier). Pull from Developer Guide.
+9. `**Fix:**` - followed by a separate fenced code block with the corrected implementation (must include a language identifier). Pull from Developer Guide.
+10. `**Notes:**` - context, rationale, or implementation guidance
+11. `<span style="font-size: 14px;">**MSFT Reference:** [Pattern Name](URL)</span>` - when a WAF pattern or Azure guidance page applies
 
 Priority labels:
 
@@ -86,7 +86,7 @@ Priority labels:
 #### Finding Rules
 
 * Separate findings with `---` (horizontal rule).
-* Always use **two separate** fenced code blocks — one under `**File:**` and one under `**Fix:**` — each with a language identifier (`java`, `yaml`, `properties`, `sql`, `xml`, `dockerfile`, `text`). Pull samples from the Developer Guide. Never combine both into one block.
+* Always use **two separate** fenced code blocks - one under `**File:**` and one under `**Fix:**` - each with a language identifier (`java`, `yaml`, `properties`, `sql`, `xml`, `dockerfile`, `text`). Pull samples from the Developer Guide. Never combine both into one block.
 * For findings that are infrastructure/coordination items with no code, use `**File:**` with the relevant Helm values or config and `**Fix:**` with the target state.
 * Configurable values in code use `// e.g., 3` comments.
 * `Resiliency Related: Yes` for all P0 and P1 findings.
@@ -97,14 +97,14 @@ Priority labels:
 
 #### Ending
 
-Do **not** add `[Back to Top](#top)` at the end of Section 2 yet — that will be added by `assessment-builder-2` after P2/P3 findings are appended.
+Do **not** add `[Back to Top](#top)` at the end of Section 2 yet - that will be added by `assessment-builder-2` after P2/P3 findings are appended.
 
 ## Formatting Conventions
 
-* Aligned pipe tables — all pipes vertically aligned across all rows.
+* Aligned pipe tables - all pipes vertically aligned across all rows.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between individual findings within a group.
-* `**Priority: PX — Label**` on its own line (no `| Repos:` inline).
+* `**Priority: PX - Label**` on its own line (no `| Repos:` inline).
 * All code blocks have a language identifier.
 * Inline code for env vars, function names, file paths, and config keys.
 * All repo references use `{serviceName}`, never a hardcoded service name.
@@ -123,3 +123,8 @@ Do not overwrite the existing content.
 After completing this prompt:
 
 > **Next step:** Run `/clear`, then `/hve-resiliency-assessment-builder-2`
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

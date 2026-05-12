@@ -44,20 +44,20 @@ In code examples and fix blocks, use placeholder values like `{primaryRegion}`, 
 
 ### The Four Rules
 
-**Rule 1 — Failover Is the Central Pillar**
+**Rule 1 - Failover Is the Central Pillar**
 If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from passive DR to active/active failover is the lens through which all findings are evaluated.
 
-**Rule 2 — Resiliency Wording Is Required**
+**Rule 2 - Resiliency Wording Is Required**
 Every finding placed in the resiliency bucket **must** articulate the resiliency impact in its description. The framing must be:
 
 > *"If you don't fix [X], then during a [failure scenario], [Y impact] will occur, which affects the resiliency of [the client's ability to accomplish Z]."*
 
 Do **not** frame findings as: *"Your logic is broken"* or *"You need to make this fix."* If you cannot articulate a resiliency impact statement, the finding does not belong in the resiliency bucket.
 
-**Rule 3 — Failure-Triggered Issues Qualify**
+**Rule 3 - Failure-Triggered Issues Qualify**
 If an issue **only manifests because of a failure event** (availability zone failure, region failure, GLB failover), it qualifies as a resiliency finding, even if a procedural or manual workaround exists. The existence of a workaround affects **priority** (P1 vs P0), not **categorization**.
 
-**Rule 4 — Include Everything, Let the Customer Decide**
+**Rule 4 - Include Everything, Let the Customer Decide**
 All recommendations remain in the report regardless of whether the customer is expected to accept them. The customer may decline any recommendation. This ensures a paper trail: if an ignored recommendation causes a test failure or production incident, the team can reference the original finding.
 
 ## Priority Legend
@@ -69,7 +69,7 @@ Use this consistently in all outputs:
 * P2: Improvement/Best Practice (Non-Blocking)
 * P3: Non-Blocking Code Consistency (Best Practices / Maintainability)
 
-### P0 — Critical Resiliency Risk
+### P0 - Critical Resiliency Risk
 
 **Definition**: The finding **blocks failover from functioning** or **renders the active/active deployment meaningless**. Without this fix, the investment in a second region provides no benefit.
 
@@ -82,7 +82,7 @@ Use this consistently in all outputs:
 * Application logic that assumes a specific region and breaks when executed in the other region.
 * Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
 
-### P1 — Important Resiliency Risk
+### P1 - Important Resiliency Risk
 
 **Definition**: The finding is resiliency-related (passes the litmus test) but has a **procedural workaround**, **lower blast radius**, or **does not fully block failover**.
 
@@ -93,7 +93,7 @@ Use this consistently in all outputs:
 * Missing retry logic or error handling that causes degraded experience during failover but does not fully prevent operation.
 * Resiliency improvements that are best-practice but not strictly required for failover to function.
 
-### P2 — Code Quality / Non-Resiliency
+### P2 - Code Quality / Non-Resiliency
 
 **Definition**: The finding is a valid code issue but **behaves identically in single-region and active/active**. The multi-region deployment does not introduce, amplify, or change this issue.
 
@@ -101,7 +101,7 @@ Use this consistently in all outputs:
 
 **Reclassification opportunity**: If the team can reframe the impact in resiliency terms (Rule 2) and the customer would agree it is resiliency-related, it may be moved to P1. If the reframing is a stretch, leave it at P2.
 
-### P3 — Noted for Completeness
+### P3 - Noted for Completeness
 
 **Definition**: The finding has **no functional resiliency impact** and does not affect failover mechanics. It is retained per Rule 4 so the customer has a complete record.
 
@@ -122,28 +122,28 @@ Q1: Does moving from single-region (with passive DR) to active/active
   │
   ├── YES ──► Q2: Does this fix block failover from working at all?
   │             │
-  │             ├── YES ──► P0 — Critical Resiliency Risk
+  │             ├── YES ──► P0 - Critical Resiliency Risk
   │             │
   │             └── NO ──► Q3: Does this issue only manifest during a failure event?
   │                          │
   │                          ├── YES ──► Q4: Is there a procedural workaround?
   │                          │             │
-  │                          │             ├── YES ──► P1 — Important Resiliency Risk
+  │                          │             ├── YES ──► P1 - Important Resiliency Risk
   │                          │             │
-  │                          │             └── NO ──► P0 — Critical Resiliency Risk
+  │                          │             └── NO ──► P0 - Critical Resiliency Risk
   │                          │
-  │                          └── NO ──► P1 — Important Resiliency Risk
+  │                          └── NO ──► P1 - Important Resiliency Risk
   │
   └── NO ──► Q5: Can the impact be framed in resiliency terms (Rule 2)?
                │
-               ├── YES (credibly) ──► P1 — Important Resiliency Risk
+               ├── YES (credibly) ──► P1 - Important Resiliency Risk
                │                       (reword the impact statement)
                │
                └── NO ──► Q6: Does the finding have functional or operational impact?
                             │
-                            ├── YES ──► P2 — Code Quality / Non-Resiliency
+                            ├── YES ──► P2 - Code Quality / Non-Resiliency
                             │
-                            └── NO ──► P3 — Noted for Completeness
+                            └── NO ──► P3 - Noted for Completeness
 ```
 
 ### Special Case: Prerequisite Findings

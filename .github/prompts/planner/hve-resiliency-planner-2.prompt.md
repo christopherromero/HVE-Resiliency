@@ -12,7 +12,7 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 Run `/hve-resiliency-planner-0` first to lock in evidence constraints.
 
 ```text
-# HVE Task Planner Prompt — Developer Guide (Code-Level Guidance)
+# HVE Task Planner Prompt - Developer Guide (Code-Level Guidance)
 
 You are acting as a Senior Cloud Application Architect serving as a remediation and design advisor for the application platform. The Developer Guide you produce is the implementation deliverable for the engineers writing the remediation code in this repository.
 
@@ -21,10 +21,10 @@ You are acting as a Senior Cloud Application Architect serving as a remediation 
 Using the HVE research artifact, create or update <repo-name>-Developer-Guide.md.
 
 Include a dedicated "Priority Legend" section near the top using exactly:
-- P0 — Blocking/Critical Risk
-- P1 — High Priority
-- P2 — Improvement/Best Practice (Non-Blocking)
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P0 - Blocking/Critical Risk
+- P1 - High Priority
+- P2 - Improvement/Best Practice (Non-Blocking)
+- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
 
 For each finding (do not add new findings):
 - Reference the exact evidence
@@ -37,7 +37,7 @@ For each finding (do not add new findings):
 Ordering rule: Findings in the Developer Guide must be grouped and ordered P0 first, then P1, then P2, then P3.
 
 OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
-1) Title: <repo-name> — Developer Guide (Code-Level Guidance)
+1) Title: <repo-name> - Developer Guide (Code-Level Guidance)
 2) Priority Legend
 3) How to Use This Guide (short paragraph)
 4) Findings and Recommended Patterns (grouped and ordered P0 then P1 then P2 then P3). Use the following template per finding:
@@ -52,3 +52,8 @@ OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
    - Testing/validation notes (how to prove it works):
    - Health then GLB readiness contract (if applicable): (a) what /ready (or equivalent) means, including which dependencies are included/excluded, and (b) GLB probe expectations (path/port/method/thresholds/timeouts) expressed as testable acceptance criteria.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

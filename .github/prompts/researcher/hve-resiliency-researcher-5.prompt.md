@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — Failure & Degraded-Mode Behavior
+# HVE Task Researcher Prompt - Failure & Degraded-Mode Behavior
 
 You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
 
@@ -50,3 +50,8 @@ OUTPUT FORMAT (repeat per failure mode):
 - Manual ops workaround (references):
 - Evidence citations (files + line numbers):
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

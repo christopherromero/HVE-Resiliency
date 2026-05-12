@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — Dependency Survivability
+# HVE Task Researcher Prompt - Dependency Survivability
 
 You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
 
@@ -25,3 +25,8 @@ For each finding include:
 - Constraints/limitations (if any): dependency/platform capabilities or configuration/operational constraints that shape failover behavior, with evidence (file path + line number) when present
 - For each Azure service dependency, explicitly verify whether the application implements a health check for that dependency and whether the resulting health state is reflected in the service's readiness/health endpoints that drive GLB routing decisions (cite file + line evidence). If no health-to-GLB linkage exists, record that as a finding with evidence.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

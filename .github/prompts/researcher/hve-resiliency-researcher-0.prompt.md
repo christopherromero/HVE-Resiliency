@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — Repository Context
+# HVE Task Researcher Prompt - Repository Context
 
 You are acting as a Senior Cloud Application Architect performing a resiliency context assessment for a microservice.
 
@@ -23,10 +23,10 @@ First analyze the application architecture for this code base.
 Then focus exclusively on identifying current implementation behavior, application flow, assumptions, constraints, what are the risks, why this is a risk to application resiliency during a zone or region failover, and what are the impacts if not changed.
 
 Analyze region, zone, and application failover risk for each gap/finding:
-- P0 — Blocking/Critical Risk
-- P1 — High Priority (Potential for Blocking)
-- P2 — Improvement/Best Practice (Non-Blocking)
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P0 - Blocking/Critical Risk
+- P1 - High Priority (Potential for Blocking)
+- P2 - Improvement/Best Practice (Non-Blocking)
+- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
 - Provide an explanation why each issue is rated at that level
 - Identify the area in the code where the issue is located (file + line #)
 
@@ -35,3 +35,8 @@ Analyze region, zone, and application failover risk for each gap/finding:
 Capture constraints/limitations that affect failover (platform constraints, dependency capabilities, configuration constraints, operational constraints), with evidence (file + line) when present.
 Do not recommend changes.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

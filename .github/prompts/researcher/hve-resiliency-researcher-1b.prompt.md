@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — External Dependency Inventory
+# HVE Task Researcher Prompt - External Dependency Inventory
 
 You are acting as a Senior Cloud Application Architect performing an external dependency assessment for a microservice.
 
@@ -38,7 +38,7 @@ Base findings ONLY on verifiable evidence.
 
 ## Output Requirements (must follow exact format)
 
-### Section 1 — Used External Dependencies (Evidence Confirmed)
+### Section 1 - Used External Dependencies (Evidence Confirmed)
 
 List only dependencies that are explicitly referenced.
 
@@ -54,7 +54,7 @@ For each non-Azure and external dependency include:
 - What GLB probes (or upstream probes) hit (endpoint/path/port) and what conditions cause unhealthy vs healthy, as expressed in config/code + evidence
 - Constraints/limitations (if any): dependency/platform capabilities or configuration/operational constraints that shape failover behavior, with evidence (file path + line number) when present
 
-### Section 2 — Checked but Not Present
+### Section 2 - Checked but Not Present
 
 List non-Azure and external dependencies that were explicitly evaluated because they are commonly expected or architecturally relevant, but for which NO evidence was found in the repository.
 
@@ -63,7 +63,7 @@ For each non-Azure and external dependency include:
 - Reason it was evaluated (e.g., common pattern, failover relevance)
 - Explicit statement: "No references found in code, config, IaC, or pipelines"
 
-### Section 3 — Not Applicable
+### Section 3 - Not Applicable
 
 List non-Azure and external dependency categories that are clearly not applicable to this application based on its architecture or scope.
 
@@ -78,3 +78,8 @@ For each item include:
 - If no evidence exists, it must appear only in Section 2 or Section 3.
 - Be precise, defensive, and audit-ready.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

@@ -4,7 +4,7 @@ description: "Appends Sections 4 (IaC Gap Analysis), 5 (Full Finding Matrix), an
 argument-hint: "serviceName=..."
 ---
 
-# Resiliency Report Generator — Part D: IaC, Matrix, and Standards
+# Resiliency Report Generator - Part D: IaC, Matrix, and Standards
 
 Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-planner-context.instructions.md).
 
@@ -16,11 +16,11 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 
 Read **only** the following before generating. Keep context minimal.
 
-* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` — read the **entire** existing file. You need every H4 finding heading (`#### PX-NNN: Short Title`) to build the Full Finding Matrix and Standards Alignment. Also use Section 2 and Section 3 content to derive IaC cross-references.
-* `.copilot-tracking/plans/` — locate `{serviceName}-Master.md`. Read the Architecture and Dependency Map section and the Open Questions section for IaC context.
-* `helmcharts/env/prod/{serviceName}/values.yaml` — read in full for IaC Gap Analysis current values.
-* `helmcharts/env/prod/{serviceName}/configmap.yaml` — read in full for IaC Gap Analysis current values.
-* `helmcharts/templates/` — scan for deployment.yaml, hpa.yaml, ingress.yaml, serviceentry.yaml, service.yaml, serviceaccount.yaml to identify what IaC is available to review.
+* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the **entire** existing file. You need every H4 finding heading (`#### PX-NNN: Short Title`) to build the Full Finding Matrix and Standards Alignment. Also use Section 2 and Section 3 content to derive IaC cross-references.
+* `.copilot-tracking/plans/` - locate `{serviceName}-Master.md`. Read the Architecture and Dependency Map section and the Open Questions section for IaC context.
+* `helmcharts/env/prod/{serviceName}/values.yaml` - read in full for IaC Gap Analysis current values.
+* `helmcharts/env/prod/{serviceName}/configmap.yaml` - read in full for IaC Gap Analysis current values.
+* `helmcharts/templates/` - scan for deployment.yaml, hpa.yaml, ingress.yaml, serviceentry.yaml, service.yaml, serviceaccount.yaml to identify what IaC is available to review.
 
 Do **not** read the Developer Guide or consolidated research for this prompt.
 
@@ -38,7 +38,7 @@ The generated report must use region-agnostic terms throughout. Never reference 
 
 **Append** the following three sections to the existing `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` file. Do not overwrite or regenerate any existing content.
 
-### Section 4 — IaC Gap Analysis
+### Section 4 - IaC Gap Analysis
 
 Use `# 4. IaC Gap Analysis` as the heading.
 
@@ -64,7 +64,7 @@ Include entries for: SQL Failover Group configuration, Cosmos DB multi-region wr
 
 End with `[Back to Top](#top)`.
 
-### Section 5 — Full Finding Matrix
+### Section 5 - Full Finding Matrix
 
 Use `# 5. Full Finding Matrix` as the heading.
 
@@ -77,13 +77,13 @@ Build a complete table of **every finding** from Sections 2 and 3, sorted P0 →
 Rules:
 
 * All IDs link to their H4 anchor. Anchor format: lowercase, hyphens, special chars removed (e.g., `#p0-001-sql-single-region-fqdn`).
-* Include every finding from every section — P0 through P3, both Resiliency and Non-Resiliency.
+* Include every finding from every section - P0 through P3, both Resiliency and Non-Resiliency.
 * Category column uses the H3 group name the finding appears under.
 * Repo(s) column always shows `{serviceName}`.
 
 End with `[Back to Top](#top)`.
 
-### Section 6 — Microsoft Standards Alignment
+### Section 6 - Microsoft Standards Alignment
 
 Use `# 6. Microsoft Standards Alignment` as the heading.
 
@@ -95,25 +95,25 @@ Build a table mapping Azure Well-Architected Framework (WAF) patterns and Azure 
 
 Include patterns relevant to the findings discovered in this assessment. Common patterns for this type of service:
 
-* [Health Endpoint Monitoring](https://learn.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring) — relates to health probe findings
-* [Retry Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) — relates to retry/circuit breaker findings
-* [Circuit Breaker Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker) — relates to circuit breaker findings
-* [Queue-Based Load Leveling](https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling) — relates to failure queue findings
-* [Deployment Stamps](https://learn.microsoft.com/en-us/azure/architecture/patterns/deployment-stamp) — relates to multi-region deployment findings
-* [Geode Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/geodes) — relates to active/active deployment
-* [Throttling Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling) — relates to rate limiting findings
-* [Competing Consumers](https://learn.microsoft.com/en-us/azure/architecture/patterns/competing-consumers) — relates to scheduler leader election findings
-* [Bulkhead Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead) — relates to thread pool isolation findings
-* [Compensating Transaction](https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction) — relates to transaction boundary findings
-* [Azure SQL Failover Groups](https://learn.microsoft.com/en-us/azure/azure-sql/database/failover-group-sql-db) — relates to SQL failover findings
-* [Azure Key Vault Best Practices](https://learn.microsoft.com/en-us/azure/key-vault/general/best-practices) — relates to Key Vault findings
+* [Health Endpoint Monitoring](https://learn.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring) - relates to health probe findings
+* [Retry Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) - relates to retry/circuit breaker findings
+* [Circuit Breaker Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker) - relates to circuit breaker findings
+* [Queue-Based Load Leveling](https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling) - relates to failure queue findings
+* [Deployment Stamps](https://learn.microsoft.com/en-us/azure/architecture/patterns/deployment-stamp) - relates to multi-region deployment findings
+* [Geode Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/geodes) - relates to active/active deployment
+* [Throttling Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling) - relates to rate limiting findings
+* [Competing Consumers](https://learn.microsoft.com/en-us/azure/architecture/patterns/competing-consumers) - relates to scheduler leader election findings
+* [Bulkhead Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead) - relates to thread pool isolation findings
+* [Compensating Transaction](https://learn.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction) - relates to transaction boundary findings
+* [Azure SQL Failover Groups](https://learn.microsoft.com/en-us/azure/azure-sql/database/failover-group-sql-db) - relates to SQL failover findings
+* [Azure Key Vault Best Practices](https://learn.microsoft.com/en-us/azure/key-vault/general/best-practices) - relates to Key Vault findings
 
 Only include patterns that have at least one finding mapped to them. Status values:
 
-* `Not Implemented` — the pattern is completely absent
-* `Partial (reason)` — some elements exist but incomplete
-* `Misconfigured` — the pattern is attempted but incorrectly configured
-* `Not followed` — the pattern applies but guidance is not followed
+* `Not Implemented` - the pattern is completely absent
+* `Partial (reason)` - some elements exist but incomplete
+* `Misconfigured` - the pattern is attempted but incorrectly configured
+* `Not followed` - the pattern applies but guidance is not followed
 
 End with `[Back to Top](#top)`.
 
@@ -140,7 +140,7 @@ If validation finds discrepancies (e.g., Section 1 counts do not match actual fi
 
 ## Formatting Conventions
 
-* Aligned pipe tables — all pipes vertically aligned across all rows.
+* Aligned pipe tables - all pipes vertically aligned across all rows.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between major sections.
 * All repo references use `{serviceName}`, never a hardcoded service name.
@@ -159,3 +159,8 @@ Do not overwrite the existing content. After appending, perform the validation c
 After completing this prompt, the full Code-Level Resiliency Assessment report is complete.
 
 > **Report complete.** Review the final output at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

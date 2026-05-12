@@ -4,7 +4,7 @@ description: "Creates the Code-Level Resiliency Assessment report header, Table 
 argument-hint: "serviceName=... [reportTitle=...] [targetDeployment=...]"
 ---
 
-# Resiliency Report Generator — Part A: Header and Assessment Overview
+# Resiliency Report Generator - Part A: Header and Assessment Overview
 
 Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-planner-context.instructions.md).
 
@@ -18,8 +18,8 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 
 Read **only** the following before generating. Do **not** read the Developer Guide or subagent files for this prompt.
 
-* `.copilot-tracking/plans/` — locate `{serviceName}-Master.md`. Read the Overview Summary, Priority Legend, Application Summary, Architecture and Dependency Map, the finding count per priority tier, and the Open Questions section. This is sufficient for the Assessment Overview.
-* `.copilot-tracking/research/` — locate `*-{serviceName}-research.md`. Read only the Repository Context section (Section 1) for the opening paragraph.
+* `.copilot-tracking/plans/` - locate `{serviceName}-Master.md`. Read the Overview Summary, Priority Legend, Application Summary, Architecture and Dependency Map, the finding count per priority tier, and the Open Questions section. This is sufficient for the Assessment Overview.
+* `.copilot-tracking/research/` - locate `*-{serviceName}-research.md`. Read only the Repository Context section (Section 1) for the opening paragraph.
 
 ## Critical Context
 
@@ -31,9 +31,9 @@ All section headers, H3 group names, finding titles, and repo references must us
 
 The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
 
-* **Primary region** — the current production region
-* **Secondary region** or **failover region** — the target active/active peer
-* **Both regions** — when referring to symmetric requirements
+* **Primary region** - the current production region
+* **Secondary region** or **failover region** - the target active/active peer
+* **Both regions** - when referring to symmetric requirements
 
 ## What to Generate
 
@@ -76,7 +76,7 @@ Place `<a id="top"></a>` immediately after the header horizontal rule, then `## 
 6. [Microsoft Standards Alignment](#6-microsoft-standards-alignment)
 ```
 
-### 3. Section 1 — Assessment Overview
+### 3. Section 1 - Assessment Overview
 
 Use `# 1. Assessment Overview` as the heading. Include all of the following sub-sections:
 
@@ -96,7 +96,7 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
     | **Non-Resiliency** | **P3**    | N     | Security-only observations and configuration hygiene items                     |
     |                    | **Total** | **N** |                                                                                |
 
-    To split findings between Resiliency and Non-Resiliency sections: all P0 and P1 findings are Resiliency. P2 and P3 findings are classified using the litmus test — findings that pass the active/active litmus test (behavior changes in multi-region) are Resiliency; findings with identical behavior regardless of topology are Non-Resiliency.
+    To split findings between Resiliency and Non-Resiliency sections: all P0 and P1 findings are Resiliency. P2 and P3 findings are classified using the litmus test - findings that pass the active/active litmus test (behavior changes in multi-region) are Resiliency; findings with identical behavior regardless of topology are Non-Resiliency.
 
 4. **IMPORTANT callout**: End with this exact blockquote:
 
@@ -106,11 +106,11 @@ End the section with `[Back to Top](#top)`.
 
 ## Formatting Conventions
 
-* Aligned pipe tables — all pipes vertically aligned across all rows.
+* Aligned pipe tables - all pipes vertically aligned across all rows.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between major sections.
 * All repo references use `{serviceName}`, never a hardcoded service name.
-* Report file must NOT include `<!-- markdownlint-disable-file -->` — this is a deliverable.
+* Report file must NOT include `<!-- markdownlint-disable-file -->` - this is a deliverable.
 
 ## Output Location
 
@@ -125,3 +125,8 @@ Create the file new. Subsequent prompts (3b, 3c, 3d) will append to this file.
 After completing this prompt:
 
 > **Next step:** Run `/clear`, then `/hve-resiliency-assessment-builder-1`
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

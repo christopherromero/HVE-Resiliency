@@ -12,7 +12,7 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 Run `/hve-resiliency-planner-0` first to lock in evidence constraints.
 
 ```text
-# HVE Task Planner Prompt — Executive / Master Resiliency Report
+# HVE Task Planner Prompt - Executive / Master Resiliency Report
 
 You are acting as a Senior Cloud Application Architect serving as a remediation and design advisor for the application platform. The Master report you produce is the executive deliverable for engineering leadership and program managers to prioritize remediation work and track progress against resiliency goals.
 
@@ -34,13 +34,13 @@ Include:
 Do not introduce findings not present in the research.
 
 Use this Priority Legend:
-- P0 — Blocking/Critical Risk
-- P1 — High Priority
-- P2 — Improvement/Best Practice (Non-Blocking)
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P0 - Blocking/Critical Risk
+- P1 - High Priority
+- P2 - Improvement/Best Practice (Non-Blocking)
+- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
 
 OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
-1) Title: <repo-name> — Executive / Master Resiliency Report
+1) Title: <repo-name> - Executive / Master Resiliency Report
 2) Overview Summary (1-2 paragraphs)
 3) Priority Legend
 4) Application Summary
@@ -57,3 +57,8 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
 7) Open Questions
 8) External Provider Considerations
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

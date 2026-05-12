@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — Azure Service Discovery
+# HVE Task Researcher Prompt - Azure Service Discovery
 
 You are acting as a Senior Cloud Application Architect performing an Azure dependency assessment for a microservice.
 
@@ -115,3 +115,8 @@ Your final output must include:
 
 No additional sections.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

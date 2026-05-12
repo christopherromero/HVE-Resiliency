@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — Final Consolidation
+# HVE Task Researcher Prompt - Final Consolidation
 
 You are acting as a Senior Cloud Application Architect performing the final consolidation of all resiliency research for a microservice.
 
@@ -40,16 +40,16 @@ NON-NEGOTIABLE RULES
 ========================
 PRIORITY DEFINITIONS (USE EXACTLY)
 ========================
-- P0 — Blocking/Critical Risk
+- P0 - Blocking/Critical Risk
   Causes outage, data loss, duplicate transactions, or inability to fail over safely during zone or regional failure.
 
-- P1 — High Priority (Potential for Blocking)
+- P1 - High Priority (Potential for Blocking)
   Does not fully block failover but materially increases MTTR, data risk, or customer impact during failure.
 
-- P2 — Improvement/Best Practice (Non-Blocking)
+- P2 - Improvement/Best Practice (Non-Blocking)
   Does not materially impact correctness during failover but weakens resilience posture or operational clarity.
 
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
   Just a good practice
 
 ========================
@@ -95,7 +95,7 @@ REQUIRED OUTPUT FORMAT
 (Use this exact structure and heading order)
 ========================
 
-# HVE Task Research — <repo-name>
+# HVE Task Research - <repo-name>
 
 Assessment Scope:
 - Repository: <repo-name>
@@ -185,3 +185,8 @@ QUALITY BAR CHECK
 - Sections are complete even if empty
 - Findings are internally consistent
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

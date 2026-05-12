@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt — State, Data & Consistency
+# HVE Task Researcher Prompt - State, Data & Consistency
 
 You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
 
@@ -33,3 +33,8 @@ Record any constraints/limitations (dependency consistency model, replication la
 Document risks that could surface during zone or regional failover.
 Do not propose fixes.
 ```
+
+
+## Output Review
+
+> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
