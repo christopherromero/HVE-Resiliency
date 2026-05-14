@@ -4,6 +4,8 @@ Guided GitHub Copilot workflow for producing Azure resiliency assessments. The w
 
 This repository packages the prompts, instructions, and skill needed to drive the workflow end-to-end inside VS Code with GitHub Copilot Chat.
 
+For a visual overview of how the workflow evolved and how its five phases fit together, see [docs/resiliency-researcher-workflow.md](docs/resiliency-researcher-workflow.md).
+
 ## Quick start
 
 1. Open this repository in VS Code with GitHub Copilot Chat enabled.
@@ -30,7 +32,8 @@ See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resilie
 | [.github/prompts/planner/](.github/prompts/planner/) | Phase 4 planning prompts. |
 | [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/) | Phase 5 assessment authoring prompts. |
 | [.github/instructions/](.github/instructions/) | Platform context and evidence-only rules applied to researcher and planner prompts. |
-| [Microsoft-Assessment/](Microsoft-Assessment/) | Workflow overview and a worked example assessment. |
+| [docs/](docs/) | Workflow overview and reference documentation. |
+| [Microsoft-Assessment/](Microsoft-Assessment/) | Worked example assessment output. |
 
 ## Workflow phases
 
@@ -42,7 +45,7 @@ See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resilie
 | 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | User-gated, `/clear` between steps. |
 | 5. Assessment | `assessment-builder-0` … `assessment-builder-3` | User-gated, `/clear` between steps. |
 
-A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). A visual overview of the workflow evolution is in [Microsoft-Assessment/resiliency-researcher-workflow.md](Microsoft-Assessment/resiliency-researcher-workflow.md).
+A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). For per-phase descriptions and the workflow evolution diagrams, see [docs/resiliency-researcher-workflow.md](docs/resiliency-researcher-workflow.md).
 
 ## HVE at Microsoft
 
