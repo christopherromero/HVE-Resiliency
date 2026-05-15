@@ -165,16 +165,7 @@ In both modes, the agent MUST first compute the applicable prompt set by mapping
 
 ## Priority Definitions
 
-* P0: Critical / Blocking. Causes outage, data loss, duplicate transactions, or inability to fail over safely.
-* P1: Required, Non-Blocking. Materially increases application risk, data risk, or customer impact during failure.
-* P2: Improvement / Best Practice. Does not materially impact correctness but weakens resilience posture.
-* P3: Non-Blocking Code Consistency. Maintainability, readability, duplication, or inconsistent patterns that are non-blocking.
-
-## Service Exclusion Rule
-
-* After Prompt 1 completes, dependencies in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are dropped from scope
-* Prompts 2-7, service-specific prompts (8-19), and the consolidation report analyze only Section 1 dependencies (evidence-confirmed)
-* In Phase 2, run only the service-specific prompts for dependencies found in Section 1
+See [platform context](../../instructions/hve-resiliency-platform-context.instructions.md) for researcher phases and [planner context](../../instructions/hve-resiliency-planner-context.instructions.md) for planning phases.
 
 ## Output Review
 
