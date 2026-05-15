@@ -1,13 +1,11 @@
 # HVE Resiliency
 ## Overview
 
-An HVE (Hypervelocity Engineering) agent-driven resiliency framework for Azure. It orchestrates the **Task Researcher** and **Task Planner** agents ([microsoft/hve-core](https://github.com/microsoft/hve-core) and bundled in the [HVE Essentials VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve.hve-essentials)) through a five-phase workflow that produces evidence-only research and a prioritized P0-P3 remediation plan with file- and line-level citations.
+An HVE (Hypervelocity Engineering) agent-driven resiliency framework for Azure. It orchestrates the **Task Researcher** and **Task Planner** agents from [microsoft/hve-core](https://github.com/microsoft/hve-core) (bundled in the [HVE Essentials VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve.hve-essentials), and not owned by this repo) through a five-phase workflow that produces evidence-only research and a prioritized P0-P3 remediation plan with file- and line-level citations.
 
 The framework targets two failure modes: zone failure within a region, and full regional failover in an active/active multi-region deployment where either region can take over for the other.
 
-This repository packages the prompts, instructions, and skill needed to drive the workflow end-to-end inside VS Code with GitHub Copilot Chat. It does not own the Task Researcher or Task Planner agents themselves; those are maintained in `hve-core`. Guidance aligns with the [Azure Well-Architected Framework Reliability pillar](https://learn.microsoft.com/azure/well-architected/reliability/) and [Azure reliability documentation](https://learn.microsoft.com/azure/reliability/).
-
-For a visual overview of how the workflow evolved and how its five phases fit together, see [docs/resiliency-researcher-workflow.md](docs/resiliency-researcher-workflow.md).
+This repository packages the prompts, instructions, and skill needed to drive the workflow end-to-end inside VS Code with GitHub Copilot Chat.
 
 ## Problem statement
 
@@ -54,6 +52,15 @@ See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resilie
 
 ## Workflow phases
 
+The framework follows an application-centric, evidence-first flow built on HVE Core's `Task Researcher` and `Task Planner` agents:
+
+1. **Source code and IaC** in the target repository serve as primary evidence.
+2. **Task Researcher** runs Phase 1-2 prompts to produce per-area research artifacts (architecture, dependencies, failure paths, per-service findings), citing file and line for every claim.
+3. **Phase 3 consolidation** merges those artifacts into a single evidence document, deduplicating findings and normalizing terminology.
+4. **Task Planner** reads the consolidated document under evidence-lock-in rules and produces a prioritized P0-P3 plan plus a code-level resiliency assessment.
+5. **Outputs** include forensic research artifacts, a Master plan and Developer Guide, and a backlog-ready assessment report with Microsoft Standards Alignment.
+
+
 | Phase | Prompts | Notes |
 |-------|---------|-------|
 | 1. Core Research | `researcher-0` … `researcher-7-logging` | Sequential. Mode-aware. |
@@ -92,7 +99,6 @@ Mode B totals are 30-50% higher because the orchestrating agent retains conversa
 | [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/) | Reliability pillar: availability, resiliency, and recovery. Phase 5 assessment maps every P0-P3 finding to WAF reliability patterns (see [`assessment-builder-3`](.github/prompts/assessment-builder/hve-resiliency-assessment-builder-3.prompt.md)). |
 | [Azure Proactive Resiliency Library (APRL)](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/) | Design-time and detection-time resiliency guidance for Azure services, used as a reference for per-service findings in Phase 2. |
 | [Cloud Adoption Framework (CAF)](https://learn.microsoft.com/azure/cloud-adoption-framework/) | Application readiness for cloud scale and reliability, supporting the transition to active/active multi-region operation. |
-| GitHub Copilot and HVE | Agent-based, standardized assessment and evidence generation via the Task Researcher and Task Planner agents from [microsoft/hve-core](https://github.com/microsoft/hve-core). |
 
 ## HVE at Microsoft
 
