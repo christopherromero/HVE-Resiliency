@@ -1,4 +1,17 @@
 # HVE Resiliency
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Problem statement](#problem-statement)
+* [Quick start](#quick-start)
+* [Repository layout](#repository-layout)
+* [Workflow phases](#workflow-phases)
+* [Token consumption estimates](#token-consumption-estimates)
+* [Alignment with Microsoft frameworks](#alignment-with-microsoft-frameworks)
+* [HVE at Microsoft](#hve-at-microsoft)
+* [Contributing](#contributing)
+
 ## Overview
 
 An HVE (Hypervelocity Engineering) agent-driven resiliency framework for Azure. It orchestrates the **Task Researcher** and **Task Planner** agents from [microsoft/hve-core](https://github.com/microsoft/hve-core) (bundled in the [HVE Essentials VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve.hve-essentials), and not owned by this repo) through a five-phase workflow that produces evidence-only research and a prioritized P0-P3 remediation plan with file- and line-level citations.
