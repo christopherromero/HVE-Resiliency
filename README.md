@@ -21,7 +21,7 @@ This framework addresses those gaps with standardized, AI-assisted workflows tha
 
 ## Quick start
 
-1. Install the [HVE Essentials VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve.hve-essentials) so the `Task Researcher` and `Task Planner` agents are available in Copilot Chat.
+1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the `Task Researcher` and `Task Planner` agents are available in Copilot Chat.
 2. Open this repository (or the target codebase being assessed) in VS Code with GitHub Copilot Chat enabled.
 3. In Chat, run `/hve-resiliency-research`.
 4. Choose an execution mode when prompted:
