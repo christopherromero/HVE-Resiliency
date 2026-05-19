@@ -3,34 +3,124 @@
 ## Table of Contents
 
 * [Overview](#overview)
-* [Problem statement](#problem-statement)
+* [What this skill solves](#what-this-skill-solves)
+* [When to use this skill](#when-to-use-this-skill)
+* [What this skill does NOT do](#what-this-skill-does-not-do)
+* [Finding prioritization (P0–P3)](#finding-prioritization-p0p3)
+* [What you get as output](#what-you-get-as-output)
 * [Quick start](#quick-start)
-* [Repository layout](#repository-layout)
 * [Workflow phases](#workflow-phases)
-* [Token consumption estimates](#token-consumption-estimates)
+* [Repository layout](#repository-layout)
+* [Token consumption estimates](#token-consption-estimates)
 * [Alignment with Microsoft frameworks](#alignment-with-microsoft-frameworks)
 * [HVE at Microsoft](#hve-at-microsoft)
 * [Contributing](#contributing)
 
+---
+
 ## Overview
 
-An HVE (Hypervelocity Engineering) agent-driven resiliency framework for Azure. It orchestrates the **Task Researcher** and **Task Planner** agents from [microsoft/hve-core](https://github.com/microsoft/hve-core) (bundled in the [HVE Essentials VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve.hve-essentials), and not owned by this repo) through a five-phase workflow that produces evidence-only research and a prioritized P0-P3 remediation plan with file- and line-level citations.
+HVE Resiliency is an **AI-assisted analysis framework** that evaluates application source code and infrastructure (IaC) to identify resiliency gaps and generate a **prioritized remediation plan (P0–P3)**.
 
-The framework targets two failure modes: zone failure within a region, and full regional failover in an active/active multi-region deployment where either region can take over for the other.
+Unlike traditional architecture reviews, this framework:
 
-This repository packages the prompts, instructions, and skill needed to drive the workflow end-to-end inside VS Code with GitHub Copilot Chat.
+- Works directly on **source code and infrastructure definitions**
+- Produces **evidence-based findings with file and line references**
+- Translates findings into **actionable, backlog-ready remediation plans**
+- Focuses on **real failure scenarios** (zone failure and regional failover)
 
-## Problem statement
+It is designed for engineering teams building or operating systems in Azure, especially those targeting **high availability and multi-region resiliency**.
 
-Manual resiliency assessments tend to be:
+---
+
+## What this skill solves
+
+Manual resiliency assessments are often:
 
 - Inconsistent across teams and engagements
-- Slow to repeat as code evolves
-- Infrastructure-first rather than code-aware
-- Disconnected from engineering backlogs
+- Time-consuming to repeat as code evolves
+- Focused on infrastructure, ignoring code-level risks
+- Difficult to translate into actionable backlog work
 
-This framework addresses those gaps with standardized, AI-assisted workflows that produce a traceable evidence chain from research to a prioritized P0-P3 remediation plan, reviewed by a qualified engineer before delivery.
+This skill standardizes and automates resiliency analysis across repositories.
 
+### Expected impact
+
+Using this framework, teams can:
+
+- ✅ Reduce assessment time (hours instead of days)
+- ✅ Increase consistency across projects
+- ✅ Identify **code-level failure paths** not visible in architecture diagrams
+- ✅ Maintain full traceability from finding → code → remediation
+- ✅ Generate **prioritized, backlog-ready actions**
+
+---
+
+## When to use this skill
+
+Use this skill when:
+
+- Preparing a system for **production readiness**
+- Validating resiliency before a **major release**
+- Migrating to **multi-region or active/active architectures**
+- Converting resiliency risks into **engineering backlog items**
+- Performing **code-level resiliency analysis**
+
+### Typical use cases
+
+- Pre go-live validation
+- Architecture and resiliency reviews
+- Cloud migration readiness
+- Continuous resiliency checks
+- Engineering quality improvements
+
+---
+
+## What this skill does NOT do
+
+This skill is intended for **design-time and code-level analysis**.
+
+It does **not**:
+
+- Execute or simulate failover scenarios
+- Perform chaos engineering or load testing
+- Automatically fix issues in the codebase
+- Analyze runtime telemetry or production behavior
+- Replace engineering review or decision-making
+
+A qualified engineer must validate all findings before implementation.
+
+---
+
+## Finding prioritization (P0–P3)
+
+Findings are classified based on their potential impact:
+
+| Priority | Description |
+|----------|------------|
+| **P0 (Critical)** | Risk of full system failure or data loss |
+| **P1 (High)** | Significant service degradation or partial outage |
+| **P2 (Medium)** | Resiliency gaps affecting recovery or stability |
+| **P3 (Low)** | Improvements or optimizations |
+
+This prioritization enables teams to focus on **failover-blocking risks first**.
+
+---
+
+## What you get as output
+
+After running the workflow, you will obtain:
+
+- 📄 Evidence-based research artifacts (file + line references)
+- 📊 Consolidated resiliency findings
+- 🧩 Prioritized remediation plan (P0–P3)
+- 📘 Developer guidance for issue resolution
+- ✅ Backlog-ready resiliency assessment aligned with Microsoft frameworks
+
+Example:  
+[View sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md)
+
+---
 
 ## Quick start
 
@@ -50,18 +140,6 @@ The `/clear` command resets Copilot's context between phases. Each phase should 
 Mode B gets the same isolation by running each prompt as a fresh subagent. See HVE Core's Context Engineering docs for the full explanation.
 
 See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md) for the authoritative workflow definition.
-
-## Repository layout
-
-| Path | Purpose |
-|------|---------|
-| [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/) | Skill that orchestrates the full research workflow. |
-| [.github/prompts/researcher/](.github/prompts/researcher/) | Phase 1 (core) and Phase 2 (per-service) research prompts, plus the consolidation prompt. |
-| [.github/prompts/planner/](.github/prompts/planner/) | Phase 4 planning prompts. |
-| [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/) | Phase 5 assessment authoring prompts. |
-| [.github/instructions/](.github/instructions/) | Platform context and evidence-only rules applied to researcher and planner prompts. |
-| [docs/](docs/) | Workflow overview and reference documentation. |
-| [Microsoft-Assessment/](Microsoft-Assessment/) | Worked example assessment output. |
 
 ## Workflow phases
 
@@ -83,6 +161,18 @@ The framework follows an application-centric, evidence-first flow built on HVE C
 | 5. Assessment | `assessment-builder-0` … `assessment-builder-3` | User-gated, `/clear` between steps. |
 
 A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). For per-phase descriptions and the workflow evolution diagrams, see [docs/resiliency-researcher-workflow.md](docs/resiliency-researcher-workflow.md).
+
+## Repository layout
+
+| Path | Purpose |
+|------|---------|
+| [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/) | Skill that orchestrates the full research workflow. |
+| [.github/prompts/researcher/](.github/prompts/researcher/) | Phase 1 (core) and Phase 2 (per-service) research prompts, plus the consolidation prompt. |
+| [.github/prompts/planner/](.github/prompts/planner/) | Phase 4 planning prompts. |
+| [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/) | Phase 5 assessment authoring prompts. |
+| [.github/instructions/](.github/instructions/) | Platform context and evidence-only rules applied to researcher and planner prompts. |
+| [docs/](docs/) | Workflow overview and reference documentation. |
+| [Microsoft-Assessment/](Microsoft-Assessment/) | Worked example assessment output. |
 
 ## Token consumption estimates
 
