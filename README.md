@@ -92,6 +92,127 @@ A qualified engineer must validate all findings before implementation.
 
 ---
 
+## Customization and extensibility
+
+This skill is **designed to be adapted** to different projects, architectures, and customer requirements.
+
+The default behavior is driven by a predefined **platform and engagement context**, including:
+
+- Resiliency definition and classification rules
+- Priority model (P0–P3)
+- Failover assumptions (e.g., active/active, GLB-driven routing)
+- Architectural constraints and system topology
+- Reporting structure and output expectations
+
+👉 You can review the default context here:  
+[View planner context instructions](https://github.com/christopherromero/HVE-Resiliency/edit/main/.github/instructions/hve-resiliency-planner-context.instructions.md)
+
+---
+
+### Why customization matters
+
+Different teams and projects may have:
+
+- Different target architectures (e.g., active/passive vs active/active)
+- Different failover mechanisms (e.g., no GLB, custom routing)
+- Different platform constraints (e.g., hybrid, non-Azure environments)
+- Different engagement models (e.g., code ownership, implementation support)
+- Different definitions of resiliency and acceptable risk
+
+Without customization, findings may be:
+- Misaligned with system goals
+- Incorrectly prioritized
+- Overly prescriptive or not actionable
+
+---
+
+### What can be customized
+
+Teams can adapt the skill by modifying the instructions under: .github/instructions/
+
+Key areas that can be customized:
+
+#### 1. Engagement context
+Define the scenario being analyzed:
+
+- Current vs target architecture
+- Failover model (active/passive, active/active, blue/green, etc.)
+- Scope (single service, platform, multi-repo)
+- Constraints (e.g., no write access, customer-owned code)
+
+#### 2. Resiliency definition
+Adjust what qualifies as a resiliency finding:
+
+- Failure scenarios (zone, region, dependency, network)
+- Critical system behaviors
+- Acceptable vs unacceptable degradation
+
+#### 3. Priority model (P0–P3)
+Modify priority criteria to match business impact:
+
+- What is considered "blocking"
+- Acceptable workarounds
+- Business-critical vs non-critical flows
+
+#### 4. Architectural assumptions
+Override default system assumptions:
+
+- Load balancing strategy
+- Dependency deployment model (single-region vs multi-region)
+- Configuration patterns (region-aware vs abstracted endpoints)
+
+#### 5. Output expectations
+Customize how results are delivered:
+
+- Report structure
+- Level of technical depth
+- Alignment with internal standards or frameworks
+- Backlog formatting (ADO, GitHub Issues, etc.)
+
+---
+
+### How to customize
+
+1. Copy or modify the relevant instruction files: .github/instructions/hve-resiliency-planner-context.instructions.md
+.github/instructions/hve-resiliency-platform-context.instructions.md
+
+2. Update the context to match your project:
+
+- Replace architecture assumptions
+- Adjust resiliency definition
+- Update constraints and scope
+- Modify prioritization rules if needed
+
+3. Re-run the workflow: /hve-resiliency-research
+The agents will automatically pick up the updated context and apply it to all findings and recommendations.
+
+---
+
+### Example customization scenarios
+
+| Scenario | Customization focus |
+|----------|-------------------|
+| Active/passive deployment | Change failover assumptions and P0 criteria |
+| Hybrid or on-prem systems | Adjust platform context and dependencies |
+| Regulated environments | Tighten priority rules and reporting requirements |
+| Platform teams vs product teams | Modify output format and level of detail |
+| Early-stage systems | Relax strict resiliency thresholds |
+
+---
+
+### Key principle
+
+> This framework is **context-driven, not static**.
+
+The quality and relevance of findings depend heavily on how well the context reflects:
+
+- The system architecture
+- The failure scenarios that matter
+- The business goals of the project
+
+Teams are encouraged to **treat the instruction files as part of the product**, evolving them as the system and requirements change.
+---
+
 ## Finding prioritization (P0–P3)
 
 Findings are classified based on their potential impact:
