@@ -6,6 +6,7 @@
 * [What this skill solves](#what-this-skill-solves)
 * [When to use this skill](#when-to-use-this-skill)
 * [What this skill does NOT do](#what-this-skill-does-not-do)
+* [Customization and extensibility](#customization-and-extensibility)
 * [Finding prioritization (P0–P3)](#finding-prioritization-p0p3)
 * [What you get as output](#what-you-get-as-output)
 * [Quick start](#quick-start)
@@ -211,6 +212,7 @@ The quality and relevance of findings depend heavily on how well the context ref
 - The business goals of the project
 
 Teams are encouraged to **treat the instruction files as part of the product**, evolving them as the system and requirements change.
+
 ---
 
 ## Finding prioritization (P0–P3)
