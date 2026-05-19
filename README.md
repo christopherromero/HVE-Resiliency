@@ -3,6 +3,8 @@
 ## Table of Contents
 
 * [Overview](#overview)
+* [Documentation](#documentation)
+* [Problem statement](#problem-statement)
 * [What this skill solves](#what-this-skill-solves)
 * [When to use this skill](#when-to-use-this-skill)
 * [What this skill does NOT do](#what-this-skill-does-not-do)
@@ -31,6 +33,25 @@ Unlike traditional architecture reviews, this framework:
 - Focuses on **real failure scenarios** (zone failure and regional failover)
 
 It is designed for engineering teams building or operating systems in Azure, especially those targeting **high availability and multi-region resiliency**.
+
+---
+
+## Documentation
+
+Start here before running the framework end-to-end. These two guides are the primary references for everything in this repo:
+
+| Guide | Read this when you want to |
+|-------|----------------------------|
+| **[Resiliency Researcher Workflow](docs/resiliency-researcher-workflow.md)** | Understand the five-phase research-to-assessment workflow, per-phase prompt sequence, mode selection (interactive vs autonomous), and the workflow evolution diagrams. |
+| **[Work Item Skills Guide](docs/workitem-skills-guide.md)** | Turn a finished assessment into a real backlog in Azure DevOps or Jira Cloud via the export and import skills, including hierarchy options, dry runs, and troubleshooting. |
+
+The authoritative skill definitions live alongside the skills themselves at [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md), [.github/skills/hve-resiliency-workitem-export/SKILL.md](.github/skills/hve-resiliency-workitem-export/SKILL.md), [.github/skills/hve-resiliency-workitem-import/SKILL.md](.github/skills/hve-resiliency-workitem-import/SKILL.md), and [.github/skills/hve-resiliency-workitem-jira-import/SKILL.md](.github/skills/hve-resiliency-workitem-jira-import/SKILL.md).
+
+---
+
+## Problem statement
+
+Manual resiliency assessments tend to be inconsistent across teams and engagements, slow to repeat as code evolves, infrastructure-first rather than code-aware, and disconnected from engineering backlogs. This framework addresses those gaps with standardized, AI-assisted workflows that produce a traceable evidence chain from research to a prioritized P0-P3 remediation plan, reviewed by a qualified engineer before delivery.
 
 ---
 
@@ -247,8 +268,29 @@ Example:
 
 ## Quick start
 
+GitHub Copilot Chat auto-discovers any **skills**, **prompts**, and **instructions** placed under `.github/skills/`, `.github/prompts/`, and `.github/instructions/` in the workspace you have open. A *skill* (`SKILL.md`) tells Copilot when and how to invoke a workflow, a *prompt* (`*.prompt.md`) is an invocable slash command, and an *instruction* (`*.instructions.md`) is a rule applied automatically to files matching its `applyTo` pattern. No registration step is needed — placing the files under `.github/` is enough.
+
 1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the `Task Researcher` and `Task Planner` agents are available in Copilot Chat.
-2. Open this repository (or the target codebase being assessed) in VS Code with GitHub Copilot Chat enabled.
+2. Install this framework's skills, prompts, and instructions into the **root** of the codebase you want to assess. Pick one of the following from your target repo's root:
+
+    ```powershell
+    # PowerShell (Windows / macOS / Linux)
+    irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1 | iex
+    ```
+
+    ```bash
+    # Bash (macOS / Linux / WSL)
+    curl -fsSL https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.sh | bash
+    ```
+
+    The installer downloads the latest `main` (no `git` required), copies `.github/skills/`, `.github/prompts/`, and `.github/instructions/` into your `.github/` folder, and prompts before overwriting. Pin to a tag and force overwrite with the parameterized form:
+
+    ```powershell
+    & ([scriptblock]::Create((irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1))) -Ref v1.0 -Force
+    ```
+
+    Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then type `/` in Chat to confirm the new commands appear (`/hve-resiliency-research`, `/hve-resiliency-workitem-export`, `/hve-resiliency-workitem-import`, `/hve-resiliency-workitem-jira-import`). Commit the `.github/` additions so the rest of your team gets the same workflow.
+
 3. In Chat, run `/hve-resiliency-research`.
 4. Choose an execution mode when prompted:
     - **Mode A (Interactive).** One prompt per turn, `/clear` between prompts.
@@ -283,7 +325,7 @@ The framework follows an application-centric, evidence-first flow built on HVE C
 | 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | User-gated, `/clear` between steps. |
 | 5. Assessment | `assessment-builder-0` … `assessment-builder-3` | User-gated, `/clear` between steps. |
 
-A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). For per-phase descriptions and the workflow evolution diagrams, see [docs/resiliency-researcher-workflow.md](docs/resiliency-researcher-workflow.md).
+A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). Per-phase descriptions, workflow evolution diagrams, and the post-Phase-5 backlog import flow are covered in the guides linked from [Documentation](#documentation).
 
 ## Repository layout
 
@@ -293,9 +335,15 @@ A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Leve
 | [.github/prompts/researcher/](.github/prompts/researcher/) | Phase 1 (core) and Phase 2 (per-service) research prompts, plus the consolidation prompt. |
 | [.github/prompts/planner/](.github/prompts/planner/) | Phase 4 planning prompts. |
 | [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/) | Phase 5 assessment authoring prompts. |
+| [.github/prompts/workitem-export/](.github/prompts/workitem-export/) | Backlog export prompt for converting assessment findings into ADO or Jira import CSV files. |
+| [.github/prompts/workitem-import/](.github/prompts/workitem-import/) | Bulk-import prompts for posting an export CSV directly into Azure DevOps or Jira Cloud. |
+| [.github/skills/hve-resiliency-workitem-export/](.github/skills/hve-resiliency-workitem-export/) | Skill that converts assessment findings into ADO or Jira import CSV files. |
+| [.github/skills/hve-resiliency-workitem-import/](.github/skills/hve-resiliency-workitem-import/) | Skill that bulk-creates ADO work items from an export CSV via REST API, with optional parent Epic, priority-grouped User Stories, rich HTML descriptions, and assessment attachment. |
+| [.github/skills/hve-resiliency-workitem-jira-import/](.github/skills/hve-resiliency-workitem-jira-import/) | Skill that bulk-creates Jira Cloud issues from an export CSV via REST API v3, with optional parent Epic, priority-grouped Stories, ADF descriptions, and assessment attachment. |
 | [.github/instructions/](.github/instructions/) | Platform context and evidence-only rules applied to researcher and planner prompts. |
-| [docs/](docs/) | Workflow overview and reference documentation. |
+| [docs/](docs/) | Workflow overview and reference documentation — see the [Documentation](#documentation) section above. |
 | [Microsoft-Assessment/](Microsoft-Assessment/) | Worked example assessment output. |
+| [install.ps1](install.ps1) / [install.sh](install.sh) | One-line bootstrap installers that copy the skills, prompts, and instructions into another repository (no `git` required). |
 
 ## Token consumption estimates
 
