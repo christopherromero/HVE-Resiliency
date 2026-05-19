@@ -5,16 +5,12 @@
 * [Overview](#overview)
 * [Documentation](#documentation)
 * [Problem statement](#problem-statement)
-* [What this skill solves](#what-this-skill-solves)
-* [When to use this skill](#when-to-use-this-skill)
-* [What this skill does NOT do](#what-this-skill-does-not-do)
+* [Scope](#scope)
 * [Customization and extensibility](#customization-and-extensibility)
-* [Finding prioritization (P0–P3)](#finding-prioritization-p0p3)
-* [What you get as output](#what-you-get-as-output)
 * [Quick start](#quick-start)
 * [Workflow phases](#workflow-phases)
 * [Repository layout](#repository-layout)
-* [Token consumption estimates](#token-consption-estimates)
+* [Token consumption estimates](#token-consumption-estimates)
 * [Alignment with Microsoft frameworks](#alignment-with-microsoft-frameworks)
 * [HVE at Microsoft](#hve-at-microsoft)
 * [Contributing](#contributing)
@@ -51,11 +47,11 @@ The authoritative skill definitions live alongside the skills themselves at [.gi
 
 ## Problem statement
 
+### Background
+
 Manual resiliency assessments tend to be inconsistent across teams and engagements, slow to repeat as code evolves, infrastructure-first rather than code-aware, and disconnected from engineering backlogs. This framework addresses those gaps with standardized, AI-assisted workflows that produce a traceable evidence chain from research to a prioritized P0-P3 remediation plan, reviewed by a qualified engineer before delivery.
 
----
-
-## What this skill solves
+### What this skill solves
 
 Manual resiliency assessments are often:
 
@@ -66,19 +62,47 @@ Manual resiliency assessments are often:
 
 This skill standardizes and automates resiliency analysis across repositories.
 
-### Expected impact
+#### Expected impact
 
 Using this framework, teams can:
 
-- ✅ Reduce assessment time (hours instead of days)
-- ✅ Increase consistency across projects
-- ✅ Identify **code-level failure paths** not visible in architecture diagrams
-- ✅ Maintain full traceability from finding → code → remediation
-- ✅ Generate **prioritized, backlog-ready actions**
+- Reduce assessment time (hours instead of days)
+- Increase consistency across projects
+- Identify **code-level failure paths** not visible in architecture diagrams
+- Maintain full traceability from finding → code → remediation
+- Generate **prioritized, backlog-ready actions**
+
+### Finding prioritization (P0–P3)
+
+Findings are classified based on their potential impact:
+
+| Priority | Description |
+|----------|------------|
+| **P0 (Critical)** | Risk of full system failure or data loss |
+| **P1 (High)** | Significant service degradation or partial outage |
+| **P2 (Medium)** | Resiliency gaps affecting recovery or stability |
+| **P3 (Low)** | Improvements or optimizations |
+
+This prioritization enables teams to focus on **failover-blocking risks first**.
+
+### What you get as output
+
+After running the workflow, you will obtain:
+
+- Evidence-based research artifacts (file + line references)
+- Consolidated resiliency findings
+- Prioritized remediation plan (P0–P3)
+- Developer guidance for issue resolution
+- Backlog-ready resiliency assessment aligned with Microsoft frameworks
+
+Example:  
+[View sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md)
 
 ---
 
-## When to use this skill
+## Scope
+
+### Applicability
 
 Use this skill when:
 
@@ -88,7 +112,7 @@ Use this skill when:
 - Converting resiliency risks into **engineering backlog items**
 - Performing **code-level resiliency analysis**
 
-### Typical use cases
+#### Typical use cases
 
 - Pre go-live validation
 - Architecture and resiliency reviews
@@ -96,9 +120,7 @@ Use this skill when:
 - Continuous resiliency checks
 - Engineering quality improvements
 
----
-
-## What this skill does NOT do
+### What this framework does NOT do
 
 This skill is intended for **design-time and code-level analysis**.
 
@@ -126,12 +148,12 @@ The default behavior is driven by a predefined **platform and engagement context
 - Architectural constraints and system topology
 - Reporting structure and output expectations
 
-👉 You can review the default context here:  
+You can review the default context here:  
 [View planner context instructions](https://github.com/christopherromero/HVE-Resiliency/edit/main/.github/instructions/hve-resiliency-planner-context.instructions.md)
 
 ---
 
-### Why customization matters
+### Customization drivers
 
 Different teams and projects may have:
 
@@ -236,36 +258,6 @@ Teams are encouraged to **treat the instruction files as part of the product**, 
 
 ---
 
-## Finding prioritization (P0–P3)
-
-Findings are classified based on their potential impact:
-
-| Priority | Description |
-|----------|------------|
-| **P0 (Critical)** | Risk of full system failure or data loss |
-| **P1 (High)** | Significant service degradation or partial outage |
-| **P2 (Medium)** | Resiliency gaps affecting recovery or stability |
-| **P3 (Low)** | Improvements or optimizations |
-
-This prioritization enables teams to focus on **failover-blocking risks first**.
-
----
-
-## What you get as output
-
-After running the workflow, you will obtain:
-
-- 📄 Evidence-based research artifacts (file + line references)
-- 📊 Consolidated resiliency findings
-- 🧩 Prioritized remediation plan (P0–P3)
-- 📘 Developer guidance for issue resolution
-- ✅ Backlog-ready resiliency assessment aligned with Microsoft frameworks
-
-Example:  
-[View sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md)
-
----
-
 ## Quick start
 
 GitHub Copilot Chat auto-discovers any **skills**, **prompts**, and **instructions** placed under `.github/skills/`, `.github/prompts/`, and `.github/instructions/` in the workspace you have open. A *skill* (`SKILL.md`) tells Copilot when and how to invoke a workflow, a *prompt* (`*.prompt.md`) is an invocable slash command, and an *instruction* (`*.instructions.md`) is a rule applied automatically to files matching its `applyTo` pattern. No registration step is needed — placing the files under `.github/` is enough.
@@ -298,7 +290,7 @@ GitHub Copilot Chat auto-discovers any **skills**, **prompts**, and **instructio
 5. **Switch the active agent in Copilot Chat to match each phase**: select `Task Researcher` for Phases 1-3 (research and consolidation), and `Task Planner` for Phases 4-5 (planning and assessment). Each prompt's frontmatter declares the agent it expects; mismatched agents will produce off-spec output.
 6. Follow the phase sequence: Core Research → Service Research → Consolidation → Planning → Assessment.
 
-### Why `/clear` between prompts?
+### Purpose of `/clear` between prompts
 
 The `/clear` command resets Copilot's context between phases. Each phase should start fresh; the artifacts (research doc, plan) carry context forward, not the chat history. This avoids context degradation from accumulated prior turns and keeps each step reproducible from files on disk.
 
