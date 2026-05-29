@@ -18,7 +18,10 @@ Read **only** the following before generating. Keep context minimal.
 
 * `.copilot-tracking/plans/` - locate `{serviceName}-Master.md`. Read the P2 and P3 sections only (skip P0, P1, Open Questions, and External Provider Considerations).
 * `.copilot-tracking/plans/` - locate `{serviceName}-Developer-Guide.md`. Read the P2 and P3 sections only (skip P0 and P1). This is the primary source for all code blocks.
-* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the existing file to understand the current state and where to append.
+* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the final 80 lines only. Confirm the last finding block ends with `---` on its own line.
+  * If complete: proceed.
+  * If truncated: stop. Do not append. Tell the user exactly: "The last P1 finding is incomplete. Open `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`, find the last complete finding ending with `---`, delete everything after that line, save the file, then re-run `/clear` and `/hve-resiliency-assessment-builder-1` to finish P0/P1 before running this prompt."
+  * If no P0/P1 findings present at all: stop. Tell the user exactly: "No P0/P1 findings found. Run `/clear` then `/hve-resiliency-assessment-builder-1` first."
 
 Do **not** read the consolidated research, subagent files, or the Developer Guide P0/P1 sections for this prompt.
 
