@@ -18,7 +18,7 @@ Read **only** the following before generating. Keep context minimal.
 
 * `.copilot-tracking/plans/` - locate `{serviceName}-Master.md`. Read the P0 and P1 sections only (skip P2, P3, Open Questions, and External Provider Considerations).
 * `.copilot-tracking/plans/` - locate `{serviceName}-Developer-Guide.md`. Read the P0 and P1 sections only (skip P2 and P3). This is the primary source for all code blocks.
-* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the final 30 lines only. Confirm the last non-blank line is `[Back to Top](#top)` — this marks the end of Section 1 and is your append position.
+* `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` - read the final 100 lines only. Confirm the last non-blank line is `[Back to Top](#top)` — this marks the end of Section 1 and is your append position.
   * If present: proceed.
   * If absent: stop. Do not append. Tell the user exactly: "Section 1 is incomplete or missing. Run `/clear` then `/hve-resiliency-assessment-builder-0` to regenerate it, then re-run this prompt."
 
