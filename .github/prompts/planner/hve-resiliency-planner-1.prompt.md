@@ -57,8 +57,3 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
 7) Open Questions
 8) External Provider Considerations
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

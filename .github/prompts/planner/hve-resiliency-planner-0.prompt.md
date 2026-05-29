@@ -33,8 +33,3 @@ PRIORITY LEGEND (use this consistently in all outputs):
 
 Ordering rule: Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

@@ -147,8 +147,3 @@ Include a short "Can we diagnose a silent outage?" walkthrough:
 - If the service stops processing transactions but pods are alive, what logs/metrics/traces would prove it?
 - If you cannot answer based on evidence, state what is missing.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

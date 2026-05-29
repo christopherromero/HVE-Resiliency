@@ -42,8 +42,3 @@ OUTPUT FORMAT (repeat per issue):
 - Constraints/limitations (evidence):
 - Remediation guidance: None (HVE Task Researcher role is evidence-only)
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

@@ -78,8 +78,3 @@ For each item include:
 - If no evidence exists, it must appear only in Section 2 or Section 3.
 - Be precise, defensive, and audit-ready.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

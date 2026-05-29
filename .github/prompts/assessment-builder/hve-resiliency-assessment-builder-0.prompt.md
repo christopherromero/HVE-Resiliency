@@ -125,8 +125,3 @@ Create the file new. Subsequent prompts (3b, 3c, 3d) will append to this file.
 After completing this prompt:
 
 > **Next step:** Run `/clear`, then `/hve-resiliency-assessment-builder-1`
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

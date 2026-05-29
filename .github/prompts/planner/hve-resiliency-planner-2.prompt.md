@@ -52,8 +52,3 @@ OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
    - Testing/validation notes (how to prove it works):
    - Health then GLB readiness contract (if applicable): (a) what /ready (or equivalent) means, including which dependencies are included/excluded, and (b) GLB probe expectations (path/port/method/thresholds/timeouts) expressed as testable acceptance criteria.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
