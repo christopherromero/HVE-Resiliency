@@ -16,6 +16,10 @@ You are acting as a Senior Cloud Application Architect performing an external de
 
 Identify external (non-Azure) service dependencies with clear separation between what is actually used, what was checked but not present, what is assumed or implicitly used, and what is not applicable to this repository.
 
+**Definition of "external (non-Azure)":** any service not part of the Azure Resource Manager (ARM) control plane. This includes GitHub, third-party SaaS, CDNs, DNS providers, certificate authorities, and any Microsoft service not managed as an Azure resource (e.g., Microsoft Graph, npm registries).
+
+**Transitive dependencies:** if a direct dependency (e.g., an SDK or library) is known to make runtime calls to an external service, note it in Section 1 with evidence. Do not perform deep recursive analysis of all transitive packages - only flag those with observable external network calls in code or configuration.
+
 ## Instructions
 
 Explicitly analyze the repository for non-Azure and external dependencies referenced in:
@@ -48,10 +52,11 @@ For each non-Azure and external dependency include:
 - Brief description of how it is used
 - Whether it materially impacts zone or region failover (Yes/No + description of why this could impact zone or region failover)
 - Existing mitigations present (if any): retries/timeouts/fallbacks/feature flags/runbooks, with evidence (file path + line number)
-- Health check present for this dependency? (Yes/No + evidence)
-- How health is determined (e.g., ping/query/auth call/SDK check/timeouts) + evidence
-- Is dependency health surfaced to GLB health evaluation? (Yes/No/Unclear + evidence of the wiring)
-- What GLB probes (or upstream probes) hit (endpoint/path/port) and what conditions cause unhealthy vs healthy, as expressed in config/code + evidence
+- Health check sub-table with one row per check, columns:
+  - Health Check Mechanism (e.g., ping/query/auth call/SDK check/timeout, or "None")
+  - Evidence (file path + line number)
+  - Surfaced to GLB? (Yes / No / Unclear, with evidence of the wiring)
+  - GLB Probe Details (endpoint/path/port hit by GLB or upstream probes, and the conditions that mark healthy vs unhealthy as expressed in config/code + evidence)
 - Constraints/limitations (if any): dependency/platform capabilities or configuration/operational constraints that shape failover behavior, with evidence (file path + line number) when present
 
 ### Section 2 - Checked but Not Present

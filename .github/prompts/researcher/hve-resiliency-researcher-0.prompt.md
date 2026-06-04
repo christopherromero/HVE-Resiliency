@@ -13,14 +13,13 @@ Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-
 You are acting as a Senior Cloud Application Architect performing a resiliency context assessment for a microservice.
 
 ## OBJECTIVE
-Research this repository.
+Systematically examine the repository's source code, configuration files, infrastructure-as-code templates, and dependency manifests to understand the application's architecture and resiliency posture.
 
 Validate readiness for:
 - Zone failure within the primary region
 - Full regional failover from the primary region to the secondary region
 
-First analyze the application architecture for this code base.
-Then focus exclusively on identifying current implementation behavior, application flow, assumptions, constraints, what are the risks, why this is a risk to application resiliency during a zone or region failover, and what are the impacts if not changed.
+Begin by analyzing the application architecture for this code base, then characterize current implementation behavior, application flow, assumptions, constraints, the risks, why each is a risk to application resiliency during a zone or region failover, and the impacts if not changed.
 
 Analyze region, zone, and application failover risk for each gap/finding:
 - P0 - Blocking/Critical Risk
@@ -30,10 +29,17 @@ Analyze region, zone, and application failover risk for each gap/finding:
 - Provide an explanation why each issue is rated at that level
 - Identify the area in the code where the issue is located (file + line #)
 
-- Provide an application walk through and high-level architecture for this microservice
-- Capture existing mitigations already present (retries/timeouts/fallbacks/feature flags/runbooks), with evidence (file + line).
+Capture existing mitigations already present (retries/timeouts/fallbacks/feature flags/runbooks), with evidence (file + line).
 Capture constraints/limitations that affect failover (platform constraints, dependency capabilities, configuration constraints, operational constraints), with evidence (file + line) when present.
+If the repository does not contain infrastructure-as-code or deployment configuration, explicitly note which resiliency aspects cannot be assessed from the codebase alone and flag them as requiring external validation.
 Do not recommend changes.
+
+## OUTPUT FORMAT
+Produce the output as the following numbered sections, in this order:
+1. Architecture Overview - application walkthrough and high-level architecture for this microservice.
+2. Findings - table with columns: ID, Description, Priority (P0-P3), File, Line, Explanation.
+3. Existing Mitigations - table with columns: ID, Mitigation, File, Line, Notes.
+4. Constraints/Limitations - table with columns: ID, Constraint, Category, File, Line, Notes. Include rows for aspects that cannot be assessed from the codebase alone (mark Category as "External validation required").
 ```
 
 

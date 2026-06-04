@@ -50,11 +50,11 @@ The current state packages the entire workflow as a Copilot skill (`resiliency-r
 
 ```mermaid
 flowchart LR
-    P1["<b>Phase 1: Core Research</b><br/>Inventory dependencies and<br/>establish resiliency evidence baseline"]
-    P2["<b>Phase 2: Service-Specific Research</b><br/>Deep-dive analysis on each Azure<br/>service identified in Phase 1"]
-    P3["<b>Phase 3: Consolidation</b><br/>Merge all research into a single<br/>evidence report for planning handoff"]
-    P4["<b>Phase 4: Planning</b><br/>Produce executive Master report<br/>and Developer Guide remediation plan"]
-    P5["<b>Phase 5: Code-Level Assessment Report</b><br/>Assemble final per-service assessment<br/>with prioritized findings (P0-P3)"]
+    P1["**Phase 1: Core Research**<br/>Inventory dependencies and<br/>establish resiliency evidence baseline"]
+    P2["**Phase 2: Service-Specific Research**<br/>Deep-dive analysis on each Azure<br/>service identified in Phase 1"]
+    P3["**Phase 3: Consolidation**<br/>Merge all research into a single<br/>evidence report for planning handoff"]
+    P4["**Phase 4: Planning**<br/>Produce executive Master report<br/>and Developer Guide remediation plan"]
+    P5["**Phase 5: Code-Level Assessment Report**<br/>Assemble final per-service assessment<br/>with prioritized findings (P0-P3)"]
 
     P1 --> P2 --> P3 --> P4 --> P5
 
