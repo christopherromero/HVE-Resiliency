@@ -82,7 +82,13 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
 1. **Opening paragraph**: Describe what the service does, its tech stack, and the scope of the analysis. Reference the evidence-only methodology.
 
-2. **Assessment Themes**: A numbered list of the top 3-5 themes that emerged from the research, each with a brief description and cross-references to the relevant finding IDs. Use the `PX-NNN` IDs from the Master Report directly (e.g., P0-001, P1-005); no re-mapping is needed.
+2. **Assessment Themes**: A numbered list of the top 3-5 themes that emerged from the research. Each theme is one short paragraph describing the theme and why it matters; do **not** append a trailing `**Findings:**` list to the paragraph. Immediately after the numbered list, add a `## Themes at a Glance` table that maps each theme to its findings:
+
+    | # | Theme                | Findings                                             |
+    | --- | --- | --- |
+    | 1 | Short theme label    | [P0-001](#p0-001-short-title), [P0-024](#p0-024-short-title) |
+
+    Link every finding ID to its H4 anchor (lowercase, hyphens, special chars removed), matching the anchors used in the Full Finding Matrix. Use the `PX-NNN` IDs from the Master Report directly (e.g., P0-001, P1-005); no re-mapping is needed. For a contiguous range, link the first and last ID with "to" between them (e.g., `[P0-001](#p0-001-short-title) to [P0-007](#p0-007-short-title)`).
 
 3. **Summary Findings Table**: Counts broken down by Section and Priority. Derive counts from the Master Report finding tallies:
 
@@ -107,6 +113,7 @@ End the section with `[Back to Top](#top)`.
 ## Formatting Conventions
 
 * Aligned pipe tables - all pipes vertically aligned across all rows.
+* Prose follows the Report Prose Conventions in the planner context: no em dashes or en dashes (use a spaced hyphen), and avoid decorative "not X, but Y" antithesis.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between major sections.
 * All repo references use `{serviceName}`, never a hardcoded service name.

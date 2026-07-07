@@ -33,6 +33,14 @@ All **generated report output** (finding descriptions, recommendations, code exa
 
 In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic hostnames (e.g., `apim-prod-region1.example.com`) rather than region-specific names.
 
+## Report Prose Conventions
+
+Apply these conventions to all generated report and planning prose:
+
+* **No em dashes or en dashes.** Never emit U+2014 (em dash) or U+2013 (en dash). Use a spaced hyphen ` - ` for a break, a colon for an explanation, or split into two sentences.
+* **Limit correctio and antithesis.** Avoid decorative "not X, but Y", "it's not X, it's Y", and "X rather than Y" constructions used only for emphasis. State the point directly. Keep a contrast only when it draws a real, load-bearing distinction (for example, the resiliency vs non-resiliency classification itself).
+* **No redundant classification tails.** In Non-Resiliency findings, do not append phrases such as "not a runtime resiliency one" or "not failover"; the section and each finding's `Resiliency Related: No` already establish this.
+
 ## Definition of Resiliency
 
 ### The Litmus Test

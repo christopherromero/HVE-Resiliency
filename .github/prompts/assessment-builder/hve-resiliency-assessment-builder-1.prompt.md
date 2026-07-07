@@ -71,11 +71,15 @@ Every P0 and P1 finding uses this exact format (field order must be preserved):
 3. `**Resiliency Related:** Yes`
 4. `**Issue:**` - description of the problem. For P0/P1: explain how the issue is introduced or worsened by the transition from single-region to active/active.
 5. `**What does this solve:**` - one sentence, the outcome achieved
-6. `**Resiliency Impact:**` - 1–3 sentences framed in terms of zone failure or regional failover impact
+6. `**Resiliency Impact:**` - 1-3 sentences framed in terms of zone failure or regional failover impact
 7. `**Recommended Fix:**` - concrete narrative action, specific enough for the application's developers to implement independently
 8. `**File:** file/path.ext:line` - followed by a fenced code block with the current problematic code (must include a language identifier). Pull from Developer Guide.
 9. `**Fix:**` - followed by a separate fenced code block with the corrected implementation (must include a language identifier). Pull from Developer Guide.
-10. `**Notes:**` - context, rationale, or implementation guidance
+10. `**Notes:**` - a bulleted list using up to four labels in this fixed order, including only the labels that apply (omit any that do not):
+    * `**Cross-refs:**` - related or prerequisite finding IDs in `PX-NNN` format
+    * `**Implementation:**` - concrete build, config, or code guidance not already stated in `**Recommended Fix:**`
+    * `**Validation:**` - the test, chaos/load/smoke check, probe, or verification command that proves the fix
+    * `**Guardrail:**` - the CI or build check that prevents regression
 11. `<span style="font-size: 14px;">**MSFT Reference:** [Pattern Name](URL)</span>` - when a WAF pattern or Azure guidance page applies
 
 Priority labels:
@@ -102,6 +106,7 @@ Do **not** add `[Back to Top](#top)` at the end of Section 2 yet - that will be 
 ## Formatting Conventions
 
 * Aligned pipe tables - all pipes vertically aligned across all rows.
+* Prose follows the Report Prose Conventions in the planner context: no em dashes or en dashes (use a spaced hyphen), and avoid decorative "not X, but Y" antithesis.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between individual findings within a group.
 * `**Priority: PX - Label**` on its own line (no `| Repos:` inline).

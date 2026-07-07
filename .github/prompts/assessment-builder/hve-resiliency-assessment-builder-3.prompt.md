@@ -42,23 +42,23 @@ The generated report must use region-agnostic terms throughout. Never reference 
 
 Use `# 4. IaC Gap Analysis` as the heading.
 
-Begin with a paragraph explaining what infrastructure was visible in the repo (Helm charts, configmaps, deployment manifests, ServiceEntry/VirtualService resources, HPA configuration, probe definitions) vs. what lives in external repos (Terraform, ARM templates, SKU/tier settings, network configuration, DNS records, GLB configuration).
+Begin with a short lead paragraph (2-4 sentences): what the IaC covers today, that it is single-region by construction, and that every multi-region decision falls to the operator and platform. State that the first table lists what the repo configures (grouped by domain) and the second lists capabilities the repo does not provide (grouped by owner), and that the `Findings` column traces each row to [Section 5](#5-full-finding-matrix). Do not enumerate a long "visible / not visible" inventory in prose; the two tables carry that split.
 
-Follow with two tables:
+Follow with two tables.
 
-**Available to Review:**
+**Available to Review** - what the repo configures today, one row per item, rows grouped and ordered by `Domain` (for example: Region topology & parameters, Data plane, Backing services, Observability, Identity, auth & health, Networking, Supply chain):
 
-| Configuration                | Current Value                          | Resiliency Assessment                            |
-|------------------------------|----------------------------------------|--------------------------------------------------|
-| Item                         | Value from values.yaml or configmap    | Assessment with finding cross-reference (PX-NNN) |
+| Domain                       | Configuration                | Current value                       | Gap / risk                                      | Findings         |
+|------------------------------|------------------------------|-------------------------------------|-------------------------------------------------|------------------|
+| Domain group                 | Item                         | Value from values.yaml or configmap | Resiliency assessment of this choice            | PX-NNN, PX-NNN   |
 
-Include entries for all infrastructure items visible in the repo that are relevant to resiliency: SQL connection settings, Cosmos DB endpoints, Key Vault references, storage accounts, APIM URLs, ServiceEntry configurations, HPA settings, probe endpoints, ingress hostnames, TLS certificates, thread pool sizes, secrets management (AKV2K8S CRDs), PDB presence, topology spread, graceful shutdown, and Dockerfile configuration.
+Include entries for all infrastructure items visible in the repo that are relevant to resiliency: SQL connection settings, Cosmos DB endpoints, Key Vault references, storage accounts, APIM URLs, ServiceEntry configurations, HPA settings, probe endpoints, ingress hostnames, TLS certificates, thread pool sizes, secrets management (AKV2K8S CRDs), PDB presence, topology spread, graceful shutdown, and Dockerfile configuration. Put the finding IDs in the `Findings` column, not inline in the `Gap / risk` prose.
 
-**Not Available (External Repos/Platform):**
+**Not Available (External Repos / Platform / Operator)** - capabilities the repo does not provide, one row per capability, with the `Owner` column set to `Operator`, `Platform`, or `External repo`:
 
-| Configuration                | Needed For                             |
-|------------------------------|----------------------------------------|
-| Item                         | Why this matters for resiliency        |
+| Capability                   | Owner                                | Needed for                          | Findings         |
+|------------------------------|--------------------------------------|-------------------------------------|------------------|
+| Item                         | Operator / Platform / External repo  | Why this matters for resiliency     | PX-NNN, PX-NNN   |
 
 Include entries for: SQL Failover Group configuration, Cosmos DB multi-region write settings, ACR geo-replication, Azure Storage replication type, GLB probe configuration, AKV2K8S operator version in secondary cluster, DNS records for secondary ingress, APIM backend registration, network policies, SQL authentication method.
 
@@ -130,17 +130,21 @@ Before finalizing, confirm the **entire report** across all sections:
 * All `Resiliency Related: Yes` findings appear under Resilient Focused Recommendations; `No` findings under Non-Resilient Focused Recommendations.
 * All six H1 sections appear in the Table of Contents.
 * Full Finding Matrix includes every finding from every section, with linked IDs.
-* P3 findings use the full finding template format (same as P0–P2).
+* P3 findings use the full finding template format (same as P0-P2).
 * All Back to Top links use `#top`.
 * No hardcoded service names appear in H2, H3, or Repo(s) columns.
 * No references to specific Azure region names appear anywhere in the report.
-* IaC Gap Analysis has both "Available to Review" and "Not Available" tables.
+* IaC Gap Analysis has both tables: "Available to Review" (with `Domain` and `Findings` columns, rows grouped by domain) and "Not Available" (with `Owner` and `Findings` columns).
+* Section 1 includes a `Themes at a Glance` table whose finding IDs link to their H4 anchors.
+* Every finding's `**Notes:**` uses the labeled bullet structure (Cross-refs, Implementation, Validation, Guardrail) in that fixed order, applicable labels only.
+* No em dashes or en dashes appear anywhere in the report; breaks use a spaced hyphen.
 
 If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts), fix them in place.
 
 ## Formatting Conventions
 
 * Aligned pipe tables - all pipes vertically aligned across all rows.
+* Prose follows the Report Prose Conventions in the planner context: no em dashes or en dashes (use a spaced hyphen), and avoid decorative "not X, but Y" antithesis.
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between major sections.
 * All repo references use `{serviceName}`, never a hardcoded service name.
