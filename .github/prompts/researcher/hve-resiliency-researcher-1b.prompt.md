@@ -28,6 +28,19 @@ Explicitly analyze the repository for non-Azure and external dependencies refere
 - Infrastructure-as-code (Bicep, ARM, Terraform, Helm, etc.)
 - Deployment pipelines (GitHub Actions, Azure DevOps, scripts)
 
+## Common External Dependencies to Evaluate (non-exhaustive checklist)
+
+Evaluate the repository for at least the following commonly used external (non-Azure) dependencies. This checklist drives coverage, not conclusions: each item still requires the Evidence Rules below. Place confirmed items in Section 1, evaluated-but-not-found items in Section 2, and clearly inapplicable categories in Section 3. Add any other external dependencies discovered that are not listed here.
+
+- Messaging / streaming: Apache Kafka (Confluent), RabbitMQ, Apache Pulsar
+- Databases / data stores: Apache Cassandra (DataStax), MongoDB (Atlas), Elasticsearch / OpenSearch (Elastic Cloud), self-managed Redis, self-managed PostgreSQL/MySQL
+- Data / analytics platforms: Databricks, Snowflake
+- CDN / edge / WAF / load balancing: Akamai, Cloudflare, Fastly, F5 (BIG-IP / Distributed Cloud)
+- DNS providers and certificate authorities (non-Azure): e.g., external DNS, Let's Encrypt, DigiCert
+- Identity / SaaS: Auth0, Okta, Microsoft Graph
+- Observability / alerting: Datadog, Splunk, New Relic, external Prometheus/Grafana, PagerDuty
+- Source control / package & container registries: GitHub, npm/PyPI/Maven, Docker Hub, non-Azure container registries
+
 ## Additional Required Check: Dependency Health Checks and GLB Health Signaling
 
 For every non-Azure and external dependency used (critical and non-critical), verify whether the codebase performs a health check that represents the service's real readiness, and whether that health status is surfaced to the Global Load Balancer (GLB) via application health endpoints/probes (or any explicit GLB health reporting mechanism). Evidence required (file path + line number) for both the check and the reporting path.

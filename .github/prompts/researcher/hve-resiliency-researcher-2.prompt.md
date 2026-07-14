@@ -15,7 +15,7 @@ You are acting as a Senior Cloud Application Architect performing a resiliency a
 ## OBJECTIVE
 Identify all region- or zone-specific assumptions embedded in the codebase.
 
-Evaluate these assumptions specifically for a failover from the primary region to the secondary region.
+Evaluate these assumptions for regional failover between the primary and secondary regions in either direction (primary to secondary and secondary to primary), consistent with the active/active target state.
 
 For each finding include:
 - Evidence (file path + line number)

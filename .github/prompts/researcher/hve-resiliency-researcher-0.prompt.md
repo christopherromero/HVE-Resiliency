@@ -15,9 +15,14 @@ You are acting as a Senior Cloud Application Architect performing a resiliency c
 ## OBJECTIVE
 Systematically examine the repository's source code, configuration files, infrastructure-as-code templates, and dependency manifests to understand the application's architecture and resiliency posture.
 
+Region context (use region-agnostic terms; never reference specific Azure region names):
+- **Primary region** - the current production region
+- **Secondary region** (or **failover region**) - the target active/active peer
+- The application is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Failover is symmetric: either region can absorb the other's traffic.
+
 Validate readiness for:
 - Zone failure within the primary region
-- Full regional failover from the primary region to the secondary region
+- Full regional failover between the primary and secondary regions in either direction (primary to secondary and secondary to primary)
 
 Begin by analyzing the application architecture for this code base, then characterize current implementation behavior, application flow, assumptions, constraints, the risks, why each is a risk to application resiliency during a zone or region failover, and the impacts if not changed.
 

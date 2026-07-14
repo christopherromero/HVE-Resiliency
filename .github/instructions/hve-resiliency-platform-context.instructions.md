@@ -8,8 +8,17 @@ applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .git
 Apply this context to all resiliency research prompts.
 
 * Validating readiness for zone failure within the primary region
-* Validating readiness for full regional failover from the primary region to the secondary region
+* Validating readiness for full regional failover between the primary and secondary regions in either direction
 * Scope is the current repository
+
+## Region Context
+
+The application is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Use region-agnostic terms throughout and never reference specific Azure region names.
+
+* **Primary region** - the current production region
+* **Secondary region** (or **failover region**) - the target active/active peer
+* **Both regions** - when referring to symmetric requirements
+* Target state is active/active, so failover is symmetric: either region can absorb the other's traffic. Validate readiness for failover in both directions (primary to secondary and secondary to primary).
 * HVE Task Researcher rules: evidence only, no remediation, no code examples
 * All findings must cite file and line-level evidence
 * Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)

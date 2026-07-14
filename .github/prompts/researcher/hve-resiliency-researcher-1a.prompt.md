@@ -93,8 +93,9 @@ When you find evidence, normalize into canonical names (examples):
 - Azure Kubernetes Service (AKS)
 - Azure API Management (APIM)
 - Azure Cache for Redis (Redis Enterprise / Managed Redis)
-- Azure Cosmos DB (include API type if visible: Mongo, SQL, etc.)
+- Azure Cosmos DB (include API type if visible: Mongo, SQL, etc.; include SKU/throughput type if visible: RU-based provisioned/autoscale, serverless, or vCore)
 - Azure SQL Database / Azure SQL Managed Instance
+- Azure Database for PostgreSQL (Flexible Server / Single Server; include Cosmos DB for PostgreSQL if applicable)
 - Azure Storage (Blob/Queue/Table/File as applicable)
 - Azure Key Vault
 - Azure Service Bus

@@ -19,6 +19,8 @@ Identify code paths where dependency failures (timeouts, DNS failures, authentic
 - Data loss or partial processing
 - Blocking transactions
 
+When assessing timeouts, cover all layers, not just application/HTTP timeouts. Explicitly check transport/TCP-layer behavior that dominates failover: connect timeouts, TCP keepalive, stale pooled connections pinned to a failed region, pool eviction, and DNS TTL/caching. Treat missing keepalive or non-evicting pools as failover failure modes in their own right.
+
 Focus on outage conditions affecting the primary region or zonal degradation.
 
 For each failure mode, capture impact fields (facts only; no prioritization):
@@ -36,7 +38,7 @@ Always cite file + line evidence for both the failure behavior and the impact st
 
 OUTPUT FORMAT (repeat per failure mode):
 - Failure mode:
-- Triggering dependency + failure type (timeout/DNS/auth/partial outage):
+- Triggering dependency + failure type (timeout/DNS/auth/partial outage; for timeouts, specify layer: application/HTTP vs transport/TCP connect vs TCP keepalive/stale pooled connection):
 - Code path / entrypoint:
 - Observed behavior (startup fail/degrade/data loss/blocking):
 - User/customer-visible impact:

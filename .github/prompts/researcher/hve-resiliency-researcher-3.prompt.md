@@ -15,7 +15,7 @@ You are acting as a Senior Cloud Application Architect performing a resiliency a
 ## OBJECTIVE
 Analyze all Azure and non-Azure services used in this code repository for survivability.
 
-Identify whether endpoints, credentials, or identities assume a single region and whether any fallback or multi-region logic exists in code or configuration.
+Identify whether endpoints, credentials, or identities assume a single region and whether any fallback, failback, or multi-region logic exists in code or configuration.
 
 For each finding include:
 - Evidence (file path + line number)
