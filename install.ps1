@@ -3,7 +3,7 @@
     Installs the HVE Resiliency Copilot skills, prompts, and instructions into the current repository.
 
 .DESCRIPTION
-    Downloads the requested ref of microsoft/HVE-Resiliency from GitHub and copies the
+    Downloads the requested ref of christopherromero/HVE-Resiliency from GitHub and copies the
     .github/skills, .github/prompts, and .github/instructions folders into the
     current working directory's .github/ folder so GitHub Copilot Chat auto-discovers them.
 
@@ -22,15 +22,15 @@
     Overwrite existing files without prompting.
 
 .PARAMETER Repo
-    Override the source repository in the form owner/name. Defaults to microsoft/HVE-Resiliency.
+    Override the source repository in the form owner/name. Defaults to christopherromero/HVE-Resiliency.
 
 .EXAMPLE
     # Recommended one-liner (run from your target repo's root)
-    irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1 | iex
+    irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1 | iex
 
 .EXAMPLE
     # Parameterized form (pin to a tag, force overwrite)
-    & ([scriptblock]::Create((irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1))) -Ref v1.0 -Force
+    & ([scriptblock]::Create((irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1))) -Ref v1.0 -Force
 
 .EXAMPLE
     # Local script form
@@ -42,7 +42,7 @@ param(
     [string]$Destination = (Get-Location).Path,
     [string[]]$Include = @('skills', 'prompts', 'instructions'),
     [switch]$Force,
-    [string]$Repo = 'microsoft/HVE-Resiliency'
+    [string]$Repo = 'christopherromero/HVE-Resiliency'
 )
 
 $ErrorActionPreference = 'Stop'

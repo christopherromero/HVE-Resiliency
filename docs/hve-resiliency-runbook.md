@@ -98,19 +98,19 @@ From the target repository root, run one of the following.
 PowerShell (Windows, macOS, Linux):
 
 ```powershell
-irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1 | iex
 ```
 
 Bash (macOS, Linux, WSL):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.sh | bash
 ```
 
 To pin to a specific tag and force overwrite existing files:
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1))) -Ref v1.0 -Force
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1))) -Ref v1.0 -Force
 ```
 
 ### 0.2 Verify the install
@@ -441,7 +441,7 @@ Planning and assessment phases consume the consolidated research document. If a 
 If a new version of the framework is released during an engagement:
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1))) -Ref v1.1 -Force
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1))) -Ref v1.1 -Force
 ```
 
 Reload VS Code, then continue from the next pending phase. Already-written artifacts under `.copilot-tracking/` are not regenerated automatically; re-run any phase you want to refresh.

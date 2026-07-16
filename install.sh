@@ -3,13 +3,13 @@
 # Installs the HVE Resiliency Copilot skills, prompts, and instructions into the current repository.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.sh | bash -s -- --ref v1.0 --force
+#   curl -fsSL https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.sh | bash -s -- --ref v1.0 --force
 #
 # Flags:
 #   --ref <ref>          Branch, tag, or commit to install from (default: main)
 #   --destination <dir>  Target repo root (default: current working directory)
-#   --repo <owner/name>  Source repository (default: microsoft/HVE-Resiliency)
+#   --repo <owner/name>  Source repository (default: christopherromero/HVE-Resiliency)
 #   --force              Overwrite existing files without prompting
 #   --include "a b c"    Space-separated subfolders of .github to install
 #                        (default: "skills prompts instructions")
@@ -18,7 +18,7 @@ set -euo pipefail
 
 REF="main"
 DESTINATION="$(pwd)"
-REPO="microsoft/HVE-Resiliency"
+REPO="christopherromero/HVE-Resiliency"
 FORCE=0
 INCLUDE=(skills prompts instructions)
 

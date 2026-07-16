@@ -47,7 +47,7 @@ The framework ships as a set of Copilot skills:
 
    ```powershell
    # PowerShell (Windows / macOS / Linux)
-   irm https://raw.githubusercontent.com/microsoft/HVE-Resiliency/main/install.ps1 | iex
+   irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1 | iex
    ```
 
    The installer copies `.github/skills/`, `.github/prompts/`, and `.github/instructions/` into your `.github/` folder. Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then commit the `.github/` additions so the rest of your team gets the same workflow.
