@@ -79,7 +79,11 @@ Use the `PX-NNN` IDs from the Master Report **directly and unchanged**. Do not r
 
 * The `PX-NNN` namespace is **per priority tier** and **shared across Section 2 (Resilient) and Section 3 (Non-Resilient)**. The litmus test determines which section a finding appears in; it does **not** reset or partition the numbering.
 * The P2 and P3 sequences from the Master Report continue here from where `assessment-builder-1` left off (which only emitted P0 and P1). For each priority, walk the Master Report in order and place each finding under Section 2 or Section 3 based on `Resiliency Related`.
-* Example: if the Master Report lists P2 findings `P2-001`, `P2-002`, `P2-003` and only `P2-002` is `Resiliency Related: No`, then Section 2 contains `P2-001` and `P2-003` and Section 3 contains `P2-002`. IDs are never renumbered to be locally contiguous within a section.
+* Example: if the Master Report lists P2 findings `P2-001`, `P2-002`, `P2-003` and only `P2-002` is `Resiliency Related: No`, then Section 2 contains `P2-001` and `P2-003` and Section 3 contains `P2-002`. IDs are never renumbered; the gap in each section is expected and correct.
+
+#### Finding Order
+
+Within each H2 priority block in **both** sections, emit findings in **ascending numeric ID order**. IDs were assigned in logical order at consolidation, so ascending-ID order **is** the logical, readable order - never reorder findings to jump around. Gaps are expected wherever a finding of the same priority belongs to the other section (per the litmus test); do not close a gap by pulling a finding out of ID order. H3 shared-service group headers must align to the ID order: each group holds a contiguous ascending run, and groups appear in ascending order of their first member ID.
 
 #### Individual Finding Template
 

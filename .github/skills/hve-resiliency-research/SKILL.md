@@ -42,7 +42,7 @@ Use this table as the authoritative summary of per-phase behavior. The detailed 
 |-------|---------|-----------------|-----------------|-----------------------|-----------------------------------|
 | 1. Core Research | 0-7 (sequential) | One prompt per turn; summarize, then stop with next-prompt recommendation | All prompts run back-to-back as isolated subagents | Yes | Yes |
 | 2. Service Research | 8-19 (filtered to applicable services) | One prompt per turn; summarize, then stop with next-prompt recommendation | Up to 3 concurrent subagents per batch | Yes (never auto-dispatch Phase 3) | Yes |
-| 3. Consolidation | `consolidate` | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes |
+| 3. Consolidation | `consolidate-0`, `consolidate-1`, `consolidate-2` (sequential) | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
 | 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
 | 5. Assessment | `assessment-builder-0` through final | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
 
@@ -50,7 +50,7 @@ Key invariants:
 
 * Mode selection only affects Phases 1 and 2. Phases 3-5 are always user-gated by `/clear`.
 * The agent must never skip ahead to service-specific prompts (8-19) without completing Prompts 0-7.
-* The agent must never auto-dispatch Phase 3 from Phase 2 (the consolidation prompt is long-running and times out under autonomous orchestration).
+* The agent must never auto-dispatch Phase 3 from Phase 2 (the consolidation prompts are long-running and time out under autonomous orchestration).
 
 ### Phase 1: Core Research (Prompts 0-7) - Start Here
 
@@ -115,7 +115,7 @@ In both modes, the agent MUST first compute the applicable prompt set by mapping
 
 #### Phase 2 Stop Rule (Both Modes)
 
-* **STOP at the end of Phase 2.** Do not auto-dispatch Phase 3 (`/hve-resiliency-researcher-consolidate`) - that prompt is long-running and times out under autonomous orchestration. End the turn with the explicit next-step recommendation: "Run `/clear`, then `/hve-resiliency-researcher-consolidate` to begin Phase 3 (Consolidation)."
+* **STOP at the end of Phase 2.** Do not auto-dispatch Phase 3 (`/hve-resiliency-researcher-consolidate-0`) - the consolidation prompts are long-running and time out under autonomous orchestration. End the turn with the explicit next-step recommendation: "Run `/clear`, then `/hve-resiliency-researcher-consolidate-0` to begin Phase 3 (Consolidation)."
 
 #### Phase 2 Prompt-to-Service Map
 
@@ -134,7 +134,11 @@ In both modes, the agent MUST first compute the applicable prompt set by mapping
 
 ### Phase 3: Consolidation
 
-* Run `/clear`, then `/hve-resiliency-researcher-consolidate` to merge all research outputs into a single consolidated research document at `.copilot-tracking/research/`.
+Phase 3 is split into three sequential, user-gated passes so the consolidation never times out. Run each after a `/clear`:
+
+* Run `/clear`, then `/hve-resiliency-researcher-consolidate-0` - reads all Phase 1 and Phase 2 artifacts, deduplicates findings, assigns the authoritative logical finding IDs into a findings manifest, and writes the research file header and Repository Context.
+* Run `/clear`, then `/hve-resiliency-researcher-consolidate-1` - appends Sections 2-5 (Dependency Inventory, Region and Zone Assumptions, State and Data, Failure and Degraded-Mode) using the manifest IDs.
+* Run `/clear`, then `/hve-resiliency-researcher-consolidate-2` - appends Sections 6-8 and the authoritative Research Findings Index, then runs the quality bar. Produces the completed consolidated research document at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 

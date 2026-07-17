@@ -62,6 +62,10 @@ Use the `PX-NNN` IDs from the Master Report **directly and unchanged**. Do not r
 * All P0 and P1 findings are `Resiliency Related: Yes` by definition, so every P0 and P1 ID appears under Section 2 in this prompt. The P0 and P1 sequences therefore run contiguously here (e.g., `P0-001`, `P0-002`, … then `P1-001`, `P1-002`, …).
 * P2 and P3 IDs continue this same per-priority sequence in the next prompt (`assessment-builder-2`), split between Section 2 and Section 3 by the litmus test. Example: if a P2 finding is `P2-003` in the Master Report, it stays `P2-003` regardless of which section it lands in.
 
+#### Finding Order
+
+Within each H2 priority block, emit findings in **ascending numeric ID order** (`P0-001`, `P0-002`, `P0-003`, ...). IDs were assigned in logical order at consolidation, so ascending-ID order **is** the logical, readable order - never reorder findings to jump around. H3 shared-service group headers must align to that order: each H3 group contains a contiguous run of ascending IDs, and the groups themselves appear in ascending order of their first (lowest) member ID. If a desired grouping would break ascending-ID order, defer to ascending-ID order; the upstream logical sequence is authoritative.
+
 #### Individual Finding Template
 
 Every P0 and P1 finding uses this exact format (field order must be preserved):

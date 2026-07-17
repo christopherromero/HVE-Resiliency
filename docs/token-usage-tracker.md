@@ -24,7 +24,7 @@ table in for your run:
 
 | Stage | End-of-stage prompt | Cumulative Session Cost (credits) |
 |-------|---------------------|-----------------------------------|
-| Research (Phases 1-3) | `/hve-resiliency-researcher-consolidate` | |
+| Research (Phases 1-3) | `/hve-resiliency-researcher-consolidate-2` | |
 | Planning (Phase 4) | `/hve-resiliency-planner-2` | |
 | Assessment (Phase 5) | `/hve-resiliency-assessment-builder-3` | |
 

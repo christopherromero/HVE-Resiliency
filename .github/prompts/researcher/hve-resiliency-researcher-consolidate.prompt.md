@@ -56,7 +56,9 @@ PRIORITY DEFINITIONS (USE EXACTLY)
 REQUIRED FINDINGS FORMAT
 ========================
 
-Finding IDs use the format `PX-NNN`, where `PX` is the priority tier (P0, P1, P2, P3) and `NNN` is a zero-padded sequence number that restarts at `001` within each priority tier. The first P0 finding is `P0-001`, the second is `P0-002`; the first P1 finding is `P1-001`; and so on. Numbering is assigned in the order findings appear in this consolidated artifact and must remain stable across all downstream prompts (Planner, Assessment Builder).
+Finding IDs use the format `PX-NNN`, where `PX` is the priority tier (P0, P1, P2, P3) and `NNN` is a zero-padded sequence number that restarts at `001` within each priority tier. The first P0 finding is `P0-001`, the second is `P0-002`; the first P1 finding is `P1-001`; and so on.
+
+**Logical ordering (authoritative):** Within each priority tier, order findings logically so that related items sit next to each other - group by shared dependency, service, or theme (for example: all Cosmos findings together, then all Key Vault findings, then all health/GLB findings). Assign the `NNN` sequence in that final logical order. This ordering is the single authoritative sequence for the whole workflow: every downstream artifact (Planner Master Report, Developer Guide, Assessment Builder) presents findings in **ascending ID order** within each priority tier and must never reorder or renumber them. Because IDs are assigned in logical order here, ascending-ID order downstream is the logical order.
 
 ### Finding P0-001 (example heading; replace with the actual PX-NNN)
 

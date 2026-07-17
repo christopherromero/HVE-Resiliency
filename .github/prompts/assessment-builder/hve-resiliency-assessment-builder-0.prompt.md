@@ -1,7 +1,7 @@
 ---
 agent: Task Planner
 description: "Creates the Code-Level Resiliency Assessment report header, Table of Contents, and Section 1 (Assessment Overview)"
-argument-hint: "serviceName=... [reportTitle=...] [targetDeployment=...]"
+argument-hint: "serviceName=... [reportTitle=...] [targetDeployment=...] [regionA=...] [regionB=...]"
 ---
 
 # Resiliency Report Generator - Part A: Header and Assessment Overview
@@ -13,6 +13,8 @@ Use [Resiliency Task Planner Context](../../../instructions/hve-resiliency-plann
 * ${input:serviceName}: (Required) Service name matching the repo name; used to locate artifacts and populate all headers, sections, and repo references throughout the report.
 * ${input:reportTitle}: (Optional) H1 title. Default: "Code-Level Resiliency Assessment".
 * ${input:targetDeployment}: (Optional) Target deployment model. Default: "Active/Active".
+* ${input:regionA}: (Optional) One of the two active Azure regions named in the Document Header only. Default: "West US".
+* ${input:regionB}: (Optional) The other active Azure region named in the Document Header only. Default: "West US 2".
 
 ## Source Artifacts
 
@@ -35,6 +37,8 @@ The generated report must use region-agnostic terms throughout. Never reference 
 * **Secondary region** or **failover region** - the target active/active peer
 * **Both regions** - when referring to symmetric requirements
 
+**Exception (Document Header only):** The `Target Deployment` line in the Document Header names the two concrete active regions from `{regionA}` and `{regionB}` so the reader has the explicit region mapping once. The regions are active peers, so present them as "between {regionA} and {regionB}" without labeling either primary or secondary. This exception applies **only** to that single header line. Everywhere else - Assessment Overview prose, findings, recommendations, H3 group names, and code examples - remains fully region-agnostic and uses `Primary region` / `Secondary region` placeholders.
+
 ## What to Generate
 
 Create a **new file** at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` containing **only** the following sections. Subsequent prompts (3b, 3c, 3d) will append the remaining sections.
@@ -52,7 +56,7 @@ Create a **new file** at `Microsoft Assessment/{serviceName}-Code-Level-Resilien
 
 **Current Deployment:** {current deployment from research}
 
-**Target Deployment:** {targetDeployment}
+**Target Deployment:** {targetDeployment} - between {regionA} and {regionB}
 
 **Version:** {semver}
 
@@ -90,7 +94,27 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
     Link every finding ID to its H4 anchor (lowercase, hyphens, special chars removed), matching the anchors used in the Full Finding Matrix. Use the `PX-NNN` IDs from the Master Report directly (e.g., P0-001, P1-005); no re-mapping is needed. For a contiguous range, link the first and last ID with "to" between them (e.g., `[P0-001](#p0-001-short-title) to [P0-007](#p0-007-short-title)`).
 
-3. **Summary Findings Table**: Counts broken down by Section and Priority. Derive counts from the Master Report finding tallies:
+3. **Albertsons Azure Services Reference Architectures**: Include the following table verbatim in **every** assessment. It is static, customer-specific content that applies to all services and does **not** change per report. Reproduce the service names and links **exactly** as written; this table is **exempt** from the Region-Agnostic Language Rule and the `{serviceName}` substitution rule. Do not reword, reorder, add, or remove rows.
+
+    | Azure Shared Service                | Link to Reference Architecture                |
+    | ----------------------------------- | --------------------------------------------- |
+    | Azure API Management                | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Integration%20Platform/APIM/Design/APIM%20-%20Albertsons%20Multi-Region%20Design%20v5.docx?d=w7f65ea542cc7491687202cfa68599d7b&csf=1&web=1&e=dhPvP3) |
+    | Azure Application Gateway           | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Integration%20Platform/AppGW/Design/Albertsons%20Architecture%20Design_Application%20Gateway_v1.0.docx?d=w3126f533271842c9a75d83ae93b6b6db&csf=1&web=1&e=hmksie) |
+    | Azure Key Vault                     | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Cloud%20Foundation/Design/Albertsons%20Azure%20Key%20Vault%20Architecture%20Design%20Proposal.docx?d=wf1abecab2812460a8cadd6e5956d5bb8&csf=1&web=1&e=yzvvQh) |
+    | Kafka                               | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Integration%20Platform/Kafka/Approved_Albertsons_RegionResiliency_Kafka-MultiRegion.docx?d=w08142308135244de855f4dab4c49ca2d&csf=1&web=1&e=kueuJ9) |
+    | Azure Entra ID                      | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Security/IAM/Design/ACI%20Entra%20ID%20Draft%20v1.0.docx?d=wad696d3ecdae4d84a6a1ea5675d3aec6&csf=1&web=1&e=rCLr5y) |
+    | Azure Storage                       | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Database%20Platform/Storage/Albertsons%20Architecture%20Design_Storage_v1.0.docx?d=w97ad6ce3e77348e09a1ee3e676bc3ac0&csf=1&web=1&e=C4SVMy) |
+    | Azure SQL Database                  | [Reference](https://rxsafeway.sharepoint.com/:f:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Database%20Platform/SQL%20DB?csf=1&web=1&e=xMauSY) |
+    | Azure Cosmos DB                     | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Database%20Platform/Cosmos/Albertsons_Architecture_Design_MongoDB_RU_v1.0.docx?d=wa68893488e094fef9b5506690c685847&csf=1&web=1&e=YDVc7g) |
+    | Azure Functions                     | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Cloud%20Foundation/Design/Albertsons%20Azure%20Functions%20Architecture%20Design%20Proposal.docx?d=w0c59f970929f47f2a6dcef096fffd7f2&csf=1&web=1&e=tXAxCU) |
+    | Azure Networking                    | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Network/Design/Albertsons%20Architecture%20Design%20-%20Networking%20-%20Draft%201.3.docx?d=w6adb9edef1754753a259b296fffa4b1d&csf=1&web=1&e=IshBZT) |
+    | Azure Managed Redis                 | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Database%20Platform/Redis/Design/Managed%20Redis%20-%20Albertsons%20Multi-Region%20Design%20v3.docx?d=wad90acec4c154b2498d899a2ffcdc9d4&csf=1&web=1&e=L7pVbQ) |
+    | Azure Kubernetes Service (AKS)      | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Container%20Platform/Design/Albertsons%20Architecture%20Design_AKS%20and%20Istio_v1.0.docx?d=w97c0edfea59d466e80af843958d95c5c&csf=1&web=1&e=7UJSQS) |
+    | Azure Storage Blobs and Files       | [Reference](https://rxsafeway.sharepoint.com/:w:/r/sites/Cloud2.0/Shared%20Documents/I11%20Resiliency%20Program/Discovery/Storage/Architecture%20Options%20for%20Storage%20Blobs%20and%20Azure%20Files_v04.docx?d=w5d8203dcf43c41438843a71219ec05d8&csf=1&web=1&e=kTl0dg) |
+
+    Place this table immediately above the Summary Findings Table.
+
+4. **Summary Findings Table**: Counts broken down by Section and Priority. Derive counts from the Master Report finding tallies:
 
     | Section            | Priority  | Count | Description                                                                    |
     |--------------------|-----------|-------|--------------------------------------------------------------------------------|
@@ -104,7 +128,7 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
     To split findings between Resiliency and Non-Resiliency sections: all P0 and P1 findings are Resiliency. P2 and P3 findings are classified using the litmus test - findings that pass the active/active litmus test (behavior changes in multi-region) are Resiliency; findings with identical behavior regardless of topology are Non-Resiliency.
 
-4. **IMPORTANT callout**: End with this exact blockquote:
+5. **IMPORTANT callout**: End with this exact blockquote:
 
     > **IMPORTANT:** Throughout this guidance, hard numbers used for retry counts, timeout settings, interval timings, thread pool sizes, and circuit breaker thresholds are provided as examples. In code, these should be configurable variables sourced from environment-specific configmaps. Treat all code snippets as illustrative patterns, not prescriptive implementations.
 

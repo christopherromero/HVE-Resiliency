@@ -246,13 +246,13 @@ Phase 2 is complete when:
 
 * One artifact exists per applicable service under `.copilot-tracking/research/`.
 * The completion summary lists every artifact produced and every service skipped (with reason).
-* The agent has stopped and recommended `/clear`, then `/hve-resiliency-researcher-consolidate`.
+* The agent has stopped and recommended `/clear`, then `/hve-resiliency-researcher-consolidate-0`.
 
 **Do not** let the orchestrator auto-dispatch Phase 3. Consolidation is long-running and times out under autonomous orchestration.
 
 ## Phase 3: Consolidation
 
-Phase 3 merges every Phase 1 and Phase 2 artifact into one consolidated evidence document.
+Phase 3 merges every Phase 1 and Phase 2 artifact into one consolidated evidence document. It runs as three sequential passes so the work never times out: Part A (`consolidate-0`) reads everything, deduplicates, and assigns the authoritative finding IDs into a manifest plus the research file header and Repository Context; Part B (`consolidate-1`) appends Sections 2-5; Part C (`consolidate-2`) appends Sections 6-8 and the authoritative Research Findings Index, then runs the quality bar. Run `/clear` before each pass.
 
 ### 3.1 Reset context
 
@@ -260,21 +260,30 @@ Phase 3 merges every Phase 1 and Phase 2 artifact into one consolidated evidence
 /clear
 ```
 
-### 3.2 Run consolidation
+### 3.2 Run consolidation (three passes, `/clear` between each)
 
 ```text
-/hve-resiliency-researcher-consolidate
+/hve-resiliency-researcher-consolidate-0
+```
+
+```text
+/hve-resiliency-researcher-consolidate-1
+```
+
+```text
+/hve-resiliency-researcher-consolidate-2
 ```
 
 ### 3.3 Verify the output
 
-Confirm a consolidated document exists under `.copilot-tracking/research/` with the repo name as the file prefix. Open it and verify:
+Confirm a consolidated document exists under `.copilot-tracking/research/` with the repo name as the file prefix (alongside the `-findings-manifest.md` coordination file Part A wrote). Open it and verify:
 
 * Every retained finding still cites the upstream artifact and the original file and line evidence.
 * Terminology is consistent (for example, the same service name is used across all sections).
 * Duplicates between Phase 1 and Phase 2 are merged, not just appended.
+* Finding IDs are contiguous and ascending within each priority tier, and the Section 9 index matches the body.
 
-If the document is incomplete or inconsistent, re-run `/hve-resiliency-researcher-consolidate` (after `/clear`) with an explicit instruction to address the gap. Do not start Phase 4 until consolidation is clean.
+If a pass is incomplete or inconsistent, re-run that pass (after `/clear`) with an explicit instruction to address the gap. Do not start Phase 4 until consolidation is clean.
 
 ## Phase 4: Planning
 
@@ -473,9 +482,9 @@ Fix: stop, `/clear`, switch to the correct agent (`Task Researcher` for Phases 1
 
 ### Consolidation times out
 
-Symptom: `/hve-resiliency-researcher-consolidate` runs for an extended period and then errors.
+Symptom: a consolidation pass runs for an extended period and then errors.
 
-Fix: ensure consolidation is run interactively (not as part of an autonomous chain), with a fresh `/clear` immediately before it. If it still times out, re-run it with explicit instructions to consolidate in batches by service.
+Fix: ensure each consolidation pass (`consolidate-0`, `consolidate-1`, `consolidate-2`) is run interactively (not as part of an autonomous chain), with a fresh `/clear` immediately before it. The three-part split already keeps each pass small; if a single pass still times out, re-run just that pass with explicit instructions to process its findings in smaller batches by section or service.
 
 ### Findings missing file and line citations
 

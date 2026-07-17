@@ -68,7 +68,7 @@ End with `[Back to Top](#top)`.
 
 Use `# 5. Full Finding Matrix` as the heading.
 
-Build a complete table of **every finding** from Sections 2 and 3, sorted P0 → P1 → P2 → P3. Extract each finding's ID, priority, H3 group (Category), short description, and repo from the existing report content.
+Build a complete table of **every finding** from Sections 2 and 3, sorted P0 → P1 → P2 → P3, and within each priority tier in ascending `PX-NNN` ID order (matching the order findings appear in Sections 2 and 3). Extract each finding's ID, priority, H3 group (Category), short description, and repo from the existing report content.
 
 | ID                                                                   | Priority | Category           | Finding                              | Repo(s)         |
 |----------------------------------------------------------------------|----------|--------------------|--------------------------------------|-----------------|

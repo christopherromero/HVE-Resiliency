@@ -30,6 +30,7 @@ Include:
 - Priority Legend (P0/P1/P2/P3) as a dedicated section near the top
 - Prioritized findings and remediation plan (every finding must have a priority)
 - Findings must be grouped and ordered: P0 first, then P1, then P2, then P3
+- Within each priority tier, keep the logical order assigned in the consolidated research artifact: emit findings in ascending `PX-NNN` order and do not reorder or renumber them
 
 Do not introduce findings not present in the research.
 
@@ -45,7 +46,7 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
 3) Priority Legend
 4) Application Summary
 5) Architecture and Dependency Map
-6) Prioritized Findings (grouped and ordered P0 then P1 then P2 then P3) using a table with columns:
+6) Prioritized Findings (grouped and ordered P0 then P1 then P2 then P3; within each priority tier, list findings in ascending `PX-NNN` order) using a table with columns:
    - Finding ID using the format `PX-NNN` (e.g., P0-001). The sequence restarts at `001` within each priority tier. Use the IDs assigned in the consolidated research artifact unchanged.
    - Priority (P0/P1/P2/P3)
    - Title

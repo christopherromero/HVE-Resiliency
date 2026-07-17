@@ -72,7 +72,7 @@ Phase 2 runs only the prompts that match the Azure services identified in Phase 
 
 ## Phase 3: Consolidation
 
-Phase 3 merges every artifact produced in Phases 1 and 2 into a single, unified evidence report that the Task Planner can consume without revisiting per-prompt outputs. It runs only `/hve-resiliency-researcher-consolidate`, which deduplicates findings, normalizes terminology, and ensures every claim retained in the consolidated report is still backed by evidence from an upstream artifact.
+Phase 3 merges every artifact produced in Phases 1 and 2 into a single, unified evidence report that the Task Planner can consume without revisiting per-prompt outputs. To keep the merge from timing out, it runs as three sequential passes: `/hve-resiliency-researcher-consolidate-0` reads every Phase 1 and Phase 2 artifact, deduplicates findings, and assigns the authoritative logical finding IDs into a manifest plus the research file header and Repository Context; `/hve-resiliency-researcher-consolidate-1` appends Sections 2-5; and `/hve-resiliency-researcher-consolidate-2` appends Sections 6-8 and the authoritative Research Findings Index, then runs the quality bar. Every claim retained in the consolidated report stays backed by evidence from an upstream artifact.
 
 ## Phase 4: Planning
 

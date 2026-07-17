@@ -54,6 +54,8 @@ Follow this sequence:
 | `/hve-resiliency-researcher-4`              | `/hve-resiliency-researcher-5`                                                                                           |
 | `/hve-resiliency-researcher-5`              | `/hve-resiliency-researcher-6`                                                                                           |
 | `/hve-resiliency-researcher-6`              | `/hve-resiliency-researcher-7-logging`                                                                                   |
-| `/hve-resiliency-researcher-7-logging`      | First applicable service-specific prompt from Phase 2, or `/hve-resiliency-researcher-consolidate` if none apply         |
-| Service-specific prompts (8-19)             | Next applicable service prompt for a Prompt 1 Section 1 dependency, or `/hve-resiliency-researcher-consolidate` when complete |
-| `/hve-resiliency-researcher-consolidate`    | `/hve-resiliency-planner-0`                                                                                              |
+| `/hve-resiliency-researcher-7-logging`      | First applicable service-specific prompt from Phase 2, or `/hve-resiliency-researcher-consolidate-0` if none apply         |
+| Service-specific prompts (8-19)             | Next applicable service prompt for a Prompt 1 Section 1 dependency, or `/hve-resiliency-researcher-consolidate-0` when complete |
+| `/hve-resiliency-researcher-consolidate-0`  | `/hve-resiliency-researcher-consolidate-1`                                                                               |
+| `/hve-resiliency-researcher-consolidate-1`  | `/hve-resiliency-researcher-consolidate-2`                                                                               |
+| `/hve-resiliency-researcher-consolidate-2`  | `/hve-resiliency-planner-0`                                                                                              |
