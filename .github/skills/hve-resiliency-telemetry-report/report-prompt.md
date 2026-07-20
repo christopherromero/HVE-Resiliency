@@ -126,6 +126,8 @@ Always include `oversight_cost` in `total_agent_cost` so ROI reflects real human
 
 ### Manual Baseline Cost
 
+If `manual_baseline.hourly_rate` is missing or zero, use the default team blended rate of `221.40` USD per hour.
+
 ```text
 if manual_baseline.cost_estimate is provided:
     manual_cost = manual_baseline.cost_estimate

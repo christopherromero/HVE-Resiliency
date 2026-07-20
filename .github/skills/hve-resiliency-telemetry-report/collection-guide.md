@@ -72,6 +72,8 @@ If you have measured baseline data from a comparable manual resiliency assessmen
 
 Cost is `total_hours * hourly_rate * (1 + rework_rate)`. Typical rework rate is 10-15 percent for a well-scoped assessment.
 
+For the hourly rate, ask the operator a single question: use the default team blended rate of `221.40` USD per hour, or supply a custom rate. If the operator does not answer or has no preference, use the default. Do not block report generation waiting for a rate; fall back to the default.
+
 ## Step 6: Fill the JSON template
 
 ```json
@@ -129,7 +131,7 @@ Cost is `total_hours * hourly_rate * (1 + rework_rate)`. Typical rework rate is 
     "quality_score": 0,
     "rework_rate_percent": 0,
     "cost_estimate": 0,
-    "hourly_rate": 0,
+    "hourly_rate": 221.40,
     "confidence": "High | Medium | Low",
     "approach": ""
   },
