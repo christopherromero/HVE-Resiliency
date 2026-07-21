@@ -51,6 +51,11 @@ Focus specifically on:
 - Producer idempotence and retry safety
 - Consumer replay tolerance and rebalance behavior
 - Assumptions about a single active region, a single topic name, or a static topic target that ignores the feature flag
+- Cross-region replication dependencies: identify dependencies on near-real-time cross-region replication and describe the changes required to tolerate replication lag, stale mirror topics, delayed mirror-topic delivery, or temporary mirror-topic unavailability
+- Event ordering dependencies: identify business workflows, state transitions, or transactional flows that depend on strict event ordering and describe the changes required to tolerate delayed, replayed, or out-of-order events
+- Non-idempotent operations: identify business operations that are not idempotent and describe the changes required to prevent duplicate business outcomes when events are replayed, replicated, retried, or consumed more than once
+- Runtime cutover readiness: identify producer or consumer routing configuration that is loaded only at startup or cached for the lifetime of the process and describe the changes required to support runtime cutover without application restart
+- Failback and regional recovery: analyze failback and regional recovery behavior after a failed region is restored, including producer routing, consumer routing, offset synchronization, mirror-topic rebuild, replay handling, backlog processing, and restoration of normal active-active processing
 - Are health probes aligned between GLB and backend services?
 
 For each finding/issue:
