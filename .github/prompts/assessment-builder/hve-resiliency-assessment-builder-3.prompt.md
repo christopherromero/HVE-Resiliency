@@ -24,6 +24,8 @@ Read **only** the following before generating. Keep context minimal.
 
 Do **not** read the Developer Guide or consolidated research for this prompt.
 
+**Source fidelity exception (scoped repository read access):** for the final fidelity sweep only (see Validation Checklist), you may re-open the exact `file:line` locations already cited in the report's `**File:**` blocks and `**Issue:**` text, and run the targeted searches needed to confirm any stated count. This is a targeted set of file opens driven by what the report already cites, not a general repository scan.
+
 ## Critical Context
 
 Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
@@ -139,7 +141,9 @@ Before finalizing, confirm the **entire report** across all sections:
 * Every finding's `**Notes:**` uses the labeled bullet structure (Cross-refs, Implementation, Validation, Guardrail) in that fixed order, applicable labels only.
 * No em dashes or en dashes appear anywhere in the report; breaks use a spaced hyphen.
 
-If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts), fix them in place.
+### Fidelity Re-verification (final sweep, source-grounded)
+
+The checks above confirm the report is internally consistent, not that it is accurate. Builders 1 and 2 verify each block against source at generation time; this is a final backstop. Apply the Source Fidelity and Evidence Verification rule from the planner context across the whole report: re-open each cited `file:line` and confirm every `**File:**` block, every reused identifier, and every stated count matches the real source, and confirm no P0/P1 `**Fix:**` depends on a lower-priority finding. Also confirm that sibling findings sharing a file draw each `**File:**` block from its own distinct evidence rather than copying a sibling's. Correct any mismatch in place - this is a content fix, not formatting.
 
 ## Formatting Conventions
 

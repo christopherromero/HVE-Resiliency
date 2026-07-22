@@ -165,6 +165,30 @@ If a finding is **not itself a resiliency issue** but is a **required prerequisi
 
 Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 
+## Source Fidelity and Evidence Verification
+
+Findings, code blocks, identifiers, and counts must match the actual repository. Apply these rules wherever a prompt writes, copies, or reconstructs code, identifiers, or counts. Upstream artifacts (research, Master Report, Developer Guide) are convenient sources for a candidate block, but the repository source at the cited location is authoritative.
+
+### Verbatim Source Quoting
+
+* Any code presented as **current / existing** code - the "before" example in the Developer Guide and the `**File:**` block in the report - must be a verbatim quote of the source at the cited `file:line`. Do not paraphrase, reformat, normalize, summarize, or reconstruct it from memory or from an upstream description.
+* When a prompt has repository read access, re-open the exact cited `file:line` and confirm the quoted block matches the real source. If it does not match, replace the block with the real source. This is a content correction, not a formatting change.
+
+### Identifier Fidelity
+
+* Every identifier that names existing code must match the source character-for-character in **both** the `**File:**` block and the `**Fix:**` block. This includes config keys, YAML keys, environment variable names, method and function signatures, class and bean names, annotation names, and property names.
+* Never expand, abbreviate, prefix, or otherwise "tidy" an identifier. For example, do not render a YAML key `JOB-BATCH` as `CONFIG-JOB-BATCH`, and do not change a method signature's parameter list to what it "should" be.
+* A `**Fix:**` block may introduce new identifiers, but any identifier it reuses from existing code must match the source exactly.
+
+### Count Fidelity
+
+* Any stated count (occurrences, instances, call sites, "N places") must be recomputed with a fresh repository search at the time it is written, not carried over unverified from an upstream artifact. Correct the stated count and any dependent summary table if they disagree.
+
+### Fix-Level Dependency Inversion
+
+* A P0 or P1 Recommended Fix must not depend on a library, annotation, or dependency that is only introduced by a lower-priority finding.
+* If a fix requires a dependency, that dependency must already be declared in the repository's dependency manifest, or be added by a finding at the same or higher priority. Flag any fix whose required dependency is only added by a lower-priority finding as a dependency inversion and resolve it (raise the prerequisite's priority or state the manual prerequisite explicitly).
+
 ## Architectural Constraints
 
 When writing findings and recommendations, keep the following system topology in mind:
