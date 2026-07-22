@@ -22,7 +22,7 @@ Read **only** the following before generating. Keep context minimal.
 * `helmcharts/env/prod/{serviceName}/configmap.yaml` - read in full for IaC Gap Analysis current values.
 * `helmcharts/templates/` - scan for deployment.yaml, hpa.yaml, ingress.yaml, serviceentry.yaml, service.yaml, serviceaccount.yaml to identify what IaC is available to review.
 
-Do **not** read the Developer Guide or consolidated research for this prompt.
+Do **not** read the Developer Guide or consolidated research for this prompt. **Exception, for the Fidelity Re-verification pass only (see Validation Checklist below):** you are granted read access to the application repository itself, scoped to the exact `file:line` locations already cited in the report's `**File:**` blocks and `**Issue:**` text - this is a targeted set of file opens driven by what the report already cites, not a general repository scan.
 
 ## Critical Context
 
@@ -139,7 +139,18 @@ Before finalizing, confirm the **entire report** across all sections:
 * Every finding's `**Notes:**` uses the labeled bullet structure (Cross-refs, Implementation, Validation, Guardrail) in that fixed order, applicable labels only.
 * No em dashes or en dashes appear anywhere in the report; breaks use a spaced hyphen.
 
-If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts), fix them in place.
+### Fidelity Re-verification (source-grounded, run after the structural checks above)
+
+The checks above confirm the report is internally consistent; they do not confirm it is *accurate*. Run these against the real repository before finalizing:
+
+* For every finding with a `**File:**` code block, re-open that exact `file:line` in the repository and confirm the block matches what is actually there. If it does not, correct the block from the real file rather than leaving the mismatch - this is not a formatting check, fix the content.
+* For every finding whose `**Issue:**` text makes a specific factual claim about what the code does (a mechanism is present, a value is used, two mechanisms sit on the same call graph, N layers compound), spot-check that claim against the same cited evidence used for the code block. Correct or soften any claim the source does not support.
+* For every finding that states a count (occurrences, instances, sites, "N places"), recompute that count with a fresh search against the repository rather than trusting the number carried from the research artifact. Correct the stated count and the Summary Findings Table if they disagree.
+* For every Recommended Fix with a code block, confirm applying it to the **real**, now-verified "before" code would still solve the stated Issue, and would not silently remove a mechanism that currently works with nothing equivalent replacing it.
+* For every Recommended Fix or Implementation note that references a library, annotation, or dependency, confirm it is already declared in the repository's dependency manifest, or is itself added by another finding in this same report at the same or higher priority. Flag any P0/P1 fix whose dependency is only added by a lower-priority finding, per the Fix-Level Dependency Inversion rule in the planner context.
+* For every finding that shares a file or root cause with a sibling finding (e.g., a compound issue split into two `PX-NNN` entries), confirm each one's `**File:**` block is drawn from its own distinct evidence rather than copied from its sibling's.
+
+If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts, or a code block does not match the source), fix them in place.
 
 ## Formatting Conventions
 
