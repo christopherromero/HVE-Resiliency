@@ -15,23 +15,23 @@ Apply this context to all resiliency Task Planner prompts.
 
 ## Engagement Context
 
-* **Objective**: Transition from a single-region deployment (with passive disaster recovery only) to an **active/active deployment across two regions**
-* **Current State**: Single-region production deployment. The secondary region serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
-* **Target State**: Multi-region active/active with GLB-driven full-stack failover across two regions. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
+* **Objective**: Evaluate the current service/repo resiliency for the transition from an **active-passive (DR)** posture to an **active/active deployment across West US and West US 2**
+* **Current State**: Active-passive (DR). Single-region production deployment in West US. West US 2 serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
+* **Target State**: Multi-region active/active with GLB-driven full-stack failover between West US and West US 2. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
 * **Scope**: Code assessment and resiliency recommendations across multiple application repos and microservices. Some services may be **pattern-only**: recommendations but no full execution.
 * **Constraint**: The customer makes all code changes themselves. The team does **not** have source code write access. Reports must be actionable enough for the customer's developers to implement independently.
 
-> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from a passive DR model to active/active. Findings that block or degrade this transition are the highest priority.
+> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from an active-passive (DR) model to active/active. Findings that block or degrade this transition are the highest priority.
 
-## Region-Agnostic Output Rule
+## Region Naming Rule
 
-All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must use region-agnostic language throughout:
+All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must name the two active/active regions and must not use primary/secondary role labels:
 
-* **Primary region**: the current production region
-* **Secondary region** or **failover region**: the target active/active peer
+* **West US**: one of the two active/active regions (currently the production region)
+* **West US 2**: the other active/active region (the peer being added)
 * **Both regions**: when referring to symmetric requirements
 
-In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic hostnames (e.g., `apim-prod-region1.example.com`) rather than region-specific names.
+The two regions are active/active peers, so failover is symmetric: either region can absorb the other's traffic. In code examples and fix blocks, use `westus` and `westus2` (e.g., hostnames like `apim-prod-westus.example.com`) rather than primary/secondary placeholders.
 
 ## Report Prose Conventions
 
@@ -45,7 +45,7 @@ Apply these conventions to all generated report and planning prose:
 
 ### The Litmus Test
 
-> **"Does going from single-region (with passive DR) to active/active introduce or change this issue?"**
+> **"Does going from active-passive (DR) to active/active introduce or change this issue?"**
 
 * If **YES**: the issue is resiliency-related. The behavior changes, worsens, or becomes newly relevant when operating across multiple active regions or when a failover event occurs. **Categorize as a resiliency finding.**
 * If **NO**: the behavior is identical whether the application runs in a single region or multiple regions. This is a code-quality or logic bug. **Do not categorize as resiliency** unless the issue can be reframed in terms of resiliency impact (see Rule 2 below).
@@ -53,7 +53,7 @@ Apply these conventions to all generated report and planning prose:
 ### The Four Rules
 
 **Rule 1 - Failover Is the Central Pillar**
-If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from passive DR to active/active failover is the lens through which all findings are evaluated.
+If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from active-passive (DR) to active/active failover is the lens through which all findings are evaluated.
 
 **Rule 2 - Resiliency Wording Is Required**
 Every finding placed in the resiliency bucket **must** articulate the resiliency impact in its description. The framing must be:
@@ -165,6 +165,30 @@ If a finding is **not itself a resiliency issue** but is a **required prerequisi
 
 Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 
+## Source Fidelity and Evidence Verification
+
+Findings, code blocks, identifiers, and counts must match the actual repository. Apply these rules wherever a prompt writes, copies, or reconstructs code, identifiers, or counts. Upstream artifacts (research, Master Report, Developer Guide) are convenient sources for a candidate block, but the repository source at the cited location is authoritative.
+
+### Verbatim Source Quoting
+
+* Any code presented as **current / existing** code - the "before" example in the Developer Guide and the `**File:**` block in the report - must be a verbatim quote of the source at the cited `file:line`. Do not paraphrase, reformat, normalize, summarize, or reconstruct it from memory or from an upstream description.
+* When a prompt has repository read access, re-open the exact cited `file:line` and confirm the quoted block matches the real source. If it does not match, replace the block with the real source. This is a content correction, not a formatting change.
+
+### Identifier Fidelity
+
+* Every identifier that names existing code must match the source character-for-character in **both** the `**File:**` block and the `**Fix:**` block. This includes config keys, YAML keys, environment variable names, method and function signatures, class and bean names, annotation names, and property names.
+* Never expand, abbreviate, prefix, or otherwise "tidy" an identifier. For example, do not render a YAML key `JOB-BATCH` as `CONFIG-JOB-BATCH`, and do not change a method signature's parameter list to what it "should" be.
+* A `**Fix:**` block may introduce new identifiers, but any identifier it reuses from existing code must match the source exactly.
+
+### Count Fidelity
+
+* Any stated count (occurrences, instances, call sites, "N places") must be recomputed with a fresh repository search at the time it is written, not carried over unverified from an upstream artifact. Correct the stated count and any dependent summary table if they disagree.
+
+### Fix-Level Dependency Inversion
+
+* A P0 or P1 Recommended Fix must not depend on a library, annotation, or dependency that is only introduced by a lower-priority finding.
+* If a fix requires a dependency, that dependency must already be declared in the repository's dependency manifest, or be added by a finding at the same or higher priority. Flag any fix whose required dependency is only added by a lower-priority finding as a dependency inversion and resolve it (raise the prerequisite's priority or state the manual prerequisite explicitly).
+
 ## Architectural Constraints
 
 When writing findings and recommendations, keep the following system topology in mind:
@@ -175,7 +199,7 @@ When writing findings and recommendations, keep the following system topology in
    * Per **dependency** (are the services I depend on reachable?)
    * Per **shared service** (are platform-level shared services available?)
    * The app must report health of its **own** region AND awareness of whether the **failover-target region** is healthy, so the GLB can make informed decisions.
-3. **Dependencies must exist in both regions**: If a dependency is only deployed in the primary region, failover to the secondary region gains nothing for that dependency path. Flag any single-region dependency as P0.
+3. **Dependencies must exist in both regions**: If a dependency is only deployed in one region, failover to the other region gains nothing for that dependency path. Flag any single-region dependency as P0.
 4. **Use abstracted endpoints**: Recommendations should direct toward region-agnostic connection patterns. Use failover group listener names, not individual server FQDNs. Do **not** recommend putting both region-specific values in config; recommend the single abstracted value that routes to whichever region is active.
 5. **Customer owns all code changes**: Recommendations must be specific and self-contained enough for the customer's developers to implement without the team's involvement.
 6. **Pattern-only services**: Some services may be pattern-only scope (recommendations only, no full execution or testing). Flag these clearly.

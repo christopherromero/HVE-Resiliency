@@ -22,25 +22,27 @@ Read **only** the following before generating. Keep context minimal.
 
 Do **not** read the consolidated research, subagent files, or the Developer Guide P0/P1 sections for this prompt.
 
+**Source fidelity exception (scoped repository read access):** You may re-open the exact `file:line` locations cited in the Developer Guide entries you are rendering - scoped to those cited locations - to verify each `**File:**` code block and every reused identifier against the actual source. This is a targeted set of file opens driven by the citations you are already rendering, not a general repository scan. It also permits the fresh searches needed to confirm any count stated in a finding.
+
 ## Critical Context
 
 Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 
-## Region-Agnostic Language Rule
+## Region Naming Rule
 
-The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
+The generated report must name the two active/active regions throughout and must not use primary/secondary role labels. Use:
 
-* **Primary region** - the current production region
-* **Secondary region** or **failover region** - the target active/active peer
+* **West US** - one of the two active/active regions (currently the production region)
+* **West US 2** - the other active/active region (the peer being added)
 * **Both regions** - when referring to symmetric requirements
 
 ## Classification: Resiliency vs Non-Resiliency
 
 Use the active/active litmus test to classify each P2 and P3 finding:
 
-> **"Does going from single-region to active/active introduce or change this issue?"**
+> **"Does going from active-passive (DR) to active/active introduce or change this issue?"**
 
 * **YES** → `Resiliency Related: Yes` → place under Section 2 (Resilient Focused Recommendations)
 * **NO** → `Resiliency Related: No` → place under Section 3 (Non-Resilient Focused Recommendations)
@@ -96,7 +98,7 @@ Every P2 and P3 finding uses this exact format (field order must be preserved):
 5. `**What does this solve:**` - one sentence, the outcome achieved
 6. For `Resiliency Related: Yes`: `**Resiliency Impact:**` - 1-3 sentences. For `Resiliency Related: No`: `**Impact:**` - 1-3 sentences.
 7. `**Recommended Fix:**` - concrete narrative action
-8. `**File:** file/path.ext:line` - followed by a fenced code block with the current problematic code (must include a language identifier). Pull from Developer Guide.
+8. `**File:** file/path.ext:line` - followed by a fenced code block with the current problematic code (must include a language identifier). Take the candidate block from the Developer Guide, then verify it verbatim against the actual source at the cited `file:line` and use the source if they differ. Preserve every existing identifier exactly per the Source Fidelity and Evidence Verification rule in the planner context.
 9. `**Fix:**` - followed by a separate fenced code block with the corrected implementation (must include a language identifier). Pull from Developer Guide.
 10. `**Notes:**` - a bulleted list using up to four labels in this fixed order, including only the labels that apply (omit any that do not):
     * `**Cross-refs:**` - related or prerequisite finding IDs in `PX-NNN` format
@@ -114,6 +116,7 @@ Priority labels:
 
 * Separate findings with `---` (horizontal rule).
 * Always use **two separate** fenced code blocks - one under `**File:**` and one under `**Fix:**` - each with a language identifier. Pull samples from the Developer Guide. Never combine both into one block.
+* **Source fidelity:** verify the `**File:**` block and every reused identifier against the actual source per the Source Fidelity and Evidence Verification rule in the planner context; if the Developer Guide disagrees with source, use source.
 * For findings with no code change (configuration or coordination items), use relevant config under `**File:**` and the target state under `**Fix:**`.
 * Configurable values in code use `// e.g., 3` comments.
 * `What does this solve` is required on all findings, one sentence.
@@ -132,7 +135,7 @@ Priority labels:
 * All code blocks have a language identifier.
 * Inline code for env vars, function names, file paths, and config keys.
 * All repo references use `{serviceName}`, never a hardcoded service name.
-* No references to specific Azure region names.
+* Regions are named as West US and West US 2 (active/active); no primary/secondary role labels.
 
 ## Output Location
 

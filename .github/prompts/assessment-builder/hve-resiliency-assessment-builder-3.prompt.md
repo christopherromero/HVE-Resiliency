@@ -24,15 +24,17 @@ Read **only** the following before generating. Keep context minimal.
 
 Do **not** read the Developer Guide or consolidated research for this prompt.
 
+**Source fidelity exception (scoped repository read access):** for the final fidelity sweep only (see Validation Checklist), you may re-open the exact `file:line` locations already cited in the report's `**File:**` blocks and `**Issue:**` text, and run the targeted searches needed to confirm any stated count. This is a targeted set of file opens driven by what the report already cites, not a general repository scan.
+
 ## Critical Context
 
 Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 
-## Region-Agnostic Language Rule
+## Region Naming Rule
 
-The generated report must use region-agnostic terms throughout. Never reference specific Azure region names.
+The generated report must name the two active/active regions (West US and West US 2) and must not use primary/secondary role labels.
 
 ## What to Generate
 
@@ -60,7 +62,7 @@ Include entries for all infrastructure items visible in the repo that are releva
 |------------------------------|--------------------------------------|-------------------------------------|------------------|
 | Item                         | Operator / Platform / External repo  | Why this matters for resiliency     | PX-NNN, PX-NNN   |
 
-Include entries for: SQL Failover Group configuration, Cosmos DB multi-region write settings, ACR geo-replication, Azure Storage replication type, GLB probe configuration, AKV2K8S operator version in secondary cluster, DNS records for secondary ingress, APIM backend registration, network policies, SQL authentication method.
+Include entries for: SQL Failover Group configuration, Cosmos DB multi-region write settings, ACR geo-replication, Azure Storage replication type, GLB probe configuration, AKV2K8S operator version in the West US 2 cluster, DNS records for West US 2 ingress, APIM backend registration, network policies, SQL authentication method.
 
 End with `[Back to Top](#top)`.
 
@@ -133,13 +135,15 @@ Before finalizing, confirm the **entire report** across all sections:
 * P3 findings use the full finding template format (same as P0-P2).
 * All Back to Top links use `#top`.
 * No hardcoded service names appear in H2, H3, or Repo(s) columns.
-* No references to specific Azure region names appear anywhere in the report.
+* Regions are named as West US and West US 2 (active/active); no primary/secondary role labels appear anywhere in the report.
 * IaC Gap Analysis has both tables: "Available to Review" (with `Domain` and `Findings` columns, rows grouped by domain) and "Not Available" (with `Owner` and `Findings` columns).
 * Section 1 includes a `Themes at a Glance` table whose finding IDs link to their H4 anchors.
 * Every finding's `**Notes:**` uses the labeled bullet structure (Cross-refs, Implementation, Validation, Guardrail) in that fixed order, applicable labels only.
 * No em dashes or en dashes appear anywhere in the report; breaks use a spaced hyphen.
 
-If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts), fix them in place.
+### Fidelity Re-verification (final sweep, source-grounded)
+
+The checks above confirm the report is internally consistent, not that it is accurate. Builders 1 and 2 verify each block against source at generation time; this is a final backstop. Apply the Source Fidelity and Evidence Verification rule from the planner context across the whole report: re-open each cited `file:line` and confirm every `**File:**` block, every reused identifier, and every stated count matches the real source, and confirm no P0/P1 `**Fix:**` depends on a lower-priority finding. Also confirm that sibling findings sharing a file draw each `**File:**` block from its own distinct evidence rather than copying a sibling's. Correct any mismatch in place - this is a content fix, not formatting.
 
 ## Formatting Conventions
 
@@ -148,7 +152,7 @@ If validation finds discrepancies (e.g., Section 1 counts do not match actual fi
 * Blank lines before and after tables, code blocks, headings, and lists.
 * `---` horizontal rules between major sections.
 * All repo references use `{serviceName}`, never a hardcoded service name.
-* No references to specific Azure region names.
+* Regions are named as West US and West US 2 (active/active); no primary/secondary role labels.
 
 ## Output Location
 

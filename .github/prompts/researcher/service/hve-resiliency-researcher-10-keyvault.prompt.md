@@ -8,7 +8,7 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-You are validating and refining a multi-region Azure Key Vault architecture deployed across the primary and secondary regions.
+You are validating and refining a multi-region Azure Key Vault architecture deployed across West US and West US 2.
 
 Focus on region resiliency and failover expectations. Assume:
 - Two independent Azure Key Vaults (one per region), no automatic Azure failover

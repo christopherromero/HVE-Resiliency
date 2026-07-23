@@ -16,7 +16,7 @@ Evaluate these areas:
 - Does the app connect to a local Redis endpoint by default?
 - Is region selection explicit and configurable?
 - How does the app detect Redis failure (timeouts/errors)?
-- Is there clear fallback logic to secondary/tertiary regions?
+- Is there clear fallback logic to the other region?
 - Are retries bounded with backoff (no retry storms)?
 - Does the app assume immediate cross-region consistency?
 - On cache miss or stale data, does it safely fall back to the source of truth?

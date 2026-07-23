@@ -8,12 +8,12 @@ agent: Task Researcher
 Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-- The APIM service will be deployed across two Azure regions (primary and secondary)
+- The APIM service will be deployed across two Azure regions (West US and West US 2)
 - Traffic is routed regionally using a Global Load Balancer; failover occurs at the application level, not per-service
 - Applications operating in one region must not depend on Azure services in the other region due to latency
 - APIM is deployed as two independent instances:
-  - One APIM instance in the primary region
-  - One APIM instance in the secondary region
+  - One APIM instance in West US
+  - One APIM instance in West US 2
 - Other Azure services are designed using multi-region or replicated patterns
 - Zone failures within a region must be survivable without customer impact
 - Are health probes aligned between GLB and backend services?
