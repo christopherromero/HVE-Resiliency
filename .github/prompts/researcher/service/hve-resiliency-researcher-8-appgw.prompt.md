@@ -16,7 +16,7 @@ Evaluate the application against the following dimensions:
 - Does all client traffic flow through a global or internal load balancer before reaching Application Gateway?
 - Are there any direct DNS or IP dependencies on a single region's App Gateway?
 - What happens to the application during a regional App Gateway outage?
-- Can the secondary region immediately serve 100% of traffic?
+- Can either region immediately serve 100% of traffic?
 - Are health probes aligned between GLB and backend services?
 - Are retries, timeouts, and exponential backoff implemented?
 - Is the application stateless or capable of operating correctly in an active-active or active-passive model?

@@ -1,6 +1,6 @@
 ---
 name: hve-resiliency-research
-description: Use for resiliency research covering zone failure within a primary region and regional failover to a secondary region with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
+description: Use for resiliency research covering zone failure within either region and active/active regional failover between two regions with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
 ---
 
 # HVE Resiliency Research

@@ -51,7 +51,7 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
    - Priority (P0/P1/P2/P3)
    - Title
    - What is true (summary of the research finding)
-   - Why it matters (impact during zone loss / primary then secondary region failover)
+   - Why it matters (impact during zone loss / active/active region failover between West US and West US 2)
    - Evidence references (file+line citations or research reference IDs)
    - Recommended remediation summary (1-3 bullets; no code here)
    - Owner suggestion (team/component)

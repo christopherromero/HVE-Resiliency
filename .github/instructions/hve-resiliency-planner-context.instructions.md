@@ -15,23 +15,23 @@ Apply this context to all resiliency Task Planner prompts.
 
 ## Engagement Context
 
-* **Objective**: Transition from a single-region deployment (with passive disaster recovery only) to an **active/active deployment across two regions**
-* **Current State**: Single-region production deployment. The secondary region serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
-* **Target State**: Multi-region active/active with GLB-driven full-stack failover across two regions. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
+* **Objective**: Evaluate the current service/repo resiliency for the transition from an **active-passive (DR)** posture to an **active/active deployment across West US and West US 2**
+* **Current State**: Active-passive (DR). Single-region production deployment in West US. West US 2 serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
+* **Target State**: Multi-region active/active with GLB-driven full-stack failover between West US and West US 2. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
 * **Scope**: Code assessment and resiliency recommendations across multiple application repos and microservices. Some services may be **pattern-only**: recommendations but no full execution.
 * **Constraint**: The customer makes all code changes themselves. The team does **not** have source code write access. Reports must be actionable enough for the customer's developers to implement independently.
 
-> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from a passive DR model to active/active. Findings that block or degrade this transition are the highest priority.
+> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from an active-passive (DR) model to active/active. Findings that block or degrade this transition are the highest priority.
 
-## Region-Agnostic Output Rule
+## Region Naming Rule
 
-All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must use region-agnostic language throughout:
+All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must name the two active/active regions and must not use primary/secondary role labels:
 
-* **Primary region**: the current production region
-* **Secondary region** or **failover region**: the target active/active peer
+* **West US**: one of the two active/active regions (currently the production region)
+* **West US 2**: the other active/active region (the peer being added)
 * **Both regions**: when referring to symmetric requirements
 
-In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic hostnames (e.g., `apim-prod-region1.example.com`) rather than region-specific names.
+The two regions are active/active peers, so failover is symmetric: either region can absorb the other's traffic. In code examples and fix blocks, use `westus` and `westus2` (e.g., hostnames like `apim-prod-westus.example.com`) rather than primary/secondary placeholders.
 
 ## Report Prose Conventions
 
@@ -45,7 +45,7 @@ Apply these conventions to all generated report and planning prose:
 
 ### The Litmus Test
 
-> **"Does going from single-region (with passive DR) to active/active introduce or change this issue?"**
+> **"Does going from active-passive (DR) to active/active introduce or change this issue?"**
 
 * If **YES**: the issue is resiliency-related. The behavior changes, worsens, or becomes newly relevant when operating across multiple active regions or when a failover event occurs. **Categorize as a resiliency finding.**
 * If **NO**: the behavior is identical whether the application runs in a single region or multiple regions. This is a code-quality or logic bug. **Do not categorize as resiliency** unless the issue can be reframed in terms of resiliency impact (see Rule 2 below).
@@ -53,7 +53,7 @@ Apply these conventions to all generated report and planning prose:
 ### The Four Rules
 
 **Rule 1 - Failover Is the Central Pillar**
-If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from passive DR to active/active failover is the lens through which all findings are evaluated.
+If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from active-passive (DR) to active/active failover is the lens through which all findings are evaluated.
 
 **Rule 2 - Resiliency Wording Is Required**
 Every finding placed in the resiliency bucket **must** articulate the resiliency impact in its description. The framing must be:
@@ -199,7 +199,7 @@ When writing findings and recommendations, keep the following system topology in
    * Per **dependency** (are the services I depend on reachable?)
    * Per **shared service** (are platform-level shared services available?)
    * The app must report health of its **own** region AND awareness of whether the **failover-target region** is healthy, so the GLB can make informed decisions.
-3. **Dependencies must exist in both regions**: If a dependency is only deployed in the primary region, failover to the secondary region gains nothing for that dependency path. Flag any single-region dependency as P0.
+3. **Dependencies must exist in both regions**: If a dependency is only deployed in one region, failover to the other region gains nothing for that dependency path. Flag any single-region dependency as P0.
 4. **Use abstracted endpoints**: Recommendations should direct toward region-agnostic connection patterns. Use failover group listener names, not individual server FQDNs. Do **not** recommend putting both region-specific values in config; recommend the single abstracted value that routes to whichever region is active.
 5. **Customer owns all code changes**: Recommendations must be specific and self-contained enough for the customer's developers to implement without the team's involvement.
 6. **Pattern-only services**: Some services may be pattern-only scope (recommendations only, no full execution or testing). Flag these clearly.

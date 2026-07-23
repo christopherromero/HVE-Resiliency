@@ -25,19 +25,19 @@ Read **only** the following before generating. Do **not** read the Developer Gui
 
 ## Critical Context
 
-This report serves an application transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `hve-resiliency-planner-context.instructions.md` for all priority assignments.
+This report serves an application transitioning from an active-passive (DR) posture to an active/active deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 
-## Region-Agnostic Language Rule
+## Region Naming Rule
 
-The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
+The generated report must name the two active/active regions throughout and must not use primary/secondary role labels. Use:
 
-* **Primary region** - the current production region
-* **Secondary region** or **failover region** - the target active/active peer
+* **West US** (`{regionA}`) - one of the two active/active regions (currently the production region)
+* **West US 2** (`{regionB}`) - the other active/active region (the peer being added)
 * **Both regions** - when referring to symmetric requirements
 
-**Exception (Document Header only):** The `Target Deployment` line in the Document Header names the two concrete active regions from `{regionA}` and `{regionB}` so the reader has the explicit region mapping once. The regions are active peers, so present them as "between {regionA} and {regionB}" without labeling either primary or secondary. This exception applies **only** to that single header line. Everywhere else - Assessment Overview prose, findings, recommendations, H3 group names, and code examples - remains fully region-agnostic and uses `Primary region` / `Secondary region` placeholders.
+The two regions are active/active peers: present them as "between {regionA} and {regionB}" and never label either primary or secondary. This applies everywhere - the Document Header, Assessment Overview prose, findings, recommendations, H3 group names, and code examples.
 
 ## What to Generate
 
@@ -94,7 +94,7 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
     Link every finding ID to its H4 anchor (lowercase, hyphens, special chars removed), matching the anchors used in the Full Finding Matrix. Use the `PX-NNN` IDs from the Master Report directly (e.g., P0-001, P1-005); no re-mapping is needed. For a contiguous range, link the first and last ID with "to" between them (e.g., `[P0-001](#p0-001-short-title) to [P0-007](#p0-007-short-title)`).
 
-3. **Albertsons Azure Services Reference Architectures**: Include the following table verbatim in **every** assessment. It is static, customer-specific content that applies to all services and does **not** change per report. Reproduce the service names and links **exactly** as written; this table is **exempt** from the Region-Agnostic Language Rule and the `{serviceName}` substitution rule. Do not reword, reorder, add, or remove rows.
+3. **Albertsons Azure Services Reference Architectures**: Include the following table verbatim in **every** assessment. It is static, customer-specific content that applies to all services and does **not** change per report. Reproduce the service names and links **exactly** as written; this table is **exempt** from the Region Naming Rule and the `{serviceName}` substitution rule. Do not reword, reorder, add, or remove rows.
 
     | Azure Shared Service                | Link to Reference Architecture                |
     | ----------------------------------- | --------------------------------------------- |

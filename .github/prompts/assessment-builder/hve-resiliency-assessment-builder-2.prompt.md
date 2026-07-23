@@ -30,19 +30,19 @@ Use the classification rules from `hve-resiliency-planner-context.instructions.m
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 
-## Region-Agnostic Language Rule
+## Region Naming Rule
 
-The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
+The generated report must name the two active/active regions throughout and must not use primary/secondary role labels. Use:
 
-* **Primary region** - the current production region
-* **Secondary region** or **failover region** - the target active/active peer
+* **West US** - one of the two active/active regions (currently the production region)
+* **West US 2** - the other active/active region (the peer being added)
 * **Both regions** - when referring to symmetric requirements
 
 ## Classification: Resiliency vs Non-Resiliency
 
 Use the active/active litmus test to classify each P2 and P3 finding:
 
-> **"Does going from single-region to active/active introduce or change this issue?"**
+> **"Does going from active-passive (DR) to active/active introduce or change this issue?"**
 
 * **YES** → `Resiliency Related: Yes` → place under Section 2 (Resilient Focused Recommendations)
 * **NO** → `Resiliency Related: No` → place under Section 3 (Non-Resilient Focused Recommendations)
@@ -135,7 +135,7 @@ Priority labels:
 * All code blocks have a language identifier.
 * Inline code for env vars, function names, file paths, and config keys.
 * All repo references use `{serviceName}`, never a hardcoded service name.
-* No references to specific Azure region names.
+* Regions are named as West US and West US 2 (active/active); no primary/secondary role labels.
 
 ## Output Location
 

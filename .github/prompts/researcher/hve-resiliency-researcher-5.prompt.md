@@ -21,7 +21,7 @@ Identify code paths where dependency failures (timeouts, DNS failures, authentic
 
 When assessing timeouts, cover all layers, not just application/HTTP timeouts. Explicitly check transport/TCP-layer behavior that dominates failover: connect timeouts, TCP keepalive, stale pooled connections pinned to a failed region, pool eviction, and DNS TTL/caching. Treat missing keepalive or non-evicting pools as failover failure modes in their own right.
 
-Focus on outage conditions affecting the primary region or zonal degradation.
+Focus on outage conditions affecting either region (West US or West US 2) or zonal degradation.
 
 For each failure mode, capture impact fields (facts only; no prioritization):
 - User/customer-visible impact (what the caller experiences)

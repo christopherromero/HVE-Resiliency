@@ -26,19 +26,19 @@ Do **not** read the consolidated research, subagent files, or the Developer Guid
 
 ## Critical Context
 
-This report serves an application transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
+This report serves an application transitioning from an active-passive (DR) posture to an active/active deployment across two regions. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 
-## Region-Agnostic Language Rule
+## Region Naming Rule
 
-The generated report must use region-agnostic terms throughout. Never reference specific Azure region names. Use:
+The generated report must name the two active/active regions throughout and must not use primary/secondary role labels. Use:
 
-* **Primary region** - the current production region
-* **Secondary region** or **failover region** - the target active/active peer
+* **West US** - one of the two active/active regions (currently the production region)
+* **West US 2** - the other active/active region (the peer being added)
 * **Both regions** - when referring to symmetric requirements
 
-In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic names rather than region-specific hostnames.
+In code examples and fix blocks, use `westus` and `westus2` (e.g., region-local hostnames) rather than primary/secondary placeholders.
 
 ## What to Generate
 
@@ -120,7 +120,7 @@ Do **not** add `[Back to Top](#top)` at the end of Section 2 yet - that will be 
 * All code blocks have a language identifier.
 * Inline code for env vars, function names, file paths, and config keys.
 * All repo references use `{serviceName}`, never a hardcoded service name.
-* No references to specific Azure region names.
+* Regions are named as West US and West US 2 (active/active); no primary/secondary role labels.
 
 ## Output Location
 

@@ -7,18 +7,18 @@ applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .git
 
 Apply this context to all resiliency research prompts.
 
-* Validating readiness for zone failure within the primary region
-* Validating readiness for full regional failover between the primary and secondary regions in either direction
+* Validating readiness for zone failure within either region
+* Validating readiness for full active/active regional failover between West US and West US 2 in either direction
 * Scope is the current repository
 
 ## Region Context
 
-The application is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Use region-agnostic terms throughout and never reference specific Azure region names.
+The application is transitioning from an active-passive (DR) posture - a single-region production deployment in West US with West US 2 as a passive disaster recovery target - to an active/active deployment across West US and West US 2. Name these two regions when referring to them and do not use primary/secondary role labels.
 
-* **Primary region** - the current production region
-* **Secondary region** (or **failover region**) - the target active/active peer
+* **West US** - one of the two active/active regions (currently the production region)
+* **West US 2** - the other active/active region (the peer being added)
 * **Both regions** - when referring to symmetric requirements
-* Target state is active/active, so failover is symmetric: either region can absorb the other's traffic. Validate readiness for failover in both directions (primary to secondary and secondary to primary).
+* Target state is active/active, so failover is symmetric: either region can absorb the other's traffic. Validate readiness for failover in both directions (West US to West US 2 and West US 2 to West US).
 * HVE Task Researcher rules: evidence only, no remediation, no code examples
 * All findings must cite file and line-level evidence
 * Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)

@@ -14,7 +14,7 @@ expectations for Azure Functions deployed across two regions.
 Describe only the region failover behavior and requirements. Exclude general architecture
 details unless they directly affect failover.
 
-- Deployment must follow an active-active model across the primary and secondary regions.
+- Deployment must follow an active-active model across West US and West US 2.
 - Both regions must continuously serve production traffic.
 - Each region must be capable of handling 100% of peak load during a regional outage.
 
