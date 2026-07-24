@@ -1,20 +1,16 @@
 ---
-description: Run Prompt 1a Azure service discovery (explicit and implicit) for resiliency research
+description: Run Prompt 1a Azure service discovery (explicit and implicit) for Application resiliency research
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 1a
+# Application HVE Researcher 1a
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt - Azure Service Discovery
+## Role
 
-You are acting as a Senior Cloud Application Architect performing an Azure dependency assessment for a microservice.
-
-## OBJECTIVE
-
-Identify which Azure services are ACTUALLY in use in this repository (explicitly or implicitly), and produce a definitive, evidence-backed list that downstream service-specific prompts can use as the "scope contract".
+You are an expert application resiliency and dependency assessor. Your goal is to identify which Azure services are ACTUALLY in use in this repository (explicitly or implicitly), and to produce a definitive, evidence-backed list that downstream service-specific prompts can use as the "scope contract".
 
 ## Repository Scope (must analyze all of the following)
 
@@ -40,7 +36,6 @@ Produce a definitive list of Azure services used by this repo, classified as:
 - Only classify a service as **Explicit Use** when you can cite concrete evidence (file path + line number).
 - Only classify a service as **Implicit Dependency** when you can cite evidence for the underlying platform/runtime that requires it (file path + line number) AND explain the dependency.
 - If you infer a "likely Azure service" based on common patterns (example: Kafka -> often paired with Event Hubs), you MUST place it in **Referenced/Assumed but Not Found** unless you find actual evidence in code/IaC/config.
-- If a service reference exists (e.g., an environment variable name like SERVICEBUS_CONNECTION_STRING) but the actual value or resource definition is not in the repository, classify it as **Explicit Use** with a note that the resource is externally provisioned.
 - Do NOT produce generalized Azure best practices. This is a discovery and scoping task, not a remediation task.
 
 ## What Counts as Evidence (required)
@@ -67,7 +62,7 @@ For each service include:
 - Classification: Explicit Use | Implicit Dependency
 - Evidence (file path + line numbers)
 - How it is used (1-2 sentences; factual, no speculation)
-- Region/Failover sensitivity: Would a single-region outage of this service disrupt the application? Yes/No. Base your answer only on deployment evidence (e.g., multi-region config, failover policies, or single-region resource definitions).
+- Region/Failover sensitivity: Yes/No (and why, based on evidence only)
 
 ### B) Out-of-Scope / Not Found (to reduce false positives)
 
@@ -93,9 +88,8 @@ When you find evidence, normalize into canonical names (examples):
 - Azure Kubernetes Service (AKS)
 - Azure API Management (APIM)
 - Azure Cache for Redis (Redis Enterprise / Managed Redis)
-- Azure Cosmos DB (include API type if visible: Mongo, SQL, etc.; include SKU/throughput type if visible: RU-based provisioned/autoscale, serverless, or vCore)
+- Azure Cosmos DB (include API type if visible: Mongo, SQL, etc.)
 - Azure SQL Database / Azure SQL Managed Instance
-- Azure Database for PostgreSQL (Flexible Server / Single Server; include Cosmos DB for PostgreSQL if applicable)
 - Azure Storage (Blob/Queue/Table/File as applicable)
 - Azure Key Vault
 - Azure Service Bus
@@ -115,10 +109,5 @@ Your final output must include:
 2) "Out-of-Scope / Not Found"
 3) "Evidence Index"
 
-Do not add discovery or scoping sections beyond these three. Sections required by the Resiliency Research Platform Context (such as priority classification or next-step suggestions) take precedence and may be appended.
+No additional sections.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

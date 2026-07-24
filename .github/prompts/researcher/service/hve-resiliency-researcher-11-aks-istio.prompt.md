@@ -1,11 +1,11 @@
 ---
-description: Run Prompt 11 AKS and Istio resiliency analysis
+description: Run Prompt 11 AKS and Istio resiliency analysis for Application
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 11 AKS and Istio
+# Application HVE Researcher 11 AKS and Istio
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud resiliency architect focusing on AKS and Istio.
@@ -30,10 +30,10 @@ Focus on these key areas:
 
 For each finding/issue:
 Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+   - P0 — Blocking/Critical Risk
+   - P1 — High Priority (Targeted Remediation Required)
+   - P2 — Improvement/Best Practice (Non-Blocking)
+   - P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
    - Provide an explanation why this is an issue, why each issue is rated at that level
 - Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
 
@@ -46,8 +46,3 @@ OUTPUT FORMAT (repeat per issue):
 - Existing mitigations present (evidence):
 - Constraints/limitations (evidence):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

@@ -94,7 +94,7 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
     Link every finding ID to its H4 anchor (lowercase, hyphens, special chars removed), matching the anchors used in the Full Finding Matrix. Use the `PX-NNN` IDs from the Master Report directly (e.g., P0-001, P1-005); no re-mapping is needed. For a contiguous range, link the first and last ID with "to" between them (e.g., `[P0-001](#p0-001-short-title) to [P0-007](#p0-007-short-title)`).
 
-3. **Albertsons Azure Services Reference Architectures**: Include the following table verbatim in **every** assessment. It is static, customer-specific content that applies to all services and does **not** change per report. Reproduce the service names and links **exactly** as written; this table is **exempt** from the Region Naming Rule and the `{serviceName}` substitution rule. Do not reword, reorder, add, or remove rows.
+3. **{customerName} Azure Services Reference Architectures**: Include the following table verbatim in **every** assessment. It is static, customer-specific content that applies to all services and does **not** change per report. Reproduce the service names and links **exactly** as written; this table is **exempt** from the Region Naming Rule and the `{serviceName}` substitution rule. Do not reword, reorder, add, or remove rows.
 
     | Azure Shared Service                | Link to Reference Architecture                |
     | ----------------------------------- | --------------------------------------------- |

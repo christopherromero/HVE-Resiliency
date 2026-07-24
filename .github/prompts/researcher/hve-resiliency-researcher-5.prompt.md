@@ -1,31 +1,24 @@
 ---
-description: Run Prompt 5 failure and degraded mode behavior for resiliency research
+description: Run Prompt 5 failure and degraded mode behavior for Application resiliency research
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 5
+# Application HVE Researcher 5
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt - Failure & Degraded-Mode Behavior
-
-You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
-
-## OBJECTIVE
 Identify code paths where dependency failures (timeouts, DNS failures, authentication errors, partial outages) would result in:
 - Application startup failure
 - Silent functional degradation
 - Data loss or partial processing
 - Blocking transactions
 
-When assessing timeouts, cover all layers, not just application/HTTP timeouts. Explicitly check transport/TCP-layer behavior that dominates failover: connect timeouts, TCP keepalive, stale pooled connections pinned to a failed region, pool eviction, and DNS TTL/caching. Treat missing keepalive or non-evicting pools as failover failure modes in their own right.
-
-Focus on outage conditions affecting either region (West US or West US 2) or zonal degradation.
+Focus on outage conditions affecting West US 2 or zonal degradation.
 
 For each failure mode, capture impact fields (facts only; no prioritization):
 - User/customer-visible impact (what the caller experiences)
-- Business impact (e.g., auth fails, transactions cannot be processed, refunds delayed)
+- Business impact (e.g., auth fails, payments cannot be processed, refunds delayed)
 - Blast radius (which endpoints/workflows/features are affected)
 - Data loss potential (what could be lost, where, and under what failure condition)
 - Data consistency risk (loss/duplication/replay/out-of-order) and where it can occur
@@ -38,7 +31,7 @@ Always cite file + line evidence for both the failure behavior and the impact st
 
 OUTPUT FORMAT (repeat per failure mode):
 - Failure mode:
-- Triggering dependency + failure type (timeout/DNS/auth/partial outage; for timeouts, specify layer: application/HTTP vs transport/TCP connect vs TCP keepalive/stale pooled connection):
+- Triggering dependency + failure type (timeout/DNS/auth/partial outage):
 - Code path / entrypoint:
 - Observed behavior (startup fail/degrade/data loss/blocking):
 - User/customer-visible impact:
@@ -52,8 +45,3 @@ OUTPUT FORMAT (repeat per failure mode):
 - Manual ops workaround (references):
 - Evidence citations (files + line numbers):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

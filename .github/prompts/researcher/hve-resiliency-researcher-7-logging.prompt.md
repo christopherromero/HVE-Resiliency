@@ -1,23 +1,13 @@
----
-description: Run Prompt 7 logging and transaction state validation for resiliency research
-agent: Task Researcher
----
+# HVE Task Researcher Prompt — Application Logging & Transaction State Validation
 
-# HVE Resiliency Researcher 7 - Logging
-
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
-
-```text
-# HVE Task Researcher Prompt - Logging & Transaction State Validation
-
-You are acting as a Senior Cloud Application Architect performing an observability/logging validation for a microservice.
+You are acting as a Senior Cloud Application Architect performing an observability/logging validation for an Application microservice.
 
 ## OBJECTIVE
 Validate whether this microservice logs *vital operational and transactional state* needed to:
 1) Assess microservice health/state during normal operations and during failures/failover,
-2) Diagnose transaction flow issues end-to-end (without leaking secrets or sensitive data),
+2) Diagnose transaction/payment flow issues end-to-end (without leaking secrets or PCI data),
 3) Correlate events across calls/dependencies using consistent correlation IDs,
-4) Support incident triage when pods appear "healthy" but transactions silently fail.
+4) Support incident triage when pods appear “healthy” but transactions silently fail.
 5) All logging and telemetry findings should be treated as a Priority P2 or P3 in the research output.
 
 ## SCOPE
@@ -27,14 +17,14 @@ Analyze the repository for logging/telemetry behaviors in:
 - Async workers / schedulers / message handlers (if present)
 - Error handling and retry logic
 - Health/readiness endpoints and dependency checks (and their logging)
-- Config that affects logging level/format/sinks
+- Config that affects logging level/format/sinks (logback/log4j, Spring config, env vars)
 - Telemetry integrations (OpenTelemetry, App Insights, Micrometer, tracing libraries)
 
 ## EVIDENCE RULES (MANDATORY)
 - Base findings ONLY on verifiable evidence.
 - For every claim: cite exact **file path + line number(s)**.
-- If you cannot find evidence, state "NOT FOUND (no evidence)" and list where you looked.
-- Do NOT infer behavior. Do NOT assume framework defaults unless shown in code/config.
+- If you cannot find evidence, state “NOT FOUND (no evidence)” and list where you looked.
+- Do NOT infer behavior. Do NOT assume standard Spring defaults unless shown in code/config.
 
 ## WHAT TO VALIDATE (LOGGING REQUIREMENTS)
 
@@ -43,7 +33,7 @@ Verify the code logs the following events with sufficient detail:
 1. Service startup readiness transitions:
    - Startup begin/end, config loaded, dependency initialization success/failure
 2. Readiness/liveness/health endpoint behavior:
-   - Whether health endpoints reflect dependency readiness (DB, external services, messaging, secrets store)
+   - Whether health endpoints reflect dependency readiness (DB, external PSP, messaging, token vault)
    - Whether unhealthy dependency causes readiness to fail (and if logged)
 3. Background health monitors / dependency probes (if present):
    - Periodic checks and state changes logged (healthy -> degraded -> unhealthy)
@@ -55,29 +45,29 @@ For each item, answer:
 - What exactly is logged (message + fields)?
 - Is it structured logging (JSON/fields) or unstructured text?
 - Are log levels appropriate (INFO/WARN/ERROR)?
-- Is there risk of "healthy pod" while app is functionally down due to missing dependency state logging?
+- Is there risk of “healthy pod” while app is functionally down due to missing dependency state logging?
 
-### Transaction Flow State (Critical)
-Verify the service logs transaction state transitions and decision points:
+### Transaction / Payment Flow State (Critical)
+Verify the service logs transaction state transitions and decision points for payment flows:
 1. Transaction lifecycle events (at minimum):
    - start / validation / authorization / capture / void / refund / completion / failure
 2. Idempotency and dedup logic:
    - Idempotency key presence/usage, dedup decisions, replay handling
 3. External dependency calls:
-   - Outbound calls to downstream services
+   - Outbound calls to payment processors (e.g., Chase/Braintree/Fiserv/UCOM/etc. as applicable)
    - What request metadata is logged (NON-SENSITIVE only)
    - What response metadata is logged (status codes, reason categories, latency)
 4. Retry/circuit breaker outcomes:
    - retry attempt number, backoff, final failure reason, circuit open/half-open transitions
 5. Error categorization:
    - Distinguish transient vs permanent failures (HTTP 429/5xx vs validation/business errors)
-6. "Silent failure" risks:
+6. “Silent failure” risks:
    - Identify areas where exceptions are swallowed, errors are logged without context, or failures do not emit ERROR logs/metrics.
 
 For each transaction logging point, validate:
 - What is being captured in the logs
 - Correlation/Trace ID propagation (incoming -> downstream calls)
-- Whether logs include a "state" field or consistent event names
+- Whether logs include a “state” field or consistent event names
 - Whether logs include timing/latency at key steps
 - Whether failures produce a clear root-cause breadcrumb trail across logs
 
@@ -95,23 +85,23 @@ Provide evidence for:
 - log formatter configuration
 
 ### Structured Logging, Log Hygiene, and Security (REQUIRED)
-Validate the repository prevents leaking secrets/sensitive data:
-- Are sensitive details, tokens, secrets, auth headers, PII masked or excluded?
-- Do logs avoid full payload dumps for sensitive requests/responses?
+Validate the repository prevents leaking secrets/PCI/sensitive data:
+- Are payment card details, tokens, secrets, auth headers, PII masked or excluded?
+- Do logs avoid full payload dumps for payment requests/responses?
 - Are exception logs safe (stack traces ok, but no sensitive values)?
 - Are there explicit filters/redactors?
 - Are logging levels configurable via environment and not hardcoded?
 
-### Telemetry Complements (Metrics/Tracing) - If Present
+### Telemetry Complements (Metrics/Tracing) — If Present
 If the repo contains telemetry:
 - Validate key metrics emitted for transaction success/failure counts, latency, dependency errors
-- Validate traces/spans exist for key steps and outbound calls
+- Validate traces/spans exist for payment steps and outbound calls
 - Ensure metric names/tags do not leak sensitive data
 - Cite where metrics/spans are created and what tags are included
 
 ## REQUIRED OUTPUT FORMAT
 
-### SECTION 1 - CURRENT LOGGING INVENTORY (EVIDENCE CONFIRMED)
+### SECTION 1 — CURRENT LOGGING INVENTORY (EVIDENCE CONFIRMED)
 Provide a concise inventory table:
 - Component/Module
 - What it logs (events/states)
@@ -120,19 +110,19 @@ Provide a concise inventory table:
 - Evidence (file:line)
 - Priority P2 or P3 for all logging and telemetry findings to be followed up and remediated.
 
-### SECTION 2 - GAPS & RISKS (PRIORITIZED)
+### SECTION 2 — GAPS & RISKS (PRIORITIZED)
 List findings as F-### with:
 - Title
-- Risk (impact on diagnosing failures / failover events)
-- Evidence of missing/insufficient logging (file:line) or "NOT FOUND"
+- Risk (impact on diagnosing payment failures / failover events)
+- Evidence of missing/insufficient logging (file:line) or “NOT FOUND”
 - Why this is risky (e.g., silent outage, cannot correlate, missing state transitions)
 - Impact if not addressed (e.g., inability to detect or diagnose outages, delayed incident response)
 
 Use priorities:
-- P2 - Improvement/Best Practice (Non-Blocking)
-- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P2 — Improvement/Best Practice (Non-Blocking)
+- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
 
-### SECTION 3 - PRESCRIPTIVE RECOMMENDATIONS (CODE-LEVEL)
+### SECTION 3 — PRESCRIPTIVE RECOMMENDATIONS (CODE-LEVEL)
 For each finding (no new findings beyond Section 2):
 - Recommended logging pattern (structured fields + event naming)
 - Where to implement (exact layer: filter/interceptor/service/client)
@@ -143,12 +133,6 @@ For each finding (no new findings beyond Section 2):
   - Correlation IDs present across inbound/outbound logs for a single transaction
 
 ## FINAL CHECK
-Include a short "Can we diagnose a silent outage?" walkthrough:
-- If the service stops processing transactions but pods are alive, what logs/metrics/traces would prove it?
+Include a short “Can we diagnose a silent payment outage?” walkthrough:
+- If the service stops processing payments but pods are alive, what logs/metrics/traces would prove it?
 - If you cannot answer based on evidence, state what is missing.
-```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

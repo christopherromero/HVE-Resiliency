@@ -1,24 +1,16 @@
 ---
-description: Run Prompt 1b external dependency inventory for resiliency research
+description: Run Prompt 1b external dependency inventory for Application resiliency research
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 1b
+# Application HVE Researcher 1b
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt - External Dependency Inventory
+## Role
 
-You are acting as a Senior Cloud Application Architect performing an external dependency assessment for a microservice.
-
-## OBJECTIVE
-
-Identify external (non-Azure) service dependencies with clear separation between what is actually used, what was checked but not present, what is assumed or implicitly used, and what is not applicable to this repository.
-
-**Definition of "external (non-Azure)":** any service not part of the Azure Resource Manager (ARM) control plane. This includes GitHub, third-party SaaS, CDNs, DNS providers, certificate authorities, and any Microsoft service not managed as an Azure resource (e.g., Microsoft Graph, npm registries).
-
-**Transitive dependencies:** if a direct dependency (e.g., an SDK or library) is known to make runtime calls to an external service, note it in Section 1 with evidence. Do not perform deep recursive analysis of all transitive packages - only flag those with observable external network calls in code or configuration.
+You are an expert application resiliency and external dependency assessor. Your goal is to identify external (non-Azure) service dependencies with clear separation between what is actually used, what was checked but not present, what is assumed or implicitly used, and what is not applicable to this repository.
 
 ## Instructions
 
@@ -27,19 +19,6 @@ Explicitly analyze the repository for non-Azure and external dependencies refere
 - Configuration files
 - Infrastructure-as-code (Bicep, ARM, Terraform, Helm, etc.)
 - Deployment pipelines (GitHub Actions, Azure DevOps, scripts)
-
-## Common External Dependencies to Evaluate (non-exhaustive checklist)
-
-Evaluate the repository for at least the following commonly used external (non-Azure) dependencies. This checklist drives coverage, not conclusions: each item still requires the Evidence Rules below. Place confirmed items in Section 1, evaluated-but-not-found items in Section 2, and clearly inapplicable categories in Section 3. Add any other external dependencies discovered that are not listed here.
-
-- Messaging / streaming: Apache Kafka (Confluent), RabbitMQ, Apache Pulsar
-- Databases / data stores: Apache Cassandra (DataStax), MongoDB (Atlas), Elasticsearch / OpenSearch (Elastic Cloud), self-managed Redis, self-managed PostgreSQL/MySQL
-- Data / analytics platforms: Databricks, Snowflake
-- CDN / edge / WAF / load balancing: Akamai, Cloudflare, Fastly, F5 (BIG-IP / Distributed Cloud)
-- DNS providers and certificate authorities (non-Azure): e.g., external DNS, Let's Encrypt, DigiCert
-- Identity / SaaS: Auth0, Okta, Microsoft Graph
-- Observability / alerting: Datadog, Splunk, New Relic, external Prometheus/Grafana, PagerDuty
-- Source control / package & container registries: GitHub, npm/PyPI/Maven, Docker Hub, non-Azure container registries
 
 ## Additional Required Check: Dependency Health Checks and GLB Health Signaling
 
@@ -55,7 +34,7 @@ Base findings ONLY on verifiable evidence.
 
 ## Output Requirements (must follow exact format)
 
-### Section 1 - Used External Dependencies (Evidence Confirmed)
+### Section 1 — Used External Dependencies (Evidence Confirmed)
 
 List only dependencies that are explicitly referenced.
 
@@ -65,14 +44,13 @@ For each non-Azure and external dependency include:
 - Brief description of how it is used
 - Whether it materially impacts zone or region failover (Yes/No + description of why this could impact zone or region failover)
 - Existing mitigations present (if any): retries/timeouts/fallbacks/feature flags/runbooks, with evidence (file path + line number)
-- Health check sub-table with one row per check, columns:
-  - Health Check Mechanism (e.g., ping/query/auth call/SDK check/timeout, or "None")
-  - Evidence (file path + line number)
-  - Surfaced to GLB? (Yes / No / Unclear, with evidence of the wiring)
-  - GLB Probe Details (endpoint/path/port hit by GLB or upstream probes, and the conditions that mark healthy vs unhealthy as expressed in config/code + evidence)
+- Health check present for this dependency? (Yes/No + evidence)
+- How health is determined (e.g., ping/query/auth call/SDK check/timeouts) + evidence
+- Is dependency health surfaced to GLB health evaluation? (Yes/No/Unclear + evidence of the wiring)
+- What GLB probes (or upstream probes) hit (endpoint/path/port) and what conditions cause unhealthy vs healthy, as expressed in config/code + evidence
 - Constraints/limitations (if any): dependency/platform capabilities or configuration/operational constraints that shape failover behavior, with evidence (file path + line number) when present
 
-### Section 2 - Checked but Not Present
+### Section 2 — Checked but Not Present
 
 List non-Azure and external dependencies that were explicitly evaluated because they are commonly expected or architecturally relevant, but for which NO evidence was found in the repository.
 
@@ -81,7 +59,7 @@ For each non-Azure and external dependency include:
 - Reason it was evaluated (e.g., common pattern, failover relevance)
 - Explicit statement: "No references found in code, config, IaC, or pipelines"
 
-### Section 3 - Not Applicable
+### Section 3 — Not Applicable
 
 List non-Azure and external dependency categories that are clearly not applicable to this application based on its architecture or scope.
 
@@ -96,8 +74,3 @@ For each item include:
 - If no evidence exists, it must appear only in Section 2 or Section 3.
 - Be precise, defensive, and audit-ready.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

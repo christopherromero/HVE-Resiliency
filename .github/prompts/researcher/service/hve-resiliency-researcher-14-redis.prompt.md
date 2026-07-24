@@ -1,11 +1,11 @@
 ---
-description: Run Prompt 14 Redis resiliency analysis
+description: Run Prompt 14 Redis resiliency analysis for Application
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 14 Redis
+# Application HVE Researcher 14 Redis
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are reviewing an application that uses Azure Managed Redis Enterprise
@@ -16,7 +16,7 @@ Evaluate these areas:
 - Does the app connect to a local Redis endpoint by default?
 - Is region selection explicit and configurable?
 - How does the app detect Redis failure (timeouts/errors)?
-- Is there clear fallback logic to the other region?
+- Is there clear fallback logic to secondary/tertiary regions?
 - Are retries bounded with backoff (no retry storms)?
 - Does the app assume immediate cross-region consistency?
 - On cache miss or stale data, does it safely fall back to the source of truth?
@@ -28,10 +28,10 @@ Evaluate these areas:
 
 For each finding/issue:
 Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+   - P0 — Blocking/Critical Risk
+   - P1 — High Priority (Targeted Remediation Required)
+   - P2 — Improvement/Best Practice (Non-Blocking)
+   - P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
    - Provide an explanation why this is an issue, why each issue is rated at that level
 - Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
 
@@ -44,8 +44,3 @@ OUTPUT FORMAT (repeat per issue):
 - Existing mitigations present (evidence):
 - Constraints/limitations (evidence):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

@@ -7,7 +7,7 @@ applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .git
 
 Apply this context to all Application Platform resiliency research prompts.
 
-* Albertsons operates applications in Azure
+* {customerName} operates applications in Azure
 * Validating readiness for zone failure within West US 2
 * Validating readiness for full regional failover from West US 2 to West US
 * Scope is the current repository within the Application Platform
@@ -48,4 +48,4 @@ Follow this sequence:
 | `/hve-resiliency-researcher-6`            | `/hve-resiliency-researcher-7-logging`                                                                                        |
 | `/hve-resiliency-researcher-7-logging`    | First applicable service-specific prompt from Phase 2, or `/hve-resiliency-researcher-consolidate` if none apply              |
 | Service-specific prompts (8-19)     | Next applicable service prompt for a Prompt 1 Section 1 dependency, or `/hve-resiliency-researcher-consolidate` when complete  |
-| `/hve-resiliency-researcher-consolidate`  | `/ospg-hve-planner-0`                                                                                                   |
+| `/hve-resiliency-researcher-consolidate`  | `/hve-resiliency-planner-0`                                                                                                   |

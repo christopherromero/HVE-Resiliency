@@ -1,22 +1,22 @@
 ---
-description: Run Prompt 8 App Gateway resiliency analysis
+description: Run Prompt 8 App Gateway resiliency analysis for Application
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 8 App Gateway
+# Application HVE Researcher 8 App Gateway
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud resiliency and Azure networking expert focusing on App Gateway.
 
-Analyze this application's architecture assuming it is fronted by Azure Application Gateway deployed in a multi-region setup with zone redundancy, autoscaling, and global load balancing.
+Analyze this application’s architecture assuming it is fronted by Azure Application Gateway deployed in a multi-region setup (West US + West US 2) with zone redundancy, autoscaling, and global load balancing (Front Door/Imperva or F5).
 
 Evaluate the application against the following dimensions:
 - Does all client traffic flow through a global or internal load balancer before reaching Application Gateway?
-- Are there any direct DNS or IP dependencies on a single region's App Gateway?
+- Are there any direct DNS or IP dependencies on a single region’s App Gateway?
 - What happens to the application during a regional App Gateway outage?
-- Can either region immediately serve 100% of traffic?
+- Can the secondary region immediately serve 100% of traffic?
 - Are health probes aligned between GLB and backend services?
 - Are retries, timeouts, and exponential backoff implemented?
 - Is the application stateless or capable of operating correctly in an active-active or active-passive model?
@@ -28,10 +28,10 @@ Evaluate the application against the following dimensions:
 For each finding/issue:
 
 Assess failover risk for each gap:
-- P0 - Blocking/Critical Risk
-- P1 - High Priority (Targeted Remediation Required)
-- P2 - Improvement/Best Practice (Non-Blocking)
-- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+- P0 — Blocking/Critical Risk
+- P1 — High Priority (Targeted Remediation Required)
+- P2 — Improvement/Best Practice (Non-Blocking)
+- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
 - Provide an explanation why this is an issue, why each issue is rated at that level
 - Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
 
@@ -44,8 +44,3 @@ OUTPUT FORMAT (repeat per issue):
 - Existing mitigations present (evidence):
 - Constraints/limitations (evidence):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

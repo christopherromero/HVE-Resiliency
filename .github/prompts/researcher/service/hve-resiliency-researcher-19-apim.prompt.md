@@ -1,14 +1,14 @@
 ---
-description: Run Prompt 19 APIM resiliency analysis
+description: Run Prompt 19 APIM resiliency analysis for Application
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 19 APIM
+# Application HVE Researcher 19 APIM
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-- The APIM service will be deployed across two Azure regions (West US and West US 2)
+- The APIM service will be deployed across two Azure regions: West US and West US 2
 - Traffic is routed regionally using a Global Load Balancer; failover occurs at the application level, not per-service
 - Applications operating in one region must not depend on Azure services in the other region due to latency
 - APIM is deployed as two independent instances:
@@ -24,15 +24,15 @@ Use [Resiliency Research Platform Context](../../../../instructions/hve-resilien
 - Are certificates and secrets sourced from region-local application Key Vaults using managed identity?
 - Regional failover must not cause:
   - data loss
-  - duplicate transactions
+  - duplicate charges
   - prolonged downtime
 
 For each finding/issue:
 Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+   - P0 — Blocking/Critical Risk
+   - P1 — High Priority (Targeted Remediation Required)
+   - P2 — Improvement/Best Practice (Non-Blocking)
+   - P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
    - Provide an explanation why this is an issue, why each issue is rated at that level
 - Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
 
@@ -44,8 +44,3 @@ OUTPUT FORMAT (repeat per issue):
 - Impact(s) if this is not changed:
 - Existing mitigations present (evidence):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

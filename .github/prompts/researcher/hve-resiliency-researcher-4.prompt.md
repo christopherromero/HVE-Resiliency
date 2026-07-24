@@ -1,18 +1,13 @@
 ---
-description: Run Prompt 4 state data and consistency characteristics for resiliency research
+description: Run Prompt 4 state data and consistency characteristics for Application resiliency research
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 4
+# Application HVE Researcher 4
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-# HVE Task Researcher Prompt - State, Data & Consistency
-
-You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
-
-## OBJECTIVE
 Analyze how application state and data are managed.
 
 Identify assumptions related to:
@@ -33,8 +28,3 @@ Record any constraints/limitations (dependency consistency model, replication la
 Document risks that could surface during zone or regional failover.
 Do not propose fixes.
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.

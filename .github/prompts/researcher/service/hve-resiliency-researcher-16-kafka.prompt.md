@@ -1,17 +1,17 @@
 ---
-description: Run Prompt 16 Kafka resiliency analysis
+description: Run Prompt 16 Kafka resiliency analysis for Application
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 16 Kafka
+# Application HVE Researcher 16 Kafka
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
-You are analyzing an application that produces to and/or consumes from Kafka deployed in a multi-region architecture with:
+You are analyzing an application that produces to and/or consumes from Kafka deployed in a multi-region Confluent architecture with:
 - Independent Kafka clusters per region
 - Active-passive regional failover
-- Cluster Linking
+- Confluent Cluster Linking
 - DNS-based bootstrap switching
 - Client reconnect required on failover
 
@@ -37,10 +37,10 @@ Focus specifically on:
 
 For each finding/issue:
 Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
+   - P0 — Blocking/Critical Risk
+   - P1 — High Priority (Targeted Remediation Required)
+   - P2 — Improvement/Best Practice (Non-Blocking)
+   - P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
    - Provide an explanation why this is an issue, why each issue is rated at that level
 - Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
 
@@ -53,8 +53,3 @@ OUTPUT FORMAT (repeat per issue):
 - Existing mitigations present (evidence):
 - Constraints/limitations (evidence):
 ```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
