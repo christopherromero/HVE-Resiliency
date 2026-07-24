@@ -1,6 +1,6 @@
 ---
 description: Platform context, resiliency definition, evidence lock-in rules, and classification guidance for Task Planner prompts
-applyTo: '.github/prompts/planner/hve-resiliency-planner-*.prompt.md, .github/prompts/assessment-builder/hve-resiliency-assessment-builder-*.prompt.md'
+applyTo: '.github/prompts/planner/hve-resiliency-planner-*.prompt.md'
 ---
 
 # Resiliency Task Planner Context
@@ -15,58 +15,55 @@ Apply this context to all resiliency Task Planner prompts.
 
 ## Engagement Context
 
-* **Objective**: Evaluate the current service/repo resiliency for the transition from an **active-passive (DR)** posture to an **active/active deployment across West US and West US 2**
-* **Current State**: Active-passive (DR). Single-region production deployment in West US. West US 2 serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
-* **Target State**: Multi-region active/active with GLB-driven full-stack failover between West US and West US 2. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
-* **Scope**: Code assessment and resiliency recommendations across multiple application repos and microservices. Some services may be **pattern-only**: recommendations but no full execution.
+* **Customer**: {customerName}
+* **Objective**: Transition from a single-region deployment (West US with East US as DR only) to an **active/active deployment across West US and West US 2**
+* **Current State**: Single-region production deployment in West US. East US serves only as a passive disaster recovery target. No Global Load Balancer (GLB). Traffic enters through edge application gateways.
+* **Target State**: Multi-region active/active with GLB-driven full-stack failover across West US and West US 2. The GLB makes all failover decisions; applications do not fail themselves over. Applications must feed health data to the GLB via health probes.
+* **Scope**: Code assessment and resiliency recommendations across multiple application repos and microservices. Some services are **pattern-only** (Postgres SQL, Event Hub): recommendations but no full execution.
 * **Constraint**: The customer makes all code changes themselves. The team does **not** have source code write access. Reports must be actionable enough for the customer's developers to implement independently.
 
-> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from an active-passive (DR) model to active/active. Findings that block or degrade this transition are the highest priority.
+> **Critical framing**: Every finding must be evaluated through the lens of this transition. The customer is not adding a second region for capacity; they are moving from a passive DR model to active/active. Findings that block or degrade this transition are the highest priority.
 
-## Region Naming Rule
+## Region-Agnostic Output Rule
 
-All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must name the two active/active regions and must not use primary/secondary role labels:
+All **generated report output** (finding descriptions, recommendations, code examples, H3 group names) must **never** reference "East US", "eastus", or any East region variant. East US is a legacy DR target that is not part of the active/active architecture.
 
-* **West US**: one of the two active/active regions (currently the production region)
-* **West US 2**: the other active/active region (the peer being added)
+Prefer region-agnostic language throughout:
+
+* **Primary region**: the current production region
+* **Secondary region** or **failover region**: the target active/active peer
 * **Both regions**: when referring to symmetric requirements
 
-The two regions are active/active peers, so failover is symmetric: either region can absorb the other's traffic. In code examples and fix blocks, use `westus` and `westus2` (e.g., hostnames like `apim-prod-westus.example.com`) rather than primary/secondary placeholders.
+"West US" and "West US 2" may be used when necessary (e.g., describing the customer's actual topology or referencing specific configuration), but prefer the generic terms above when the statement applies to any multi-region deployment.
 
-## Report Prose Conventions
-
-Apply these conventions to all generated report and planning prose:
-
-* **No em dashes or en dashes.** Never emit U+2014 (em dash) or U+2013 (en dash). Use a spaced hyphen ` - ` for a break, a colon for an explanation, or split into two sentences.
-* **Limit correctio and antithesis.** Avoid decorative "not X, but Y", "it's not X, it's Y", and "X rather than Y" constructions used only for emphasis. State the point directly. Keep a contrast only when it draws a real, load-bearing distinction (for example, the resiliency vs non-resiliency classification itself).
-* **No redundant classification tails.** In Non-Resiliency findings, do not append phrases such as "not a runtime resiliency one" or "not failover"; the section and each finding's `Resiliency Related: No` already establish this.
+In code examples and fix blocks, use placeholder values like `{primaryRegion}`, `{secondaryRegion}`, or generic hostnames (e.g., `apim-prod-region1.example.com`) rather than region-specific names.
 
 ## Definition of Resiliency
 
 ### The Litmus Test
 
-> **"Does going from active-passive (DR) to active/active introduce or change this issue?"**
+> **"Does going from single-region (West US with East US DR) to active/active (West US + West US 2) introduce or change this issue?"**
 
 * If **YES**: the issue is resiliency-related. The behavior changes, worsens, or becomes newly relevant when operating across multiple active regions or when a failover event occurs. **Categorize as a resiliency finding.**
 * If **NO**: the behavior is identical whether the application runs in a single region or multiple regions. This is a code-quality or logic bug. **Do not categorize as resiliency** unless the issue can be reframed in terms of resiliency impact (see Rule 2 below).
 
 ### The Four Rules
 
-**Rule 1 - Failover Is the Central Pillar**
-If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from active-passive (DR) to active/active failover is the lens through which all findings are evaluated.
+**Rule 1 — Failover Is the Central Pillar**
+If a finding does not interact with failover mechanics (GLB routing, health probes, region-aware configuration, dependency availability across regions), it should drop in priority. The transition from passive DR to active/active failover is the lens through which all findings are evaluated.
 
-**Rule 2 - Resiliency Wording Is Required**
+**Rule 2 — Resiliency Wording Is Required**
 Every finding placed in the resiliency bucket **must** articulate the resiliency impact in its description. The framing must be:
 
 > *"If you don't fix [X], then during a [failure scenario], [Y impact] will occur, which affects the resiliency of [the client's ability to accomplish Z]."*
 
 Do **not** frame findings as: *"Your logic is broken"* or *"You need to make this fix."* If you cannot articulate a resiliency impact statement, the finding does not belong in the resiliency bucket.
 
-**Rule 3 - Failure-Triggered Issues Qualify**
+**Rule 3 — Failure-Triggered Issues Qualify**
 If an issue **only manifests because of a failure event** (availability zone failure, region failure, GLB failover), it qualifies as a resiliency finding, even if a procedural or manual workaround exists. The existence of a workaround affects **priority** (P1 vs P0), not **categorization**.
 
-**Rule 4 - Include Everything, Let the Customer Decide**
-All recommendations remain in the report regardless of whether the customer is expected to accept them. The customer may decline any recommendation. This ensures a paper trail: if an ignored recommendation causes a test failure or production incident, the team can reference the original finding.
+**Rule 4 — Include Everything, Let the Customer Decide**
+All recommendations remain in the report regardless of whether the customer is expected to accept them. The customer may decline any recommendation. Declined recommendations are tracked by the CSAM. This ensures a paper trail: if an ignored recommendation causes a test failure or production incident, the team can reference the original finding.
 
 ## Priority Legend
 
@@ -77,20 +74,20 @@ Use this consistently in all outputs:
 * P2: Improvement/Best Practice (Non-Blocking)
 * P3: Non-Blocking Code Consistency (Best Practices / Maintainability)
 
-### P0 - Critical Resiliency Risk
+### P0 — Critical Resiliency Risk
 
 **Definition**: The finding **blocks failover from functioning** or **renders the active/active deployment meaningless**. Without this fix, the investment in a second region provides no benefit.
 
 **Criteria** (any of the following):
 
-* Hard-coded region-specific values (connection strings, endpoints, IPs) where the application must switch from a single-region FQDN or IP to an abstracted listener/endpoint that covers both regions.
+* Hard-coded region-specific values (connection strings, endpoints, IPs) where the application must switch from a single-region FQDN or IP to an abstracted listener/endpoint that covers both regions. The fix is to use the single abstracted endpoint (e.g., failover group listener) that routes to whichever region is active, not to add both region values.
 * GLB health probes not yet implemented: health probe endpoints are net-new work required for the GLB to make informed failover decisions.
 * Dependencies deployed in only one region with no plan for the second region: failing over gains nothing if the dependency does not exist in the target region.
-* Connection strings pointing to single-region FQDNs instead of failover group listener names.
+* Connection strings pointing to single-region SQL Server FQDNs instead of failover group listener names.
 * Application logic that assumes a specific region and breaks when executed in the other region.
 * Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
 
-### P1 - Important Resiliency Risk
+### P1 — Important Resiliency Risk
 
 **Definition**: The finding is resiliency-related (passes the litmus test) but has a **procedural workaround**, **lower blast radius**, or **does not fully block failover**.
 
@@ -101,7 +98,7 @@ Use this consistently in all outputs:
 * Missing retry logic or error handling that causes degraded experience during failover but does not fully prevent operation.
 * Resiliency improvements that are best-practice but not strictly required for failover to function.
 
-### P2 - Code Quality / Non-Resiliency
+### P2 — Code Quality / Non-Resiliency
 
 **Definition**: The finding is a valid code issue but **behaves identically in single-region and active/active**. The multi-region deployment does not introduce, amplify, or change this issue.
 
@@ -109,7 +106,7 @@ Use this consistently in all outputs:
 
 **Reclassification opportunity**: If the team can reframe the impact in resiliency terms (Rule 2) and the customer would agree it is resiliency-related, it may be moved to P1. If the reframing is a stretch, leave it at P2.
 
-### P3 - Noted for Completeness
+### P3 — Noted for Completeness
 
 **Definition**: The finding has **no functional resiliency impact** and does not affect failover mechanics. It is retained per Rule 4 so the customer has a complete record.
 
@@ -130,28 +127,28 @@ Q1: Does moving from single-region (with passive DR) to active/active
   │
   ├── YES ──► Q2: Does this fix block failover from working at all?
   │             │
-  │             ├── YES ──► P0 - Critical Resiliency Risk
+  │             ├── YES ──► P0 — Critical Resiliency Risk
   │             │
   │             └── NO ──► Q3: Does this issue only manifest during a failure event?
   │                          │
   │                          ├── YES ──► Q4: Is there a procedural workaround?
   │                          │             │
-  │                          │             ├── YES ──► P1 - Important Resiliency Risk
+  │                          │             ├── YES ──► P1 — Important Resiliency Risk
   │                          │             │
-  │                          │             └── NO ──► P0 - Critical Resiliency Risk
+  │                          │             └── NO ──► P0 — Critical Resiliency Risk
   │                          │
-  │                          └── NO ──► P1 - Important Resiliency Risk
+  │                          └── NO ──► P1 — Important Resiliency Risk
   │
   └── NO ──► Q5: Can the impact be framed in resiliency terms (Rule 2)?
                │
-               ├── YES (credibly) ──► P1 - Important Resiliency Risk
+               ├── YES (credibly) ──► P1 — Important Resiliency Risk
                │                       (reword the impact statement)
                │
                └── NO ──► Q6: Does the finding have functional or operational impact?
                             │
-                            ├── YES ──► P2 - Code Quality / Non-Resiliency
+                            ├── YES ──► P2 — Code Quality / Non-Resiliency
                             │
-                            └── NO ──► P3 - Noted for Completeness
+                            └── NO ──► P3 — Noted for Completeness
 ```
 
 ### Special Case: Prerequisite Findings
@@ -165,30 +162,6 @@ If a finding is **not itself a resiliency issue** but is a **required prerequisi
 
 Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 
-## Source Fidelity and Evidence Verification
-
-Findings, code blocks, identifiers, and counts must match the actual repository. Apply these rules wherever a prompt writes, copies, or reconstructs code, identifiers, or counts. Upstream artifacts (research, Master Report, Developer Guide) are convenient sources for a candidate block, but the repository source at the cited location is authoritative.
-
-### Verbatim Source Quoting
-
-* Any code presented as **current / existing** code - the "before" example in the Developer Guide and the `**File:**` block in the report - must be a verbatim quote of the source at the cited `file:line`. Do not paraphrase, reformat, normalize, summarize, or reconstruct it from memory or from an upstream description.
-* When a prompt has repository read access, re-open the exact cited `file:line` and confirm the quoted block matches the real source. If it does not match, replace the block with the real source. This is a content correction, not a formatting change.
-
-### Identifier Fidelity
-
-* Every identifier that names existing code must match the source character-for-character in **both** the `**File:**` block and the `**Fix:**` block. This includes config keys, YAML keys, environment variable names, method and function signatures, class and bean names, annotation names, and property names.
-* Never expand, abbreviate, prefix, or otherwise "tidy" an identifier. For example, do not render a YAML key `JOB-BATCH` as `CONFIG-JOB-BATCH`, and do not change a method signature's parameter list to what it "should" be.
-* A `**Fix:**` block may introduce new identifiers, but any identifier it reuses from existing code must match the source exactly.
-
-### Count Fidelity
-
-* Any stated count (occurrences, instances, call sites, "N places") must be recomputed with a fresh repository search at the time it is written, not carried over unverified from an upstream artifact. Correct the stated count and any dependent summary table if they disagree.
-
-### Fix-Level Dependency Inversion
-
-* A P0 or P1 Recommended Fix must not depend on a library, annotation, or dependency that is only introduced by a lower-priority finding.
-* If a fix requires a dependency, that dependency must already be declared in the repository's dependency manifest, or be added by a finding at the same or higher priority. Flag any fix whose required dependency is only added by a lower-priority finding as a dependency inversion and resolve it (raise the prerequisite's priority or state the manual prerequisite explicitly).
-
 ## Architectural Constraints
 
 When writing findings and recommendations, keep the following system topology in mind:
@@ -199,16 +172,16 @@ When writing findings and recommendations, keep the following system topology in
    * Per **dependency** (are the services I depend on reachable?)
    * Per **shared service** (are platform-level shared services available?)
    * The app must report health of its **own** region AND awareness of whether the **failover-target region** is healthy, so the GLB can make informed decisions.
-3. **Dependencies must exist in both regions**: If a dependency is only deployed in one region, failover to the other region gains nothing for that dependency path. Flag any single-region dependency as P0.
-4. **Use abstracted endpoints**: Recommendations should direct toward region-agnostic connection patterns. Use failover group listener names, not individual server FQDNs. Do **not** recommend putting both region-specific values in config; recommend the single abstracted value that routes to whichever region is active.
+3. **Dependencies must exist in both regions**: If a dependency is only deployed in the primary region, failover to the secondary region gains nothing for that dependency path. Flag any single-region dependency as P0.
+4. **Use abstracted endpoints**: Recommendations should direct toward region-agnostic connection patterns. SQL Server uses failover group listener name, not individual server FQDNs. Do **not** recommend putting both region-specific values in config; recommend the single abstracted value that routes to whichever region is active.
 5. **Customer owns all code changes**: Recommendations must be specific and self-contained enough for the customer's developers to implement without the team's involvement.
-6. **Pattern-only services**: Some services may be pattern-only scope (recommendations only, no full execution or testing). Flag these clearly.
+6. **Pattern-only services**: Postgres SQL, Event Hub, and potentially others are pattern-only scope (recommendations only, no full execution or testing). Flag these clearly.
 
 ## Report Delivery Strategy
 
 * **Phased delivery**: Reports are delivered in batches. This prevents the customer from being overwhelmed and allows them to start implementing while subsequent reports are prepared.
-* **Testing alignment**: Findings should map to test scenarios (chaos testing, manual fault injection, backlog items) when possible.
-* **Permanent record**: Reports are the permanent record for long-term tracking.
+* **Testing alignment**: Findings should map to test scenarios (Azure Chaos Studio, manual fault injection, Jira backlog items) when possible.
+* **CSAM handoff**: All reports go to the CSAM and CSAs for long-term tracking. The reports are the permanent record.
 * **Expect pushback**: The customer will attempt to pare down the finding list. The report should make it easy to distinguish "must fix for failover to work" (P0) from "should fix but has workaround" (P1) from "good practice but not resiliency" (P2).
 
 ## Output File Naming Rule
@@ -223,12 +196,9 @@ After completing each planner prompt output, end the response with a next-step s
 
 Follow this sequence:
 
-| Current Prompt              | Next Step                                                                                          |
-|-----------------------------|----------------------------------------------------------------------------------------------------|
-| `/hve-resiliency-planner-0` | `/hve-resiliency-planner-1`                                                                        |
+| Current Prompt         | Next Step                                                                                |
+|------------------------|------------------------------------------------------------------------------------------|
+| `/hve-resiliency-planner-0` | `/hve-resiliency-planner-1`                                                                    |
 | `/hve-resiliency-planner-1` | Run `/clear`, then `/hve-resiliency-planner-0` to re-lock evidence, then `/hve-resiliency-planner-2` |
-| `/hve-resiliency-planner-2` | `/hve-resiliency-assessment-builder-0`                                                                       |
-| `/hve-resiliency-assessment-builder-0`| `/hve-resiliency-assessment-builder-1`                                                                       |
-| `/hve-resiliency-assessment-builder-1`| `/hve-resiliency-assessment-builder-2`                                                                       |
-| `/hve-resiliency-assessment-builder-2`| `/hve-resiliency-assessment-builder-3`                                                                       |
-| `/hve-resiliency-assessment-builder-3`| Workflow complete                                                                                  |
+| `/hve-resiliency-planner-2` | `/hve-resiliency-planner-3`                                                                    |
+| `/hve-resiliency-planner-3` | Workflow complete                                                                        |
