@@ -7,6 +7,38 @@ applyTo: '**/*.prompt.md, **/*.agent.md, **/*.instructions.md, **/SKILL.md'
 
 Any workflow that reads source artifacts in one phase and quotes them in a later phase must separate observation from generation. These rules apply to prompts, agents, instructions, and skills that produce reports, assessments, reviews, audits, or plans containing quoted material.
 
+## Workflow Compliance Contract
+
+Any prompt, agent, or skill matched by this instruction file MUST behave as follows when producing quoted material from source artifacts. This contract is machine-enforceable; the verifier script exists so compliance is not left to model discretion.
+
+1. **Pin the observed state before the first read.** Record the SHA under the ledger's `source.commit` field:
+
+   ```powershell
+   git rev-parse HEAD
+   ```
+
+2. **Capture at the moment of reading.** Append an evidence entry to `.copilot-tracking/research/<scope>-evidence.json` matching `.github/skills/evidence-ledger/schema/evidence-ledger.schema.json`. Store exact bytes; `endLine` MUST equal `startLine + (snippet line count - 1)`. Use `kind: "absent"` (no line range) for null-result findings.
+
+3. **Transclude by ID when producing output.** Every quoted code block MUST be preceded immediately by an HTML comment marker of the form:
+
+   ```markdown
+   <!-- evidence: EV-014 -->
+   ```
+
+   If no ledger entry exists for a finding, the finding MUST NOT carry a quoted code block. Author prose describing the observation, or omit the finding. Reconstructing quoted material from memory or from prose descriptions in prior artifacts is prohibited.
+
+4. **Run the deterministic verifier at every phase gate.** Non-zero exit MUST block phase completion:
+
+   ```powershell
+   ./.github/skills/evidence-ledger/scripts/Test-EvidenceLedger.ps1 `
+       -LedgerPath .copilot-tracking/research/<scope>-evidence.json `
+       -ReportPath <path-to-emitted-report>.md
+   ```
+
+   On mismatch, flag the finding as unverified and stop. Do not instruct any agent to "correct the quote to match the file." Sources commonly contain near-identical constructs, and fix-forward silently snaps the citation to the wrong occurrence.
+
+5. **Halt on missing entries.** If a downstream phase cannot resolve an evidence ID, the ledger has failed, not the artifact. Report the missing ID and stop. Do not synthesize a replacement.
+
 ## The Failure This Prevents
 
 Multi-phase workflows isolate context between phases, either through explicit context clearing or through isolated subagent dispatch. Context isolation is what lets a workflow scale past a single window, and it is also an amnesia event: whatever the earlier phase saw is gone unless it was written to a file.
