@@ -28,6 +28,21 @@ Apply this context to all Application Platform resiliency research prompts.
 * After Prompts 1a and 1b complete, dependencies classified in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are excluded from analysis in Prompts 2-7 and service-specific prompts (8-19)
 * Prompts 2-7 and service-specific prompts (8-19) analyze only dependencies confirmed as used in Section 1 of the Prompt 1a and 1b outputs
 
+## Excluded Evidence Sources
+
+Local developer override files are not production configuration and MUST NOT be treated as evidence. Do not cite them in findings, dependency inventories, region/zone assumptions, or any research output.
+
+* Excluded filename patterns (case-insensitive), including all files matching:
+  * `*-local.yml`, `*-local.yaml`
+  * `*-local.json`
+  * `*-local.properties`
+  * `*-local.conf`
+  * Common examples: `application-local.yml`, `application-local.yaml`, `application-local.properties`, `bootstrap-local.yml`, `appsettings-local.json`
+* Scope: any file matching the patterns above in any directory of the repository (e.g., `src/main/resources/`, `config/`, module subdirectories).
+* If a value only appears in an excluded file, treat it as **not present** in the repository. Do not infer, quote, or paraphrase its contents.
+* If a production-shaped configuration file (e.g., `application.yml`, `application-prod.yml`, `appsettings.json`) has a `*-local.*` sibling, analyze only the production-shaped file. The presence of the local override does not itself constitute a finding.
+* This exclusion applies to all research prompts (0, 1a, 1b, 2-7, and service-specific 8-19) and to the consolidation prompt.
+
 ## Next Step Suggestions
 
 After completing each research prompt output, end the response with a next-step suggestion the user can click. Format as:
