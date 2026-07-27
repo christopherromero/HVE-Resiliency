@@ -10,7 +10,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 ```text
 Identify all region- or zone-specific assumptions embedded in the codebase.
 
-Evaluate these assumptions specifically for a failover from West US 2 to West US.
+Evaluate these assumptions specifically for a failover between West US and West US 2 as part of the target active/active deployment.
 
 For each finding include:
 - Evidence (file path + line number)

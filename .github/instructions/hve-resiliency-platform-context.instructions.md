@@ -9,7 +9,7 @@ Apply this context to all Application Platform resiliency research prompts.
 
 * {customerName} operates applications in Azure
 * Validating readiness for zone failure within West US 2
-* Validating readiness for full regional failover from West US 2 to West US
+* Validating readiness for full regional failover between West US and West US 2 as part of the target active/active deployment
 * Scope is the current repository within the Application Platform
 * HVE Task Researcher rules: evidence only, no remediation, no code examples
 * All findings must cite file and line-level evidence

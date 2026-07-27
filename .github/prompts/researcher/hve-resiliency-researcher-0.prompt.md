@@ -12,7 +12,7 @@ Research this repository as part of the Application within the {customerName} pl
 
 {customerName} operates applications in Azure and is validating readiness for:
 - Zone failure within West US 2
-- Full regional failover from West US 2 to West US
+- Full regional failover between West US and West US 2 (target active/active deployment)
 
 First analyze the application architecture for this code base.
 Then focus exclusively on identifying current implementation behavior, application flow, assumptions, constraints, what are the risks, why this is a risk to application resiliency during a zone or region failover, and what are the impacts if not changed.
