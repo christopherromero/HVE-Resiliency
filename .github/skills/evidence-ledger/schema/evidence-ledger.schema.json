@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hve/schemas/evidence-ledger.schema.json",
+  "title": "Evidence Ledger",
+  "description": "Immutable record of source observations captured at read time and transcluded by later workflow phases.",
+  "type": "object",
+  "required": ["version", "capturedAt", "source", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "capturedAt": { "type": "string", "description": "ISO 8601 timestamp of the capture run." },
+    "source": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["git", "filesystem"] },
+        "repo": { "type": "string" },
+        "commit": { "type": "string", "description": "Commit SHA the observations were made against. Required when type is git." },
+        "root": { "type": "string", "description": "Workspace-relative root the paths resolve against. Defaults to the workspace folder." }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/entry" }
+    }
+  },
+  "definitions": {
+    "entry": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^EV-[0-9]{3,}$" },
+        "kind": {
+          "enum": ["present", "absent", "external", "remote"],
+          "description": "present: quoted from a workspace file. absent: a verified null result. external: an artifact owned outside this workspace. remote: fetched from a URL."
+        },
+        "path": { "type": "string", "description": "Workspace-relative path. Required for present and absent." },
+        "startLine": { "type": "integer", "minimum": 1, "description": "Required for present. Forbidden for all other kinds." },
+        "endLine": { "type": "integer", "minimum": 1, "description": "Required for present. Must equal startLine + snippet line count - 1." },
+        "lang": { "type": "string", "description": "Fence language identifier for the snippet." },
+        "snippet": { "type": "string", "description": "Exact bytes of the cited range, newline separated. Required for present." },
+        "search": {
+          "type": "object",
+          "description": "Required for absent. Records the query that returned nothing.",
+          "required": ["query", "scope", "result"],
+          "properties": {
+            "tool": { "type": "string" },
+            "query": { "type": "string" },
+            "scope": { "type": "string" },
+            "result": { "type": "string", "const": "no matches" }
+          }
+        },
+        "owner": { "type": "string", "description": "Required for external. Owning repository, team, or platform function." },
+        "url": { "type": "string", "description": "Required for remote." },
+        "retrievedAt": { "type": "string", "description": "Required for remote. ISO 8601." },
+        "redactions": {
+          "type": "array",
+          "description": "Zero-based line offsets within the snippet whose values were replaced at capture time.",
+          "items": {
+            "type": "object",
+            "required": ["offset", "placeholder", "reason"],
+            "properties": {
+              "offset": { "type": "integer", "minimum": 0 },
+              "placeholder": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "note": { "type": "string", "description": "Factual context only. Never a substitute for the snippet." }
+      }
+    }
+  }
+}
