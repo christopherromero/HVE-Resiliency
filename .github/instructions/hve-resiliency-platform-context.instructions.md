@@ -28,6 +28,14 @@ Apply this context to all Application Platform resiliency research prompts.
 * After Prompts 1a and 1b complete, dependencies classified in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are excluded from analysis in Prompts 2-7 and service-specific prompts (8-19)
 * Prompts 2-7 and service-specific prompts (8-19) analyze only dependencies confirmed as used in Section 1 of the Prompt 1a and 1b outputs
 
+## Database-to-Kafka Pairing Standard
+
+* Databases that support Active-Active multi-master writes (for example Cosmos DB via Mongo API) pair with Kafka Active-Active
+* Databases that support only Active-Standby single-master writes (for example Azure SQL) pair with Kafka Active-Standby
+* An application using both an Active-Active and an Active-Standby database pairs with Kafka Active-Standby
+* Before running the Kafka service-specific prompt (16), confirm whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then select `hve-resiliency-researcher-16-kafka-active-active` or `hve-resiliency-researcher-16-kafka-active-standby-confluent` accordingly
+* Kafka service-specific prompts (16) must record whether the repository's confirmed database resiliency model matches the Kafka topology assumed by the selected prompt, and flag any mismatch as a finding
+
 ## Next Step Suggestions
 
 After completing each research prompt output, end the response with a next-step suggestion the user can click. Format as:
