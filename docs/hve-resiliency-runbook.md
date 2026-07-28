@@ -223,10 +223,14 @@ Before proceeding, list the prompts the orchestrator plans to run. Cross-check e
 | `/hve-resiliency-researcher-13-sql` | Azure SQL |
 | `/hve-resiliency-researcher-14-redis` | Azure Cache for Redis |
 | `/hve-resiliency-researcher-15-storage` | Azure Storage |
-| `/hve-resiliency-researcher-16-kafka` | Kafka / Event Hubs Kafka |
+| `/hve-resiliency-researcher-16-kafka` | Kafka / Event Hubs Kafka (active-passive) |
+| `/hve-resiliency-researcher-16-kafka-active-standby-confluent` | Confluent Kafka (managed active-standby, optional Kafka variant) |
+| `/hve-resiliency-researcher-16-kafka-active-active` | Kafka (active-active mirror-topic, optional Kafka variant) |
 | `/hve-resiliency-researcher-17-networking` | Networking |
 | `/hve-resiliency-researcher-18-entraid` | Entra ID |
 | `/hve-resiliency-researcher-19-apim` | API Management |
+
+Select only one Kafka variant for a Phase 2 assessment, based on the target architecture.
 
 ### 2.2 Trigger Phase 2
 
