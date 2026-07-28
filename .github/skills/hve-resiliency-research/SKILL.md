@@ -64,7 +64,10 @@ Phase 2 runs only after Phase 1 is complete. Run only the prompts matching depen
 32. Run `/clear`.
 33. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
 34. Run `/clear`.
-35. Run `/hve-resiliency-researcher-16-kafka` (Kafka)
+35. Determine whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
+    * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
+    * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
+    * Neither confirmed -> Ask the user which Kafka topology the application uses before proceeding
 36. Run `/clear`.
 37. Run `/hve-resiliency-researcher-17-networking` (Networking)
 38. Run `/clear`.
