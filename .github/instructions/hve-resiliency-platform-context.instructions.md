@@ -1,6 +1,6 @@
 ---
 description: Application Platform context and evidence-only rules for resiliency research prompts
-applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/service/hve-resiliency-researcher-*.prompt.md'
+applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/researcher/service/hve-resiliency-researcher-*.prompt.md'
 ---
 
 # Application Platform Context
@@ -15,6 +15,16 @@ Apply this context to all Application Platform resiliency research prompts.
 * All findings must cite file and line-level evidence
 * Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)
 * Output research artifacts to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
+
+## Evidence Accuracy
+
+This is the highest-priority rule for all research output. A finding that violates any bullet below is invalid and must be removed or corrected before the artifact is delivered. All file paths and code or configuration excerpts cited in research output must be verifiable in the repository at the time of research. Do not paraphrase, summarize, or fabricate.
+
+* Every file path cited must exist in the repository. Verify the path before including it in a finding.
+* Every line number cited must match the current file contents. Cite the exact line or line range where the referenced content appears.
+* Any code, configuration, string literal, or identifier reproduced in the output must be verbatim (character-for-character, including case, quoting, and whitespace) from the cited file. No paraphrasing, no reformatting, no pseudocode.
+* If the exact contents cannot be reproduced verbatim, do not include a snippet. Cite `<file>:<line>` only.
+* Do not describe code behavior in a way that implies contents not present in the file. Every claim about a file must be traceable to a specific line or line range in that file.
 
 ## Priority Definitions
 

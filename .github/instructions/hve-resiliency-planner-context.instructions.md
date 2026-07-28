@@ -13,6 +13,16 @@ Apply this context to all resiliency Task Planner prompts.
 * Do not challenge, reinterpret, or add new findings beyond those in the research artifact
 * Use the research as fixed constraints
 
+  ## Evidence Accuracy
+
+  This is the highest-priority rule for all planner output. A finding, citation, or before-code snippet that violates any bullet below is invalid and must be removed or corrected before the artifact is delivered. The consolidated research artifact is the sole source of evidence. Do not re-read source files, do not paraphrase from memory, and do not fabricate.
+
+  * Every file path, line number, and existing-code or configuration excerpt reproduced in planner output must be verbatim from the research artifact (character-for-character, including case, quoting, and whitespace).
+  * If the research artifact does not include a required excerpt, cite `<file>:<line>` only. Do not reconstruct the snippet from memory, prior context, or the current codebase.
+  * Do not add, alter, or remove findings introduced by the research artifact; do not restate a finding in a way that implies content not present in that artifact.
+  * This rule applies to "before" snippets, evidence quotes, and any inline reference to existing repository content.
+  * Remediation code (the "after" fix example) is authored guidance and does not claim to be verbatim from the repository, but it must use real language syntax and must not be pseudocode.
+
 ## Engagement Context
 
 * **Customer**: {customerName}
