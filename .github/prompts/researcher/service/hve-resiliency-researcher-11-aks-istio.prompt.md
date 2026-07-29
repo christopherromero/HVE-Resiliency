@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 11 AKS and Istio
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud resiliency architect focusing on AKS and Istio.

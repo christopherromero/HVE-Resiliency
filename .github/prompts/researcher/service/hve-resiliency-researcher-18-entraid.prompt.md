@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 18 Entra ID
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are an identity resilience reviewer specializing in Microsoft Entra ID.

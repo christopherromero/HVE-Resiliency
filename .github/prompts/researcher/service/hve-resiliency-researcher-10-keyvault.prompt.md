@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 10 Key Vault
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are validating and refining a multi-region Azure Key Vault architecture for {customerName}, deployed in West US 2 and West US.

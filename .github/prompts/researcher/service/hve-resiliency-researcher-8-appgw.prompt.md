@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 8 App Gateway
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud resiliency and Azure networking expert focusing on App Gateway.

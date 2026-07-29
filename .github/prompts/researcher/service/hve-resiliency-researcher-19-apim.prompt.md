@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 19 APIM
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 - The APIM service will be deployed across two Azure regions: West US and West US 2
