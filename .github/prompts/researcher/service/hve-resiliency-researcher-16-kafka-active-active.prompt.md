@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # HVE Resiliency Researcher 16 Kafka Active-Active
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are analyzing an application that produces to and/or consumes from Kafka deployed in a multi-region active-active architecture with:

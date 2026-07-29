@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 15 Azure Storage
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 Analyze this application's Azure Storage architecture and usage for regional resiliency and failover readiness.

@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 9 Azure Functions
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a principal Azure Solutions Architect defining the REQUIRED region-failover
