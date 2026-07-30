@@ -1,221 +1,203 @@
 ---
-description: Consolidate all Application resiliency research (Prompts 0-6 and service-specific) into a single report for Task Planner handoff
+description: HVE final research consolidation prompt
 agent: Task Researcher
 ---
 
-# Application HVE Researcher Consolidate
+# FINAL CONSOLIDATION - AUTHORITATIVE HVE RESEARCH ARTIFACT
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+## Role
 
-```text
-FINAL CONSOLIDATION — AUTHORITATIVE HVE RESEARCH ARTIFACT
-(WITH RESILIENCY PRIORITY & CODE EVIDENCE)
+Consolidate completed HVE research artifacts into one authoritative evidence-only research artifact for HVE Task Planner.
 
-You are HVE Task Researcher. Consolidate ALL completed research findings for this repository into ONE single evidence-based research artifact, written to:
+Do not read source repository files.
+Do not recommend fixes.
+Do not add new findings not present in prior research artifacts.
+Do not use advisory language such as should, recommend, implement, or fix.
 
-.copilot-tracking/research/YYYY-MM-DD-<repo-name>-research.md
+## Required Inputs
 
-This file will be the sole authoritative research input for HVE Task Planner.
+Read only completed HVE research artifacts:
 
-========================
-NON-NEGOTIABLE RULES
-========================
-- Evidence-only: do NOT provide remediation steps or design changes.
-- Every finding MUST include:
-  - Resiliency Priority (P0 / P1 / P2 / P3)
-  - Exact file names and line numbers
-  - Why this is a risk to app, zone or region failover
-  - Impact(s) if this is not changed
-  - Existing Mitigations
-  - Constraints
-- Do NOT use advisory language ("should", "recommend").
-- Priority represents **failover impact**, not implementation effort.
-- If something is evaluated and not found, explicitly document that.
-- If a section has no applicable findings, state "None found".
-- Do not duplicate findings across sections; reference the Finding ID.
+- `.copilot-tracking/research/repository-evidence-index.md`
+- `.copilot-tracking/research/azure-scope-contract.md`
+- `.copilot-tracking/research/non-azure-scope-contract.md`
+- `.copilot-tracking/research/region-endpoint-dependency-survivability.md`
+- `.copilot-tracking/research/state-failure-health-behavior.md`
+- `.copilot-tracking/research/shared-dependency-boundary-research.md`, if present
+- Any service-specific research artifacts, if present
 
-========================
-PRIORITY DEFINITIONS (USE EXACTLY)
-========================
-- P0 — Blocking/Critical Risk
-  Causes outage, data loss, duplicate charges, or inability to fail over safely during zone or regional failure.
+If an input artifact is missing, list it under Assessment Constraints.
 
-- P1 — High Priority (Potential for Blocking)
-  Does not fully block failover but materially increases MTTR, data risk, or customer impact during failure.
+## Output File
 
-- P2 — Improvement/Best Practice (Non-Blocking)
-  Does not materially impact correctness during failover but weakens resilience posture or operational clarity.
+Write:
 
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
-  Just a good practice
+`.copilot-tracking/research/YYYY-MM-DD--research.md`
 
-========================
-REQUIRED FINDINGS FORMAT
-========================
+This file is the sole authoritative research input for HVE Task Planner.
 
-### Finding F-00X
+## Non-Negotiable Rules
 
-- **Priority:** P0 / P1 / P2 / P3
-- **Description:** Evidence-based statement of current behavior
-- **Evidence:** `file.ext:L123-146`
+Every confirmed finding must include:
 
-#### Why this is a risk to app, zone or region failover
+- Priority: P0 / P1 / P2 / P3
+- Resiliency Related: Yes/No
+- Confidence
+- Exact file names and line numbers
+- Evidence-based current behavior
+- Why this is a risk to zone or regional failover
+- Impact if unchanged
+- Existing mitigations
+- Constraints
+- Source research artifact
+- Duplicate evidence locations, if any
 
-- {{Reason 1}}
-- {{Reason 2}}
-- {{Reason N}}
+Evidence gaps are not findings and do not receive P0/P1/P2/P3.
 
-#### Impact(s) if this is not changed
+## Severity Rules
 
-- {{Operational impact}}
-- {{Data or financial impact}}
-- {{Customer-visible impact (if applicable)}}
+- P0: failover-blocking risk, unsafe failover, outage, data loss, duplicate business action, or inability to fail over safely.
+- P1: material failover degradation, MTTR increase, data risk, or customer impact, but not proven complete blocker.
+- P2: non-blocking resiliency improvement or operational clarity gap.
+- P3: maintainability, naming, documentation, or consistency only.
 
-#### Existing Mitigations
+Do not assign P0 or P1 to:
 
-- {{Mitigation 1 (if any)}}
-- {{Mitigation 2}}
-- _None identified_ (explicitly state if empty)
+- Evidence gaps
+- Missing documentation alone
+- Generic best practices
+- Security-only issues without failover impact
+- Items marked Resiliency Related: No
 
-#### Constraints
+## Confidence Rules
 
-- {{Technical constraint}}
-- {{Organizational / business constraint}}
-- {{Regulatory or architectural constraint}}
+- High: direct evidence proves behavior and failover impact.
+- Medium: direct evidence proves behavior, but impact depends on one clearly stated constraint.
+- Low: partial evidence. Do not use Low for P0.
 
-If none found, state: "None found".
+## Canonical Finding Rule
 
-========================
-REQUIRED OUTPUT FORMAT
-(Use this exact structure and heading order)
-========================
+Create one canonical finding per root cause.
 
-# HVE Task Research — <repo-name>
+If multiple artifacts report the same root cause, merge them.
 
-Assessment Scope:
-- Repository: <repo-name>
+Preserve all evidence locations under Duplicate evidence locations.
+
+Do not duplicate the same finding across sections; reference the canonical Finding ID.
+
+## Required Finding Format
+
+### Finding F-###
+
+- Priority:
+- Resiliency Related:
+- Confidence:
+- Category:
+- Source research artifact:
+- Description:
+- Evidence:
+- Why this is a risk to zone or regional failover:
+- Impact if unchanged:
+- Existing mitigations:
+- Constraints:
+- Duplicate evidence locations:
+
+## Required Output Structure
+
+# HVE Task Research
+
+## Assessment Scope
+
+- Repository:
 - Focus: Zone survivability and regional failover for the application
-- Regions Evaluated: West US 2 → West US
-- Assessment Date: YYYY-MM-DD
+- Regions Evaluated: West US 2 to West US
+- Assessment Date:
 - Generated By: HVE Task Researcher
 
-Notes:
-- This document is an evidence-only research artifact.
-- It includes resiliency severity (P0/P1/P2) but no remediation.
-- This file is the sole authoritative input to HVE Task Planner.
+## Notes
 
-------------------------------------------------------------
+- This document is an evidence-only research artifact.
+- It includes resiliency severity but no remediation.
+- This file is the sole authoritative input to HVE Task Planner.
 
 ## 1. Repository Context
 
-- Service purpose
-- Application Overview
-- Execution model (API, async worker, job, library)
-- Runtime environment (AKS, App Service, Functions, VM)
-- Explicit boundaries (what this repo does NOT handle)
-- Key Business Processes and the flows for those processes
-
-------------------------------------------------------------
+- Service purpose:
+- Application overview:
+- Execution model:
+- Runtime environment:
+- Explicit boundaries:
+- Key business processes and flows:
 
 ## 2. Dependency Inventory
 
-### 2.1 Used Dependencies (Evidence Found)
+### 2.1 Azure Services Used
 
-For each finding listed, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+Use Azure scope contract evidence.
 
-### 2.2 Checked but Not Present
+### 2.2 Non-Azure Dependencies Used
 
-Dependencies commonly expected but not used.
+Use Non-Azure scope contract evidence.
 
-| Dependency | Reason Checked | Evidence Result |
+### 2.3 Checked but Not Present
 
-### 2.3 Not Applicable Dependency Categories
+Summarize only relevant checked-but-not-present dependencies.
 
-| Category | Reason Not Applicable |
+### 2.4 Not Applicable Dependency Categories
 
-------------------------------------------------------------
+Summarize only when explicitly supported by prior artifacts.
 
-## 3. Region and Zone Assumptions
+## 3. Confirmed Findings
 
-Document any region- or zone-specific assumptions found in:
-- Code
-- Configuration
-- Deployment or startup logic
+Group by category:
 
-For EACH assumption:
-- Assign P0 / P1 / P2 / P3
-- Capture exact file and line numbers
+### 3.1 Region, Endpoint, and Dependency Survivability
 
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+Use canonical findings.
 
-------------------------------------------------------------
+### 3.2 State, Data, Failure, and Health Behavior
 
-## 4. State and Data Characteristics
+Use canonical findings.
 
-Evidence-based analysis of:
-- Stateful vs stateless behavior
-- Data store access patterns
-- Replication or consistency assumptions
-- Idempotency or replay behavior
+### 3.3 Shared and Cross-Repository Boundaries
 
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+Use canonical findings.
 
-------------------------------------------------------------
+### 3.4 Hardcoded Values or Secrets Affecting Resiliency
 
-## 5. Failure and Degraded-Mode Behavior
+Use canonical findings only when failover impact is evidenced.
 
-Document evidence where dependency failures cause:
-- Startup failure
-- Runtime degradation
-- Partial processing
-- Unbounded retries or retry amplification
+### 3.5 Other Findings
 
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+Use only when a finding cannot reasonably fit above.
 
-------------------------------------------------------------
+## 4. Evidence Gaps
 
-## 6. Shared and Cross-Repository Dependencies
+| Gap ID | Area | Evidence checked | Why it matters | Needed evidence |
+|---|---|---|---|---|
 
-Document shared libraries, centralized config, or platform utilities that introduce:
-- Region coupling
-- Zone dependency
-- Ownership boundary risk
+## 5. Assessment Constraints
 
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+List constraints from prior artifacts, including missing artifacts, external ownership boundaries, unavailable IaC, platform-owned systems, generated code exclusions, or documentation-only references.
 
-------------------------------------------------------------
+## 6. Research Findings Index
 
-## 7. Hard-coded values or secrets in code or files
+| Finding ID | Priority | Resiliency Related | Confidence | Category | Short Description | Evidence | Source Artifact |
+|---|---|---|---|---|---|---|---|
 
-Evidence of secrets or other values hard-coded in code, files, or config
+## Quality Bar Check
 
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
+Before completing, verify:
 
-------------------------------------------------------------
+- No remediation text is present.
+- Every finding has priority, confidence, evidence, mitigation, constraint, and source artifact.
+- Evidence gaps have no severity.
+- Findings are deduplicated by root cause.
+- Sections are complete even if empty.
+- The Research Findings Index contains every canonical finding exactly once.
 
-## 8. Other Findings Not Categorized Above
+## Final Instruction
 
-This section captures any findings or supporting evidence that do not clearly fit within the predefined categories above.
+End with:
 
-Include findings here only if:
-- They are substantiated by evidence
-- They represent a meaningful risk, gap, code, or architectural issue
-- They cannot be reasonably mapped to an existing category
-
-For each finding listed below, use the **REQUIRED FINDINGS FORMAT** defined earlier in this report.
-
-------------------------------------------------------------
-
-## 9. Research Findings Index (Authoritative)
-
-This index is the canonical reference for Task Planner.
-
-| Finding ID | Priority | Category | Short Description | Evidence (File:Line) |
-|-----------|----------|----------|-------------------|---------------------|
-
-QUALITY BAR CHECK
-- No remediation text present
-- Every finding has a priority and code evidence
-- Sections are complete even if empty
-- Findings are internally consistent
-```
+Next step: Run /clear, then continue with HVE Task Planner using this authoritative research artifact.
