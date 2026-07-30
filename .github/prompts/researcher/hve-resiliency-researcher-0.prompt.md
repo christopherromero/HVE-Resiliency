@@ -1,32 +1,49 @@
 ---
-description: Run Prompt 0 repository context frame for application resiliency research
+description: Establish bounded repository context for application resiliency research
 agent: Task Researcher
 ---
 
-# Application Resiliency Researcher 0
+# Application Resiliency Researcher 0 Optimized
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md) as the sole authority for failure scenarios, priorities, evidence-only and no-remediation boundaries, file-line citations, and artifact location.
 
-```text
-Research this repository as part of the Application within the {customerName} platform.
+## Objective
 
 {customerName} operates applications in Azure and is validating readiness for:
 - Zone failure within West US 2
 - Full regional failover between West US and West US 2 (target active/active deployment)
 
-First analyze the application architecture for this code base.
-Then focus exclusively on identifying current implementation behavior, application flow, assumptions, constraints, what are the risks, why this is a risk to application resiliency during a zone or region failover, and what are the impacts if not changed.
+## Bounded Execution
 
-Analyze region, zone, and application failover risk for each gap/finding:
-- P0 — Blocking/Critical Risk
-- P1 — High Priority (Potential for Blocking)
-- P2 — Improvement/Best Practice (Non-Blocking)
-- P3 — Non-Blocking Code Consistency (Best Practices / Maintainability)
-- Provide an explanation why each issue is rated at that level
-- Identify the area in the code where the issue is located (file + line #)
+Keep compact root, transition, boundary, owner, finding, and evidence-gap ledgers. Capture citations on first read.
 
-- Provide an application walk through and high-level architecture for this microservice
-- Capture existing mitigations already present (retries/timeouts/fallbacks/feature flags/runbooks), with evidence (file + line).
-Capture constraints/limitations that affect failover (platform constraints, dependency capabilities, configuration constraints, operational constraints), with evidence (file + line) when present.
-Do not recommend changes.
-```
+* Run one inventory pass over production source, build, configuration, and deployment paths, then one production-root discovery pass for startup, HTTP, message, event, and background roots.
+* Trace at most four application-owned transitions per flow. Stop at a boundary, repeated owner, third-party implementation, repository exit, or evidence gap.
+* Analyze every shared owner, helper, configuration source, and boundary once; reuse its evidence across flows and assess its degraded behavior and controls.
+* Give an unresolved symbol or artifact at most two exact checks. Record the question and checks in the evidence-gap ledger, then stop that branch.
+* After coverage evaluation, allow at most one corrective scoped search for the uncovered production path or root family. Never restart broad discovery.
+
+Merge only identical risk mechanisms with the same owner, failure scenario, and impact. Preserve affected flows and evidence. Impose no finding count or priority quota; retain every distinct evidence-backed finding and limit only repetition.
+
+## Completion Criteria
+
+Stop after all roots resolve to boundaries or evidence gaps, every boundary is assessed, every finding is complete, and one full queue pass adds no new root, boundary, transition, owner, or risk mechanism. Two recorded exact checks complete an unresolved branch.
+
+## Output Contract
+
+Use this section order:
+
+1. Scope
+2. High-Level Architecture
+3. Application Flow
+4. Observed Implementation Behavior
+5. Assumptions and Constraints
+
+Use one concise entry per unique component, boundary, or flow family. Put the evidence-gap ledger in Assumptions and Constraints. Each substantive finding includes:
+
+* Priority and rationale
+* Observed behavior
+* Risk and failover impact
+* Existing mitigations, with evidence when present
+* Constraints or limitations, with evidence when present
+* File and line-level evidence
