@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 17 Networking
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are reviewing an application deployed on {customerName} multi-region Azure networking architecture.

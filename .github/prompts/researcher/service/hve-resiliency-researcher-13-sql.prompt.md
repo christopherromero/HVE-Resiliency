@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 13 SQL Server
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud reliability and data consistency expert focusing on Azure SQL Server.

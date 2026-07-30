@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 12 Cosmos DB
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are a cloud resilience reviewer focusing on Cosmos DB RU with Mongo API.

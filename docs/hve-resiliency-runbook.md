@@ -223,7 +223,8 @@ Before proceeding, list the prompts the orchestrator plans to run. Cross-check e
 | `/hve-resiliency-researcher-13-sql` | Azure SQL |
 | `/hve-resiliency-researcher-14-redis` | Azure Cache for Redis |
 | `/hve-resiliency-researcher-15-storage` | Azure Storage |
-| `/hve-resiliency-researcher-16-kafka` | Kafka / Event Hubs Kafka |
+| `/hve-resiliency-researcher-16-kafka-active-active` | Kafka (Active-Active, paired with a multi-master database) |
+| `/hve-resiliency-researcher-16-kafka-active-standby-confluent` | Kafka (Active-Standby via Confluent Cluster Linking, paired with a single-master database) |
 | `/hve-resiliency-researcher-17-networking` | Networking |
 | `/hve-resiliency-researcher-18-entraid` | Entra ID |
 | `/hve-resiliency-researcher-19-apim` | API Management |

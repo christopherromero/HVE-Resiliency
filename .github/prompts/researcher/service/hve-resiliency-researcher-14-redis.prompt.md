@@ -5,7 +5,7 @@ agent: Task Researcher
 
 # Application HVE Researcher 14 Redis
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ```text
 You are reviewing an application that uses Azure Managed Redis Enterprise
