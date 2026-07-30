@@ -1,113 +1,74 @@
 ---
-description: Run Prompt 1a Azure service discovery (explicit and implicit) for Application resiliency research
-agent: Task Researcher
+description: Discover Azure services from repository evidence
+agent: "Task Researcher"
 ---
 
-# Application HVE Researcher 1a
+# HVE Researcher 1a
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [platform context](../../instructions/hve-resiliency-platform-context.instructions.md) for its rules.
 
-```text
-## Role
+## Objective
 
-You are an expert application resiliency and dependency assessor. Your goal is to identify which Azure services are ACTUALLY in use in this repository (explicitly or implicitly), and to produce a definitive, evidence-backed list that downstream service-specific prompts can use as the "scope contract".
+Produce an evidence-only Azure scope contract. Direct invocation overrides other workflow, delegation, output, and next-step rules; retain referenced evidence rules. Do not run another resiliency prompt. Investigate directly; only when mandatory, use one non-delegating Researcher Subagent for Steps 1-3.
 
-## Repository Scope (must analyze all of the following)
+## Scope And Matrix
 
-Analyze the entire repository including (as present):
-- Application code (all languages present)
-- Configuration files (app config, Helm values, env templates, JSON/YAML, etc.)
-- Infrastructure-as-Code (Terraform/Bicep/ARM/Helm/Kustomize)
-- CI/CD pipelines (ADO/GitHub Actions/Jenkins/etc.)
-- Deployment manifests (AKS manifests, ingress, service definitions, etc.)
-- Observability config (App Insights/OpenTelemetry exporters, dashboards/config)
-- Secrets/identity config references (Key Vault references, managed identity bindings, workload identity)
+Inventory every repository file once, including extensionless operations. Exclude outputs, caches, editor metadata, tests, `.copilot-tracking/**`, reports/research/assessments, prompt artifacts, certificates, binaries, wrappers, and vendored dependencies. Keep `.github/workflows/**`; docs only trigger. Follow one reference into excluded operational text.
 
-## Primary Task
+Resolve this bounded negative matrix:
 
-Produce a definitive list of Azure services used by this repo, classified as:
-1) **Explicit Use** (direct SDK/API usage, resource definitions in IaC, explicit runtime bindings)
-2) **Implicit Dependency** (required Azure platform dependency implied by the deployed runtime or integration pattern)
-3) **Referenced/Assumed but Not Found** (mentioned in docs/diagrams/config comments, but no supporting evidence in code/IaC)
-4) **Not Present** (do not include in the final "In-Scope" list; only note if relevant to explain false positives)
+* Compute: Azure Kubernetes Service (AKS), Azure Functions, Azure App Service
+* Edge: Azure API Management, Application Gateway, Front Door, Traffic Manager, Load Balancer, DNS
+* Data: Cosmos DB, Azure SQL Database/Managed Instance, Azure Storage by subtype, Azure Managed Redis
+* Messaging: Azure Service Bus, Azure Event Hubs
+* Identity/configuration: Entra ID, Managed/Workload Identity, Key Vault, App Configuration
+* Observability: Azure Monitor, Application Insights, Log Analytics
+* Delivery: Azure Container Registry
 
-## Critical Rules (to prevent noise)
+Add positively evidenced services. Use specific nonduplicative names; never claim universal absence.
 
-- Only classify a service as **Explicit Use** when you can cite concrete evidence (file path + line number).
-- Only classify a service as **Implicit Dependency** when you can cite evidence for the underlying platform/runtime that requires it (file path + line number) AND explain the dependency.
-- If you infer a "likely Azure service" based on common patterns (example: Kafka -> often paired with Event Hubs), you MUST place it in **Referenced/Assumed but Not Found** unless you find actual evidence in code/IaC/config.
-- Do NOT produce generalized Azure best practices. This is a discovery and scoping task, not a remediation task.
+## Evidence Rules
 
-## What Counts as Evidence (required)
+Explicit Use requires an IaC resource/Azure ID, configured Azure client, pipeline target, or Azure endpoint, connection string, annotation, or runtime binding. Imports, dependencies, comments, docs, protocols, and names need a second binding signal; otherwise place them in B with the trigger.
 
-For each Azure service you identify, provide at least one of:
-- IaC resource blocks (Terraform azurerm_*, bicep resources, ARM templates)
-- SDK imports/namespaces, client creation, connection strings, endpoints
-- Kubernetes annotations/bindings to Azure resources (Workload Identity, CSI drivers, Key Vault provider, etc.)
-- Pipeline steps referencing Azure resources (az CLI calls, terraform apply, deploy scripts)
-- Config references (App Insights instrumentation key/connection string, Key Vault URI, Storage endpoints, Service Bus namespace, etc.)
+Implicit Dependency requires an Azure binding, necessity, no evidenced substitute, and a file-line chain. Kubernetes does not prove AKS, MongoDB Cosmos DB, or Kafka Event Hubs. Keep unresolved Azure hostnames neutral without product evidence. `Not Present` requires bounded row-indicator checks.
 
-Evidence must always include:
-- **File path**
-- **Line number(s)**
-- A short excerpt or description of the referenced text
+## Required Steps
 
-## Output Requirements (must follow exact format)
+### Step 1: Inventory Sources
+
+Verify availability without execution probes. Use one deterministic inventory method and one verified fallback at most. Build, filter, classify, and reuse one path-only manifest.
+
+### Step 2: Discover Signals
+
+Split into disjoint classes. Scan each once using one verified bounded scanner for Azure IDs/types, hosts, SDK/clients, configuration/identity/telemetry/deployment, `azurecr.io`, and registry server/image/login signals.
+
+Sanitize each signal in memory before any record, package, envelope, hash input, log, or response. Across all URI schemes and key/value forms, remove URI userinfo/embedded credentials, sensitive query values, connection-string assignments, Authorization header values, tokens, passwords, keys, SAS, and signatures; retain only safe scheme/host/path-family indicators. Fail closed on scan/mask/audit error or uncertainty. Audit each masked value before record/ID/hash creation and the serialized in-memory package before write/atomic commit; failure commits nothing and stops incomplete. Then group per class by canonical path, line, and family; deduplicate/sort, compute and validate counts, hashes, tuple IDs, and envelope in memory, and atomically commit one package. Return only its envelope; on response loss reread without rescanning. Suppress incidental output/raw bodies.
+
+### Step 3: Reconcile And Verify
+
+Map each stable ID to a canonical candidate, neutral Azure-host trigger, false positive, or semantic gap. Analyze each owner once. Maintain only source-coverage and candidate/signal tables; include every ID and terminal disposition, then render C from candidate/signal state.
+
+### Step 4: Audit And Render
+
+Audit each claim against its file-line citation; correct, narrow, or gap it. Run one no-change queue review.
+
+## Required Protocol
+
+Run Steps 1-4 once; do not re-enumerate. Limits: one manifest; disjoint scans cover it; one proven missed-class/family correction; one owner analysis; two indirections per branch; one queue review. Discard failed temporaries. Fallback only if no class package committed; never rescan one. Reconcile committed packages by counts, set hashes, IDs, and dispositions. Any mismatch, clipping, lost ID, read failure, incomplete manifest, unreconciled signal, or mask/audit failure is incomplete, never a gap, negative, or saturation.
+
+## Output Contract
+
+Output exactly A-C below; no other content, remediation, advice, or examples.
 
 ### A) In-Scope Azure Services (Definitive List)
 
-Provide a single authoritative list of Azure services that are in scope for further assessment prompts.
-For each service include:
-- Service Name (use canonical Azure service name)
-- Classification: Explicit Use | Implicit Dependency
-- Evidence (file path + line numbers)
-- How it is used (1-2 sentences; factual, no speculation)
-- Region/Failover sensitivity: Yes/No (and why, based on evidence only)
+Include only Explicit Use/Implicit Dependency. Give canonical name, class, file-line evidence, factual use, and Region/Failover sensitivity (Yes/No/Unclear with evidence-only rationale); `Unclear` requires an evidence gap.
 
 ### B) Out-of-Scope / Not Found (to reduce false positives)
 
-List Azure services that were:
-- Referenced/Assumed but Not Found, OR
-- Not Present
-
-For each include:
-- Service Name
-- Why it appeared (e.g., doc mention, pattern inference, config comment)
-- Confirmation that no evidence exists (state what you searched: IaC, code imports, config endpoints, pipeline steps)
+Include every weak trigger and bounded negative. State shared scope/limits once; per service give canonical result, trigger/reason, checked indicator families, and any gap or neutral-host label.
 
 ### C) Evidence Index (for defensibility)
 
-Provide an "Evidence Index" section with bullet points:
-- Azure service -> file path(s) + line(s)
-
-This should be easy to copy into a master report or backlog evidence column.
-
-## Azure Services Taxonomy (use this to normalize names)
-
-When you find evidence, normalize into canonical names (examples):
-- Azure Kubernetes Service (AKS)
-- Azure API Management (APIM)
-- Azure Cache for Redis (Redis Enterprise / Managed Redis)
-- Azure Cosmos DB (include API type if visible: Mongo, SQL, etc.)
-- Azure SQL Database / Azure SQL Managed Instance
-- Azure Storage (Blob/Queue/Table/File as applicable)
-- Azure Key Vault
-- Azure Service Bus
-- Azure Event Hubs
-- Azure Functions
-- Azure App Service
-- Azure Application Gateway
-- Azure Front Door / Traffic Manager / Load Balancer / DNS (as applicable)
-- Azure Monitor / Application Insights / Log Analytics
-- Microsoft Entra ID / Managed Identity / Workload Identity (classify under identity if present)
-- Identify any additional Azure services that are not listed above but used in this codebase.
-
-## Final Deliverable
-
-Your final output must include:
-1) "In-Scope Azure Services (Definitive List)"
-2) "Out-of-Scope / Not Found"
-3) "Evidence Index"
-
-No additional sections.
-```
+Index A/B evidence by file-line; for bounded negatives list checked scope/indicators.
