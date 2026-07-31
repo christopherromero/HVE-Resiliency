@@ -1,30 +1,29 @@
 ---
 description: Application Platform context and evidence-only rules for resiliency research prompts
-applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/researcher/service/hve-resiliency-researcher-*.prompt.md'
+applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/service/hve-resiliency-researcher-*.prompt.md'
 ---
 
 # Application Platform Context
 
 Apply this context to all Application Platform resiliency research prompts.
 
-* {customerName} operates applications in Azure
+* Albertsons operates applications in Azure
 * Validating readiness for zone failure within West US 2
-* Validating readiness for full regional failover between West US and West US 2 as part of the target active/active deployment
+* Validating readiness for full regional failover from West US 2 to West US
 * Scope is the current repository within the Application Platform
 * HVE Task Researcher rules: evidence only, no remediation, no code examples
 * All findings must cite file and line-level evidence
 * Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)
 * Output research artifacts to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
 
-## Evidence Accuracy
+## Platform-Managed Regional Failover
 
-This is the highest-priority rule for all research output. A finding that violates any bullet below is invalid and must be removed or corrected before the artifact is delivered. All file paths and code or configuration excerpts cited in research output must be verifiable in the repository at the time of research. Do not paraphrase, summarize, or fabricate.
-
-* Every file path cited must exist in the repository. Verify the path before including it in a finding.
-* Every line number cited must match the current file contents. Cite the exact line or line range where the referenced content appears.
-* Any code, configuration, string literal, or identifier reproduced in the output must be verbatim (character-for-character, including case, quoting, and whitespace) from the cited file. No paraphrasing, no reformatting, no pseudocode.
-* If the exact contents cannot be reproduced verbatim, do not include a snippet. Cite `<file>:<line>` only.
-* Do not describe code behavior in a way that implies contents not present in the file. Every claim about a file must be traceable to a specific line or line range in that file.
+* Albertsons uses platform-managed regional failover
+* For external traffic, Akamai performs global load balancing and redirects traffic to healthy regions during regional outages
+* Imperva provides WAF, DDoS protection, and security inspection but is not responsible for regional failover decisions
+* For Layer 4 traffic, F5 BIG-IP DNS provides DNS-based regional failover by directing clients to healthy regional endpoints
+* Do not generate findings for missing application-level load balancing or traffic routing logic; assume the platform redirects traffic to a healthy region
+* Focus resiliency assessments on whether the application can operate successfully in the secondary region after failover, including deployment parity, configuration synchronization, dependency availability, data replication, state management, and regional capacity
 
 ## Priority Definitions
 
@@ -45,21 +44,6 @@ This is the highest-priority rule for all research output. A finding that violat
 * An application using both an Active-Active and an Active-Standby database pairs with Kafka Active-Standby
 * Before running the Kafka service-specific prompt (16), confirm whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then select `hve-resiliency-researcher-16-kafka-active-active` or `hve-resiliency-researcher-16-kafka-active-standby-confluent` accordingly
 * Kafka service-specific prompts (16) must record whether the repository's confirmed database resiliency model matches the Kafka topology assumed by the selected prompt, and flag any mismatch as a finding
-
-## Excluded Evidence Sources
-
-Local developer override files are not production configuration and MUST NOT be treated as evidence. Do not cite them in findings, dependency inventories, region/zone assumptions, or any research output.
-
-* Excluded filename patterns (case-insensitive), including all files matching:
-  * `*-local.yml`, `*-local.yaml`
-  * `*-local.json`
-  * `*-local.properties`
-  * `*-local.conf`
-  * Common examples: `application-local.yml`, `application-local.yaml`, `application-local.properties`, `bootstrap-local.yml`, `appsettings-local.json`
-* Scope: any file matching the patterns above in any directory of the repository (e.g., `src/main/resources/`, `config/`, module subdirectories).
-* If a value only appears in an excluded file, treat it as **not present** in the repository. Do not infer, quote, or paraphrase its contents.
-* If a production-shaped configuration file (e.g., `application.yml`, `application-prod.yml`, `appsettings.json`) has a `*-local.*` sibling, analyze only the production-shaped file. The presence of the local override does not itself constitute a finding.
-* This exclusion applies to all research prompts (0, 1a, 1b, 2-7, and service-specific 8-19) and to the consolidation prompt.
 
 ## Next Step Suggestions
 

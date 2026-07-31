@@ -1,6 +1,6 @@
 ---
 name: hve-resiliency-research
-description: Use for application resiliency research covering zone failure in West US 2 and regional failover between West US and West US 2 (target active/active deployment) with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
+description: Use for application resiliency research covering zone failure in West US 2 and regional failover from West US 2 to West US with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
 ---
 
 # HVE Resiliency Research
@@ -15,7 +15,7 @@ Auto-load this skill for requests related to resiliency, Azure zone survivabilit
 
 ## Activation Behavior
 
-When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (7-18) without completing Prompts 0-6 first.
+When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (8-19) without completing Prompts 0-7 first.
 
 ## Required Workflow
 
@@ -28,8 +28,8 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 1. Run `/hve-resiliency-researcher-0` first to establish the repository context frame.
 2. Review the resulting research artifact in `.copilot-tracking/research/`.
 3. Run `/clear` before each next prompt.
-4. Run `/hve-resiliency-researcher-1`.
-5. Review the Prompt 1 output. Note which dependencies are confirmed as used (Section 1). Dependencies in Section 2 and Section 3 are excluded from all subsequent prompts.
+4. Run `/hve-resiliency-researcher-1a`, review its Section 1 Azure services, run `/clear`, then run `/hve-resiliency-researcher-1b` and review its Section 1 external dependencies.
+5. Treat the combined Prompt 1a and Prompt 1b Section 1 entries as the evidence-confirmed dependency set. Exclude every dependency classified only in either artifact's Section 2 or Section 3 from subsequent prompts.
 6. Run `/clear`.
 7. Run `/hve-resiliency-researcher-2`.
 8. Run `/clear`.
@@ -45,7 +45,7 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 
 ### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial)
 
-Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Prompt 1 Section 1. Skip services not found. Recommend applicable prompts based on Prompt 1 results.
+Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b. Skip services found only in Sections 2-3 or not found. Recommend applicable prompts from the combined Prompt 1a and Prompt 1b results.
 
 18. Run `/clear`.
 19. Run `/hve-resiliency-researcher-8-appgw` (App Gateway)
@@ -64,7 +64,7 @@ Phase 2 runs only after Phase 1 is complete. Run only the prompts matching depen
 32. Run `/clear`.
 33. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
 34. Run `/clear`.
-35. Determine whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
+35. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
     * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
     * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
     * Neither confirmed -> Ask the user which Kafka topology the application uses before proceeding
@@ -121,9 +121,9 @@ Phase 2 runs only after Phase 1 is complete. Run only the prompts matching depen
 
 ## Service Exclusion Rule
 
-* After Prompt 1 completes, dependencies in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are dropped from scope
-* Prompts 2-6, service-specific prompts (7-18), and the consolidation report analyze only Section 1 dependencies (evidence-confirmed)
-* In Phase 2, run only the service-specific prompts for dependencies found in Section 1
+* After Prompts 1a and 1b complete, dependencies classified only in Section 2 (Checked But Not Present) or Section 3 (Not Applicable) are dropped from scope
+* Prompts 2-7, service-specific prompts (8-19), and the consolidation report analyze only dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b
+* In Phase 2, run only the service-specific prompts for dependencies found in either producer's Section 1
 
 ## Deliverable Templates
 
@@ -157,30 +157,63 @@ Use these templates as the expected output shape per prompt.
   - Constraints/limitations: <if any, with evidence>
 ```
 
-### Prompt 1 Deliverable Template
+### Prompt 1a Deliverable Template
 
 ```text
-# Prompt 1 Research Output
+---
+source-prompt: hve-resiliency-researcher-1a
+schema-version: 1
+status: current
+---
 
-## SECTION 1 - USED DEPENDENCIES (EVIDENCE CONFIRMED)
-- Service / Dependency name:
-- Type (Azure service or Non-Azure):
+## Section 1 - Used Azure Services (Evidence Confirmed)
+- Service name:
+- Azure service category:
+- Evidence class: Explicit Use or Implicit Dependency
 - Evidence (file path + line number):
 - Brief description of how it is used:
-- Whether it materially impacts zone or region failover (Yes/No + why):
-- Existing mitigations present (if any): with evidence (file path + line number)
-- Health check present for this dependency? (Yes/No + evidence)
-- How health is determined: + evidence
-- Is dependency health surfaced to GLB health evaluation? (Yes/No/Unclear + evidence)
-- What GLB probes hit (endpoint/path/port) and conditions: + evidence
-- Constraints/limitations (if any): with evidence (file path + line number)
+- Region / failover sensitivity (Yes/No/Unclear + evidence-only rationale):
 
-## SECTION 2 - CHECKED BUT NOT PRESENT
+## Section 2 - Checked but Not Present
+- Service / trigger name:
+- Result: Bounded negative or Unconfirmed trigger
+- Reason it was evaluated or trigger evidence (file path + line number):
+- Checked scope and indicator families:
+- Confirmation gap or terminal label:
+
+## Section 3 - Not Applicable
+- Service / Category name:
+- Evidence (file path + line number):
+- Reason it does not apply:
+```
+
+### Prompt 1b Deliverable Template
+
+```text
+---
+source-prompt: hve-resiliency-researcher-1b
+schema-version: 1
+status: current
+---
+
+## Section 1 — Used External Dependencies (Evidence Confirmed)
+- Service / Dependency name:
+- Evidence (file path + line number):
+- Brief description of how it is used:
+- Whether it materially impacts zone or region failover:
+- Existing mitigations present (if any), with evidence:
+- Health check present for this dependency?:
+- How health is determined, with evidence:
+- Is dependency health surfaced to GLB health evaluation?:
+- What GLB probes or upstream probes hit, with evidence:
+- Constraints/limitations (if any), with evidence:
+
+## Section 2 — Checked but Not Present
 - Service / Dependency name:
 - Reason it was evaluated:
 - Explicit statement: No references found in code, config, IaC, or pipelines
 
-## SECTION 3 - NOT APPLICABLE
+## Section 3 — Not Applicable
 - Service / Category name:
 - Reason it does not apply:
 ```
@@ -193,7 +226,7 @@ Use these templates as the expected output shape per prompt.
 ## Region and Zone Assumptions
 - Assumption:
 - Priority: P0 / P1 / P2 / P3
-- Failover relevance (between West US and West US 2, target active/active):
+- Failover relevance (West US 2 to West US):
 - Evidence: <file path>:<line>
 - Existing mitigations present (if any): with evidence
 - Constraints/limitations (if any): with evidence
@@ -280,7 +313,7 @@ Use these templates as the expected output shape per prompt.
 - Constraints/limitations (if any): with evidence
 ```
 
-### Service-Specific Prompts (7-18) Deliverable Template
+### Service-Specific Prompts (8-19) Deliverable Template
 
 ```text
 # Prompt N Research Output — <Service Name>
@@ -304,7 +337,7 @@ Use these templates as the expected output shape per prompt.
 Assessment Scope:
 - Repository: <repo-name>
 - Focus: Zone survivability and regional failover
-- Regions Evaluated: betweenWest US and West US 2 (target active/active deployment)
+- Regions Evaluated: West US 2 → West US
 - Assessment Date: YYYY-MM-DD
 - Generated By: HVE Task Researcher
 

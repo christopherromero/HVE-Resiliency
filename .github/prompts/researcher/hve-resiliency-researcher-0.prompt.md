@@ -9,9 +9,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Objective
 
-{customerName} operates applications in Azure and is validating readiness for:
-- Zone failure within West US 2
-- Full regional failover between West US and West US 2 (target active/active deployment)
+Establish the repository context frame: architecture, application flow, observed behavior, assumptions, constraints, mitigations, and each evidence-backed resiliency risk, rationale, and impact.
 
 ## Bounded Execution
 

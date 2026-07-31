@@ -23,7 +23,7 @@ Do **not** read the Developer Guide or consolidated research for this prompt.
 
 ## Critical Context
 
-This report serves the {customerName} engagement. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
+This report serves the Albertsons engagement. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 

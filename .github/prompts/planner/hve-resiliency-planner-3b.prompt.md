@@ -21,7 +21,7 @@ Do **not** read the consolidated research, subagent files, or the Developer Guid
 
 ## Critical Context
 
-This report serves the {customerName} engagement. The customer is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
+This report serves the Albertsons engagement. The customer is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Use the classification rules from `hve-resiliency-planner-context.instructions.md` for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names.
 

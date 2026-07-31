@@ -17,7 +17,7 @@ Include:
 - Overview Summary (1-2 paragraphs): briefly describe the process used (HVE evidence-only research then Task Planner synthesis) and the overall findings/themes for this repo.
 - Application summary (what this code does)
 - Actual dependency map (Azure + non-Azure)
-- Resiliency gaps vs {customerName} failover model
+- Resiliency gaps vs Albertsons failover model
 - External provider considerations
 - Open questions explicitly marked
 - Priority Legend (P0/P1/P2/P3) as a dedicated section near the top
@@ -43,7 +43,7 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
    - Priority (P0/P1/P2/P3)
    - Title
    - What is true (summary of the research finding)
-   - Why it matters (impact during zone loss or failover between West US and West US 2 in the target active/active deployment)
+   - Why it matters (impact during zone loss / West US 2 then West US failover)
    - Evidence references (file+line citations or research reference IDs)
    - Recommended remediation summary (1-3 bullets; no code here)
    - Owner suggestion (team/component)

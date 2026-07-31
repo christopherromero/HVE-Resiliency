@@ -20,7 +20,7 @@ Read **only** the following before generating. Do **not** read the Developer Gui
 
 ## Critical Context
 
-This report serves the {customerName} engagement. The customer is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `hve-resiliency-planner-context.instructions.md`   for all priority assignments.
+This report serves the Albertsons engagement. The customer is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `hve-resiliency-planner-context.instructions.md`   for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names like "Braintree" or "Fiserv".
 
@@ -83,7 +83,7 @@ Use `# 1. Assessment Overview` as the heading. Include all of the following sub-
 
 2. **Assessment Themes**: A numbered list of the top 3-5 themes that emerged from the research, each with a brief description and cross-references to the relevant finding IDs. Derive finding IDs from the Master Report finding numbers using the `PX-NNN` format. Map F-001 through F-060 to their priority-specific sequential IDs (P0-001 through P0-010, P1-001 through P1-030, etc.).
 
-3. **{customerName} Azure Services Reference Architectures**: Include this exact static table:
+3. **Albertsons Azure Services Reference Architectures**: Include this exact static table:
 
     | Azure Shared Service                | Link to Reference Architecture                |
     | ----------------------------------- | --------------------------------------------- |
