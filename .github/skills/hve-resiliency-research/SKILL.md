@@ -1,331 +1,415 @@
 ---
 name: hve-resiliency-research
-description: Use for application resiliency research covering zone failure in West US 2 and regional failover from West US 2 to West US with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
+description: Use for HVE resiliency research covering Azure zone failure, regional failover, active-active, active-standby, and service-specific resiliency review using the new repository-evidence-index workflow.
 ---
 
-# HVE Resiliency Research
+## HVE Resiliency Research
 
-Use this skill when you need the full resiliency research sequence for this repository.
+Use this skill when you need the full evidence-first HVE resiliency research workflow for a source code repository.
 
 Use [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
-## Activation Guidance
+### Activation Guidance
 
-Auto-load this skill for requests related to resiliency, Azure zone survivability, or regional failover research.
+Auto-load this skill only for requests that explicitly mention one or more of the following:
 
-## Activation Behavior
+- Azure zone failure
+- Azure availability zone resiliency
+- regional failover
+- multi-region active-active
+- active-standby
+- zone survivability
+- HVE resiliency research
+- /hve-resiliency-research
+- run the HVE researcher workflow
+- repository resiliency assessment
 
-When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (7-18) without completing Prompts 0-6 first.
+Do not auto-load this skill for general reliability, performance, cost, security, or unrelated Azure questions.
 
-## Required Workflow
+### Activation Behavior
 
-Phases are strictly sequential. Each phase must complete before the next phase begins.
+When this skill is activated:
 
-### Phase 1: Core Research (Prompts 0-7) — Start Here
+1. Do not ask the user to choose an execution mode.
+2. Use the guided `/clear`-gated workflow defined in this skill file.
+3. Run exactly one prompt per turn.
+4. Start with Phase 1, Step 1: Repository Evidence Index Builder.
+5. After each prompt completes, summarize the produced artifact and stop.
+6. End every stop message with the exact next prompt to run.
+7. Do not skip to service-specific prompts until Phase 1 is complete.
+8. Do not run remediation, planning, or assessment-builder prompts during research phases.
 
-Phase 1 is mandatory and sequential. Always begin with Prompt 0.
+### Core Operating Model
 
-1. Run `/hve-resiliency-researcher-0` first to establish the repository context frame.
-2. Review the resulting research artifact in `.copilot-tracking/research/`.
-3. Run `/clear` before each next prompt.
-4. Run `/hve-resiliency-researcher-1`.
-5. Review the Prompt 1 output. Note which dependencies are confirmed as used (Section 1). Dependencies in Section 2 and Section 3 are excluded from all subsequent prompts.
-6. Run `/clear`.
-7. Run `/hve-resiliency-researcher-2`.
-8. Run `/clear`.
-9. Run `/hve-resiliency-researcher-3`.
-10. Run `/clear`.
-11. Run `/hve-resiliency-researcher-4`.
-12. Run `/clear`.
-13. Run `/hve-resiliency-researcher-5`.
-14. Run `/clear`.
-15. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
-16. Run `/clear`.
-17. Run `/hve-resiliency-researcher-7-logging` (Logging).
+This workflow uses one broad repository discovery pass followed by bounded evidence consumers.
 
-### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial)
+The repository evidence index is the required source contract for all downstream researcher prompts.
 
-Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Prompt 1 Section 1. Skip services not found. Recommend applicable prompts based on Prompt 1 results.
+All research prompts must:
 
-18. Run `/clear`.
-19. Run `/hve-resiliency-researcher-8-appgw` (App Gateway)
-20. Run `/clear`.
-21. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
-22. Run `/clear`.
-23. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
-24. Run `/clear`.
-25. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
-26. Run `/clear`.
-27. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
-28. Run `/clear`.
-29. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
-30. Run `/clear`.
-31. Run `/hve-resiliency-researcher-14-redis` (Redis)
-32. Run `/clear`.
-33. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
-34. Run `/clear`.
-35. Determine whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
-    * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
-    * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
-    * Neither confirmed -> Ask the user which Kafka topology the application uses before proceeding
-36. Run `/clear`.
-37. Run `/hve-resiliency-researcher-17-networking` (Networking)
-38. Run `/clear`.
-39. Run `/hve-resiliency-researcher-18-entraid` (Entra ID)
-40. Run `/clear`.
-41. Run `/hve-resiliency-researcher-19-apim` (APIM)
+- Use direct file and line evidence.
+- Reuse `.copilot-tracking/research/repository-evidence-index.md`.
+- Use scope gates.
+- Record evidence gaps separately from findings.
+- Assign P0/P1/P2/P3 only to confirmed findings.
+- Include confidence: High, Medium, or Low.
+- Deduplicate by root cause.
+- Avoid remediation, code examples, and implementation guidance.
+- Stop when required input artifacts are missing.
+- Write outputs to `.copilot-tracking/research/`.
 
-### Phase 3: Consolidation
+### Required Workflow
 
-42. Run `/clear`.
-43. Run `/hve-resiliency-researcher-consolidate` to merge all research outputs from Prompts 0-7 and any service-specific prompts into a single consolidated research document.
-44. Review the consolidated report at `.copilot-tracking/research/`.
+The workflow is strictly sequential.
 
-### Phase 4: Planning
+Do not start a later phase until the current phase is complete.
 
-45. Run `/clear`.
-46. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
-47. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
-48. Run `/clear`.
-49. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
-50. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
+Run `/clear` between every prompt.
 
-### Phase 5: Code-Level Resiliency Assessment Report
+Artifacts on disk carry context forward. Chat history must not be treated as the source of truth.
 
-51. Run `/clear`.
-52. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
-53. Run `/clear`.
-54. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
-55. Run `/clear`.
-56. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
-57. Run `/clear`.
-58. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
-59. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+---
 
-## Execution Rules
+## Phase 1: Core Research
 
-* Keep research findings (Phases 1-3) evidence-only and forensic
-* Do not include remediation recommendations in research phases
-* Do not include code examples in research phases
-* Classify every finding using P0 / P1 / P2 / P3 priorities
-* Cite file and line-level evidence for every substantive claim
-* Write each research output to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
-* Planning outputs (Phase 4) may include remediation and code examples
+Phase 1 creates the reusable evidence index and bounded core research artifacts.
+
+### Phase 1 Step 1: Repository Evidence Index Builder
+
+Run:
+
+`/hve-resiliency-researcher-0`
+
+Expected output:
+
+`.copilot-tracking/research/repository-evidence-index.md`
+
+Purpose:
+
+- Performs the only broad repository discovery pass.
+- Indexes entry points, dependencies, endpoints, regions, state paths, write paths, health paths, telemetry paths, shared libraries, and evidence gaps.
+- Does not assign severity.
+- Does not create findings.
+- Does not recommend fixes.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to continue with /hve-resiliency-researcher-1a (Azure Scope Contract).`
+
+### Phase 1 Step 2: Azure Scope Contract
+
+Run:
+
+`/hve-resiliency-researcher-1a`
+
+Required input:
+
+`.copilot-tracking/research/repository-evidence-index.md`
+
+Expected output:
+
+`.copilot-tracking/research/azure-scope-contract.md`
+
+Purpose:
+
+- Identifies Azure services actually used by the repository.
+- Classifies services as Explicit Use, Implicit Dependency, Referenced/Assumed but Not Found, or Not Present.
+- Produces the Azure service scope contract for service-specific prompts.
+- Does not assign severity.
+- Does not recommend fixes.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to continue with /hve-resiliency-researcher-1b (Non-Azure Scope Contract).`
+
+### Phase 1 Step 3: Non-Azure Scope Contract
+
+Run:
+
+`/hve-resiliency-researcher-1b`
+
+Required input:
+
+`.copilot-tracking/research/repository-evidence-index.md`
+
+Expected output:
+
+`.copilot-tracking/research/non-azure-scope-contract.md`
+
+Purpose:
+
+- Identifies external, SaaS, internal platform, third-party, and non-Azure dependencies.
+- Records health/readiness linkage only where repository evidence exists.
+- Produces the non-Azure dependency scope contract.
+- Does not assign severity.
+- Does not recommend fixes.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to continue with /hve-resiliency-researcher-2 (Region, Endpoint, and Dependency Survivability).`
+
+### Phase 1 Step 4: Region, Endpoint, and Dependency Survivability
+
+Run:
+
+`/hve-resiliency-researcher-2`
+
+Required inputs:
+
+- `.copilot-tracking/research/repository-evidence-index.md`
+- `.copilot-tracking/research/azure-scope-contract.md`
+- `.copilot-tracking/research/non-azure-scope-contract.md`
+
+Expected output:
+
+`.copilot-tracking/research/region-endpoint-dependency-survivability.md`
+
+Purpose:
+
+- Replaces legacy region-assumption and dependency-survivability prompts.
+- Evaluates hardcoded regions, single-region endpoints, direct IPs, identity assumptions, dependency endpoint selection, fallback logic, and multi-region selection logic.
+- Uses only indexed candidate files and scope-contract evidence.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to continue with /hve-resiliency-researcher-3 (State, Failure, and Health Behavior).`
+
+### Phase 1 Step 5: State, Failure, and Health Behavior
+
+Run:
+
+`/hve-resiliency-researcher-3`
+
+Required inputs:
+
+- `.copilot-tracking/research/repository-evidence-index.md`
+- `.copilot-tracking/research/azure-scope-contract.md`
+- `.copilot-tracking/research/non-azure-scope-contract.md`
+- `.copilot-tracking/research/region-endpoint-dependency-survivability.md`
+
+Expected output:
+
+`.copilot-tracking/research/state-failure-health-behavior.md`
+
+Purpose:
+
+- Replaces legacy state/data and failure/degraded-mode prompts.
+- Evaluates state, writes, caching, idempotency, retries, timeouts, failure behavior, health/readiness, GLB health relevance, and detection signals.
+- Uses only indexed candidate files.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to continue with /hve-resiliency-researcher-4 (Shared Dependency Boundary Analysis), or skip it if the evidence index shows no shared dependency candidates.`
+
+### Phase 1 Step 6: Shared Dependency Boundary Analysis
+
+Run only if `repository-evidence-index.md` lists shared libraries, platform utilities, generated clients, shared Helm charts, centralized config, shared pipelines, or external ownership boundaries.
+
+Run:
+
+`/hve-resiliency-researcher-4`
+
+Expected output:
+
+`.copilot-tracking/research/shared-dependency-boundary-research.md`
+
+If not applicable, write a skipped artifact at the same path with:
+
+`Shared dependency analysis skipped: no candidate shared dependency evidence found.`
+
+Purpose:
+
+- Evaluates shared libraries, platform utilities, generated clients, centralized configuration, shared pipelines, and ownership boundaries.
+- Runs only when the index proves candidate shared-boundary evidence exists.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then reply proceed to begin Phase 2 Service-Specific Research.`
+
+---
+
+## Phase 2: Service-Specific Research
+
+Phase 2 runs only service prompts that match services confirmed in:
+
+- `.copilot-tracking/research/azure-scope-contract.md`
+- `.copilot-tracking/research/non-azure-scope-contract.md`
+- `.copilot-tracking/research/repository-evidence-index.md`
+
+Do not run service prompts for services not confirmed by evidence.
+
+Each service-specific prompt must consume `repository-evidence-index.md` and must use its own scope gate.
+
+### Phase 2 Service Prompt Map
+
+Use this map:
+
+- Application Gateway: `/hve-resiliency-researcher-8-appgw`
+- Azure Functions: `/hve-resiliency-researcher-9-functions`
+- Azure Key Vault: `/hve-resiliency-researcher-10-keyvault`
+- AKS and Istio: `/hve-resiliency-researcher-11-aks-istio`
+- Cosmos DB: `/hve-resiliency-researcher-12-cosmosdb`
+- Azure SQL: `/hve-resiliency-researcher-13-sql`
+- Redis: `/hve-resiliency-researcher-14-redis`
+- Azure Storage: `/hve-resiliency-researcher-15-storage`
+- Kafka Active-Standby: `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
+- Kafka Active-Active: `/hve-resiliency-researcher-16-kafka-active-active`
+- Networking: `/hve-resiliency-researcher-17-networking`
+- Microsoft Entra ID: `/hve-resiliency-researcher-18-entraid`
+- API Management: `/hve-resiliency-researcher-19-apim`
+
+### Kafka Routing Rule
+
+Select exactly one Kafka prompt per assessment unless the user explicitly requests separate analysis for two distinct Kafka architectures:
+
+- Use Kafka Active-Standby when the target architecture is active-standby.
+- Use Kafka Active-Active when the target architecture is active-active mirror-topic plus feature flag.
+- Do not run both Kafka prompts for the same Kafka architecture.
+
+### Phase 2 Execution Rule
+
+Run one applicable service prompt per turn.
+
+After each service prompt completes:
+
+1. Summarize the produced artifact.
+2. State whether P0/P1/P2/P3 findings were produced.
+3. State the next applicable service prompt.
+4. Stop.
+
+If no applicable service prompts remain, stop with:
+
+`Run /clear, then /hve-resiliency-researcher-consolidate to begin Phase 3 Consolidation.`
+
+---
+
+## Phase 3: Consolidation
+
+Run only after Phase 1 and Phase 2 are complete.
+
+Run:
+
+`/hve-resiliency-researcher-consolidate`
+
+Required inputs:
+
+- `.copilot-tracking/research/repository-evidence-index.md`
+- `.copilot-tracking/research/azure-scope-contract.md`
+- `.copilot-tracking/research/non-azure-scope-contract.md`
+- `.copilot-tracking/research/region-endpoint-dependency-survivability.md`
+- `.copilot-tracking/research/state-failure-health-behavior.md`
+- `.copilot-tracking/research/shared-dependency-boundary-research.md`, if present
+- all completed service-specific research artifacts
+
+Expected output:
+
+`.copilot-tracking/research/YYYY-MM-DD--research.md`
+
+Purpose:
+
+- Creates the sole authoritative research artifact for HVE Task Planner.
+- Deduplicates findings by root cause.
+- Preserves source-artifact traceability.
+- Includes evidence gaps and assessment constraints.
+- Assigns canonical finding IDs.
+- Produces a planner-friendly research findings index.
+
+Do not read source repository files during consolidation.
+
+Stop after completion.
+
+Next message:
+
+`Run /clear, then /hve-resiliency-planner-0 using the consolidated research artifact.`
+
+---
+
+## Optional Phase 4: Planning
+
+Planning is outside research and uses Task Planner.
+
+Run only after Phase 3 is reviewed.
+
+Recommended commands:
+
+1. `/hve-resiliency-planner-0`
+2. `/hve-resiliency-planner-1`
+3. Review the Master report.
+4. `/hve-resiliency-planner-2`
+
+Planning may include remediation and code guidance.
+
+---
+
+## Optional Phase 5: Code-Level Assessment Report
+
+Assessment building is outside research and uses the batched Task Planner report prompts.
+
+Run after planning artifacts are reviewed.
+
+Recommended commands:
+
+1. `/clear`
+2. `/hve-resiliency-planner-3a`
+3. `/clear`
+4. `/hve-resiliency-planner-3b`
+5. `/clear`
+6. `/hve-resiliency-planner-3c`
+7. `/clear`
+8. `/hve-resiliency-planner-3d`
+
+Expected final report:
+
+`Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`
+
+---
+
+## Research Governance Rules
+
+These rules apply to all research phases:
+
+- Research is evidence-only.
+- Do not include remediation recommendations.
+- Do not include code examples.
+- Do not use advisory wording such as should, recommend, implement, or fix.
+- Every finding must include file and line evidence.
+- Every finding must include P0/P1/P2/P3 severity.
+- Every finding must include confidence.
+- Evidence gaps must not receive severity.
+- Missing documentation alone is not P0 or P1.
+- Generic best practices are not P0 or P1 unless failover impact is directly evidenced.
+- Deduplicate repeated issues by root cause.
+- Preserve duplicate evidence locations under the canonical finding.
+- Use existing mitigations only when evidenced.
+- Use constraints only when evidenced.
+- If required input artifacts are missing, stop and report the missing artifact.
+- Do not use em dashes in generated artifacts. Use a hyphen or rewrite the sentence.
 
 ## Priority Definitions
 
-* P0: Critical / Blocking. Causes outage, data loss, duplicate charges, or inability to fail over safely.
-* P1: Required, Non-Blocking. Materially increases application risk, data risk, or customer impact during failure.
-* P2: Improvement / Best Practice. Does not materially impact correctness but weakens resilience posture.
-* P3: Non-Blocking Code Consistency. Maintainability, readability, duplication, or inconsistent patterns that are non-blocking.
+- P0: Failover-blocking risk. Blocks regional failover, renders the second region ineffective, causes outage, data loss, duplicate business action, or unsafe failover.
+- P1: Material multi-region resiliency gap. Does not fully block failover but materially increases customer impact, data risk, recovery risk, or operational risk.
+- P2: Non-blocking resiliency improvement. Valid resiliency or observability improvement that does not prove failover blockage or material data risk.
+- P3: Maintainability or consistency issue. No proven functional failover impact.
 
-## Service Exclusion Rule
+A finding marked `Resiliency Related: No` must never be P0 or P1.
 
-* After Prompt 1 completes, dependencies in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are dropped from scope
-* Prompts 2-6, service-specific prompts (7-18), and the consolidation report analyze only Section 1 dependencies (evidence-confirmed)
-* In Phase 2, run only the service-specific prompts for dependencies found in Section 1
+## Output Review Notice
 
-## Deliverable Templates
+Every artifact produced by this workflow must be reviewed by a qualified engineer before it is shared, acted on, or treated as authoritative.
 
-Use these templates as the expected output shape per prompt.
+AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified priorities, fabricated citations, or internal inconsistencies.
 
-### Prompt 0 Deliverable Template
-
-```text
-# Prompt 0 Research Output
-
-## Scope
-- Repository and bounded focus area
-
-## Observed Implementation Behavior
-- Finding
-  - Priority: P0 / P1 / P2 / P3
-  - Evidence: <file path>:<line>
-  - Existing mitigations: <if any, with evidence>
-  - Constraints/limitations: <if any, with evidence>
-
-## Application Flow
-- Finding
-  - Priority: P0 / P1 / P2 / P3
-  - Evidence: <file path>:<line>
-  - Existing mitigations: <if any, with evidence>
-
-## Assumptions and Constraints
-- Finding
-  - Priority: P0 / P1 / P2 / P3
-  - Evidence: <file path>:<line>
-  - Constraints/limitations: <if any, with evidence>
-```
-
-### Prompt 1 Deliverable Template
-
-```text
-# Prompt 1 Research Output
-
-## SECTION 1 - USED DEPENDENCIES (EVIDENCE CONFIRMED)
-- Service / Dependency name:
-- Type (Azure service or Non-Azure):
-- Evidence (file path + line number):
-- Brief description of how it is used:
-- Whether it materially impacts zone or region failover (Yes/No + why):
-- Existing mitigations present (if any): with evidence (file path + line number)
-- Health check present for this dependency? (Yes/No + evidence)
-- How health is determined: + evidence
-- Is dependency health surfaced to GLB health evaluation? (Yes/No/Unclear + evidence)
-- What GLB probes hit (endpoint/path/port) and conditions: + evidence
-- Constraints/limitations (if any): with evidence (file path + line number)
-
-## SECTION 2 - CHECKED BUT NOT PRESENT
-- Service / Dependency name:
-- Reason it was evaluated:
-- Explicit statement: No references found in code, config, IaC, or pipelines
-
-## SECTION 3 - NOT APPLICABLE
-- Service / Category name:
-- Reason it does not apply:
-```
-
-### Prompt 2 Deliverable Template
-
-```text
-# Prompt 2 Research Output
-
-## Region and Zone Assumptions
-- Assumption:
-- Priority: P0 / P1 / P2 / P3
-- Failover relevance (West US 2 to West US):
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-- Constraints/limitations (if any): with evidence
-```
-
-### Prompt 3 Deliverable Template
-
-```text
-# Prompt 3 Research Output
-
-## Dependency Survivability Findings
-- Service:
-- Priority: P0 / P1 / P2 / P3
-- Region assumption in endpoint/credential/identity:
-- Fallback or multi-region logic present:
-- Health check present / health-to-GLB linkage:
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-- Constraints/limitations (if any): with evidence
-```
-
-### Prompt 4 Deliverable Template
-
-```text
-# Prompt 4 Research Output
-
-## State and Data Characteristics
-- Characteristic:
-- Priority: P0 / P1 / P2 / P3
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-- Constraints/limitations (if any): with evidence
-
-## Data Loss Potential (Facts Only)
-- Where loss could occur:
-- Failure condition (zone loss/regional failover/partial outage):
-- Writes/messages/records at risk:
-- Priority: P0 / P1 / P2 / P3
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-
-## Failover Risk Observations
-- Observation:
-- Priority: P0 / P1 / P2 / P3
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-- Constraints/limitations (if any): with evidence
-```
-
-### Prompt 5 Deliverable Template
-
-```text
-# Prompt 5 Research Output
-
-- Failure mode:
-- Priority: P0 / P1 / P2 / P3
-- Triggering dependency + failure type (timeout/DNS/auth/partial outage):
-- Code path / entrypoint:
-- Observed behavior (startup fail/degrade/data loss/blocking):
-- User/customer-visible impact:
-- Business impact:
-- Blast radius:
-- Data loss potential:
-- Data consistency risk:
-- Detection signals:
-- Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
-- Manual ops workaround (references):
-- Evidence citations (files + line numbers):
-```
-
-### Prompt 6 Deliverable Template
-
-```text
-# Prompt 6 Research Output
-
-## Shared and Cross-Repository Dependencies
-- Dependency:
-- Priority: P0 / P1 / P2 / P3
-- Ownership boundary:
-- Zone or region failover risk implication:
-- Evidence: <file path>:<line>
-- Existing mitigations present (if any): with evidence
-- Constraints/limitations (if any): with evidence
-```
-
-### Service-Specific Prompts (7-18) Deliverable Template
-
-```text
-# Prompt N Research Output — <Service Name>
-
-(repeat per issue)
-- Issue Description:
-- Risk Level (P0/P1/P2/P3):
-- Code location (file + line number):
-- Why this is a risk to app, zone or region failover:
-- Impact(s) if this is not changed:
-- Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
-- Remediation guidance: None (HVE Task Researcher role is evidence-only)
-```
-
-### Consolidated Report Deliverable Template
-
-```text
-# HVE Task Research — <repo-name>
-
-Assessment Scope:
-- Repository: <repo-name>
-- Focus: Zone survivability and regional failover
-- Regions Evaluated: West US 2 → West US
-- Assessment Date: YYYY-MM-DD
-- Generated By: HVE Task Researcher
-
-## 1. Repository Context
-
-## 2. Dependency Inventory
-### 2.1 Used Dependencies (Evidence Found)
-### 2.2 Checked but Not Present
-### 2.3 Not Applicable Dependency Categories
-
-## 3. Region and Zone Assumptions
-(Per-finding template: Finding ID, Priority, What is true, Evidence,
-Why risk, Failure mode(s), What could happen, Existing mitigations,
-Constraints/limitations, Notes/unknowns)
-
-## 4. State and Data Characteristics
-
-## 5. Failure and Degraded-Mode Behavior
-
-## 6. Shared and Cross-Repository Dependencies
-
-## 7. Research Findings Index (Authoritative)
-```
-
+Validate every claim against cited file and line references. Confirm scope decisions, reconcile contradictions, and correct errors before advancing to planning or assessment.

@@ -50,3 +50,15 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
 7) Open Questions
 8) External Provider Considerations
 ```
+
+## Output Location
+
+Write the generated report to:
+
+`.copilot-tracking/plans/<repo-name>-Master.md`
+
+## Next Step
+
+After reviewing the Master report:
+
+> **Next step:** Run `/hve-resiliency-planner-2`

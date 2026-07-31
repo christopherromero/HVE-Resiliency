@@ -16,7 +16,7 @@ argument-hint: "serviceName=... [reportTitle=...] [targetDeployment=...]"
 Read **only** the following before generating. Do **not** read the Developer Guide or subagent files for this prompt.
 
 * `.copilot-tracking/plans/` — locate `{serviceName}-Master.md`. Read the Overview Summary, Priority Legend, Application Summary, Architecture and Dependency Map, the finding count per priority tier, and the Open Questions section. This is sufficient for the Assessment Overview.
-* `.copilot-tracking/research/` — locate `*-{serviceName}-research.md`. Read only the Repository Context section (Section 1) for the opening paragraph.
+* `.copilot-tracking/research/` — locate the latest `YYYY-MM-DD--research.md`. Read only the Repository Context section (Section 1) for the opening paragraph.
 
 ## Critical Context
 

@@ -45,3 +45,15 @@ OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
    - Testing/validation notes (how to prove it works):
    - Health then GLB readiness contract (if applicable): (a) what /ready (or equivalent) means, including which dependencies are included/excluded, and (b) GLB probe expectations (path/port/method/thresholds/timeouts) expressed as testable acceptance criteria.
 ```
+
+## Output Location
+
+Write the generated guide to:
+
+`.copilot-tracking/plans/<repo-name>-Developer-Guide.md`
+
+## Next Step
+
+After reviewing the Developer Guide:
+
+> **Next step:** Run `/clear`, then `/hve-resiliency-planner-3a`

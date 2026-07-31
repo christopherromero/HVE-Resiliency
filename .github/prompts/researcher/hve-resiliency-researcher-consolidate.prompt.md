@@ -200,4 +200,4 @@ Before completing, verify:
 
 End with:
 
-Next step: Run /clear, then continue with HVE Task Planner using this authoritative research artifact.
+Next step: Run /clear, then run `/hve-resiliency-planner-0` using this authoritative research artifact.

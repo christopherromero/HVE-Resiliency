@@ -28,3 +28,9 @@ PRIORITY LEGEND (use this consistently in all outputs):
 
 Ordering rule: Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
 ```
+
+## Next Step
+
+After completing this prompt:
+
+> **Next step:** Run `/hve-resiliency-planner-1`
