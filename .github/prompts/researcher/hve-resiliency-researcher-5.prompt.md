@@ -1,64 +1,30 @@
 ---
-description: Run Prompt 5 failure and degraded mode behavior for Application resiliency research
+description: Deprecated - the monolithic Prompt 5 has been split into a scaffold-fill-verify-finalize pipeline. Redirects to the new scaffold entry point.
 agent: Task Researcher
 ---
 
-# Application HVE Researcher 5
+# Application HVE Researcher 5 (Deprecated Redirect)
 
-## Direct invocation and prerequisite
+The single monolithic `hve-resiliency-researcher-5` prompt has been replaced with a bounded, staged pipeline that mirrors the split consolidation pipeline. Run the new pipeline instead. Do not attempt to reconstruct the prior schema or run any evidence collection from this file.
 
-* Run only Prompt 5.
-* Prompt 1a/1b qualifiers: inherited research location, matching prompt identity, and Section 1 heading. Explicitly superseded is stale; age is not.
-* Use exactly one per prompt and only Section 1 confirmed dependencies. Zero/multiple: name the missing/ambiguous prerequisite, block evidence-only, and stop before repository traversal. No fallback/excluded dependencies.
+## Pipeline Entry
 
-## Task Researcher boundary
+The new pipeline is:
 
-* Evidence only: no alternatives, recommendations, selected approaches, implementation steps, remediation, or code examples.
-* On conflict, inherited platform output location/naming and this Prompt 5 schema win over delegated-agent requirements.
-* Delegate only with guaranteed sandbox/output compliance.
+1. `/hve-resiliency-researcher-5-0-scaffold` - validate Prompt 1a and 1b Section 1 prerequisites, freeze the eligible-dependency inventory, emit the Prompt 5 skeleton and a frozen manifest sidecar.
+2. `/hve-resiliency-researcher-5-1-startup-failure` - fill the startup-failure fragment.
+3. `/hve-resiliency-researcher-5-2-silent-degradation` - fill the silent-degradation fragment.
+4. `/hve-resiliency-researcher-5-3-data-loss-partial-processing` - fill the data-loss / partial-processing fragment.
+5. `/hve-resiliency-researcher-5-4-blocking-transactions` - fill the blocking-transactions fragment.
+6. `/hve-resiliency-researcher-5-verify` - audit the four outcome fragments against the manifest and workspace source.
+7. `/hve-resiliency-researcher-5-finalize` - assemble the fragments into the single Prompt 5 research artifact consumed by `hve-resiliency-consolidate-5-failure-degraded`.
 
-## Bounded discovery
+The shared contract for the split pipeline is defined in [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md). Platform inheritance is unchanged and continues to come from [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
-* Limits are per confirmed dependency; aliases, environments, or wording cannot reset them.
-* Each query result is an ownership surface. Allow at most 2 high-signal production client/config owner queries, 1 refinement/query only if capped or truncated, 20 displayed matches/surface, 5 candidate owner files read, and 2 direct production-call hops from entrypoint/owner.
-* Exclude tests/fixtures/samples/generated output/docs/local-only config unless production evidence points there.
-* Then allow 1 negative check per unresolved `Unknown`-eligible field and 1 scoped corrective search for 1 missed production path. Stop when repository-free ledger review adds nothing.
+Do not render failure-mode rows from this file. Do not read Prompt 1a or Prompt 1b from this file. Do not modify any downstream fragment, manifest, skeleton, or verify audit from this file.
 
-## Finding rows
+## Completion
 
-* Row key = confirmed dependency + failure type + production entrypoint + observed outcome (startup failure, silent degradation, data loss or partial processing, or blocking transaction). Separate distinct outcomes or priorities; retain every citation.
-* Emit only with established dependency, failure type, production entrypoint, failure mode, observed behavior, P0-P3 priority, and causal file-line citations.
-* Allow `Unknown: not found after bounded search <scope>` only in user/customer impact, business impact, blast radius, data loss potential, consistency risk, detection signals, existing mitigations, constraints/limitations, and manual workaround. Absence is not proof of runtime absence.
+Report that the monolithic Prompt 5 is deprecated and direct the operator to the pipeline entry point.
 
-## Assessment scope
-
-Identify code paths where dependency timeouts, DNS failures, authentication errors, or partial outages cause:
-
-* Application startup failure
-* Silent functional degradation
-* Data loss or partial processing
-* Blocking transactions
-
-Focus on West US 2 outages or zonal degradation. Classify each failure mode P0-P3 with inherited platform definitions.
-
-## Evidence requirements
-
-* Cite repository file-lines for every causal behavior and known impact claim.
-
-## Output (repeat per failure mode)
-
-* Failure mode:
-* Priority: P0 / P1 / P2 / P3
-* Triggering dependency + failure type (timeout/DNS/auth/partial outage):
-* Code path / entrypoint:
-* Observed behavior (startup fail/degrade/data loss/blocking):
-* User/customer-visible impact:
-* Business impact:
-* Blast radius:
-* Data loss potential:
-* Data consistency risk:
-* Detection signals:
-* Existing mitigations present (evidence):
-* Constraints/limitations (evidence):
-* Manual ops workaround (references):
-* Evidence citations (files + line numbers):
+> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-5-0-scaffold`

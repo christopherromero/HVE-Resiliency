@@ -44,66 +44,80 @@ areas above.
 ## Prerequisite Scope Contract
 
 Derive `<repository-name>` once from the case-preserving root-directory basename.
-Read exactly these prerequisite artifacts and no substitutes:
+Derive `<YYYY-MM-DD>` once as the current UTC assessment date. Read exactly these
+prerequisite artifacts and no substitutes; match the `<repository-name>` segment
+case-insensitively per the normalization rules below:
 
-* `.copilot-tracking/research/<repository-name>-hve-resiliency-researcher-1a-research-output.md`
-* `.copilot-tracking/research/<repository-name>-hve-resiliency-researcher-1b-research-output.md`
+* `.copilot-tracking/research/<YYYY-MM-DD>/<repository-name>-hve-resiliency-researcher-1a-research.md`
+* `.copilot-tracking/research/<YYYY-MM-DD>/<repository-name>-hve-resiliency-researcher-1b-research.md`
 
-Each artifact must use this exact producer grammar. YAML frontmatter starts at
-byte zero, uses the shown lowercase keys once and no other keys, and contains no
-`title` key. Each sequence entry nested under `assessment-scenarios` starts
-with exactly two ASCII space characters followed by `- `. Treat any hard tab
-used for YAML indentation as malformed input; never require or accept it as
-indentation:
+Each artifact must use this producer grammar. Frontmatter starts with a `---`
+fence, optionally preceded by a single `<!-- markdownlint-disable-file -->`
+HTML comment as the first line only. The frontmatter uses YAML with ASCII
+space indentation; treat any hard tab used for YAML indentation as malformed
+input. The frontmatter must contain at least these lowercase keys, each once,
+with scalar values; additional keys are allowed but ignored:
 
 ```yaml
 ---
-repository: <case-preserving root-directory basename>
-producer: </hve-resiliency-researcher-1a or /hve-resiliency-researcher-1b>
-assessment-scenarios:
-  - West US 2 zone failure
-  - West US 2 to West US regional failover
-producer-status: Completed
+title: <any nonempty string>
+description: <any nonempty string>
+ms.date: <YYYY-MM-DD>
+ms.topic: research
+source-prompt: <hve-resiliency-researcher-1a or hve-resiliency-researcher-1b>
+schema-version: <positive integer>
+status: current
 ---
 ```
 
-Accept only those scalar values and the two-item scenario sequence. Prompt 1a
-must use `/hve-resiliency-researcher-1a`; Prompt 1b must use
-`/hve-resiliency-researcher-1b`. After frontmatter, require one H1 with any
-nonempty text, then these H2 headings once and in order
-with no other H1 or H2.
+Prompt 1a must use `source-prompt: hve-resiliency-researcher-1a`; Prompt 1b
+must use `source-prompt: hve-resiliency-researcher-1b`. `status: current` is
+the producer-completed signal. `ms.date` must match the `<YYYY-MM-DD>` segment
+of the artifact path. After frontmatter, require one H1 with any nonempty
+text, then these three H2 headings once and in order with no other H1 or H2;
+accept either ASCII hyphen `-` or em-dash `—` as the separator in each H2:
 
 1. `## Section 1 - Used External Dependencies (Evidence Confirmed)`
 2. `## Section 2 - Checked but Not Present`
 3. `## Section 3 - Not Applicable`
 
-Each section contains either the exact empty token `* None` or one or more items
-using this exact single-line form, never both:
+Each section contains either the exact empty token `* None` or one or more
+dependency entries, never both. Each dependency entry starts with an H3 whose
+text is the canonical dependency name (any leading numeric ordinal and period
+such as `1. ` is stripped for identification), followed by a bulleted list
+under that H3 containing at least:
 
-```text
-* Dependency: `<canonical-name>` | Subtype: `<canonical-subtype>` | Evidence: `<repository-relative-path:line>[, <repository-relative-path:line>...]`
-```
+* A name field labeled `Service name:` (Prompt 1a) or `Service / Dependency name:` (Prompt 1b) whose value repeats or clarifies the canonical name.
+* An evidence field labeled `Evidence:` (Prompt 1a) or `Evidence (binding):` (Prompt 1b) whose child bullets each contain at least one `<repository-relative-path>:<line>` citation. A citation path uses `/`, is relative to the repository root, contains no `..`, and ends in a positive decimal line number. Every entry requires at least one citation whose line exists and supports the section classification.
 
-Require nonempty backtick-delimited values. A citation path uses `/`, is relative
-to the repository root, contains no `..`, and ends in a positive decimal line
-number. Every item requires at least one citation whose line exists and supports
-that classification. For `Azure Storage`, accept only `Blob Storage`, `Azure
-Files`, `Queue Storage`, `Table Storage`, or `Unspecified` as the subtype.
+For canonical name `Azure Storage`, derive the subtype from the H3 name using
+this rule set, comparing case-insensitively after stripping any leading ordinal:
+
+* `Blob Storage` when the H3 contains `Blob`
+* `Azure Files` when the H3 contains `Files`
+* `Queue Storage` when the H3 contains `Queue`
+* `Table Storage` when the H3 contains `Table`
+* `Unspecified` otherwise, including a generic `Azure Storage` H3 with no subtype qualifier
+
+Treat an H3 as canonical name `Azure Storage` when its ordinal-stripped text
+starts with `Azure` and contains any of `Storage`, `Blob`, `Files`, `Queue`,
+or `Table` in the sense of a Microsoft Azure Storage account service.
 
 For equality and duplicate checks, trim surrounding ASCII whitespace, collapse
 internal ASCII whitespace to one space, normalize `\` to `/` in identifiers and
-paths, and compare repository, producer, canonical name, subtype, and scenario
-values case-insensitively. The normalized repository must equal the normalized
-root basename in both artifacts. The normalized scenario set must equal exactly
-the two required scenarios, with no duplicate. Preserve producer spelling and
-body text for output; normalization never repairs an input.
+paths, and compare repository, source-prompt, canonical name, and subtype
+values case-insensitively. The `<repository-name>` segment of each artifact
+path must equal the case-preserving root-directory basename under
+case-insensitive comparison. Both artifacts must share the same `ms.date`
+value under exact comparison. Preserve source-prompt spelling and body text
+for output; normalization never repairs an input.
 
 Within an artifact, duplicate normalized `<canonical-name>|<canonical-subtype>`
 keys are malformed. A normalized canonical name appearing in multiple sections,
 with any subtype, is conflicting. Across Prompt 1a and Prompt 1b, the same
 normalized canonical name in different sections is conflicting. Any missing,
-unreadable, extra-key, malformed, duplicate, non-completed, citation-invalid, or
-conflicting artifact is `Blocked: prerequisite`.
+unreadable, malformed, duplicate, citation-invalid, or conflicting artifact,
+and any artifact whose `status` is not `current`, is `Blocked: prerequisite`.
 
 Prompt 1a is the Azure dependency authority. Continue only when its Section 1
 explicitly confirms canonical name `Azure Storage` with one or more accepted

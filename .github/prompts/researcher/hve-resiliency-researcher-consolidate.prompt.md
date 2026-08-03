@@ -1,16 +1,25 @@
 ---
-description: Consolidate completed Application resiliency evidence into the authoritative Task Planner research handoff
+description: Deprecated - superseded by the split consolidation pipeline (scaffold, section-fill, verify, finalize)
 agent: "Task Researcher"
-argument-hint: "assessmentManifestPath=.copilot-tracking/research/..."
+argument-hint: "(no required arguments; optional: researchRoot=.copilot-tracking/research/)"
 ---
 
 # Application HVE Researcher Consolidate
+
+> **Deprecated:** This single-run consolidation prompt is superseded by the bounded split consolidation pipeline. Prefer running the pipeline, which reads a small subset of artifacts per invocation and isolates discovery, fill, verification, and finalization into separate prompts:
+>
+> 1. `/hve-resiliency-consolidate-0-scaffold` - run discovery once; emit the skeleton and the frozen manifest sidecar.
+> 2. `/hve-resiliency-consolidate-1-repository-context` through `/hve-resiliency-consolidate-8-other` - fill each section fragment (may run in parallel).
+> 3. `/hve-resiliency-consolidate-verify-1-4` and `/hve-resiliency-consolidate-verify-5-8` - audit the section fragments.
+> 4. `/hve-resiliency-consolidate-9-finalize` - assemble, reconcile IDs, set status once, build the Section 9 index.
+>
+> Shared rules live in [Consolidation Shared Contract](../../instructions/hve-resiliency-consolidation-shared.instructions.md). The single-run contract below is retained for reference only.
 
 Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md) for inherited platform scenarios, dependency applicability rules, and P0-P3 definitions. If inherited instructions conflict with this prompt, this consolidation-only evidence contract takes precedence.
 
 ## Inputs
 
-* ${input:assessmentManifestPath}: (Required) Exact workspace-relative path to one assessment sidecar manifest under `.copilot-tracking/research/`.
+* ${input:researchRoot}: (Optional) Workspace-relative research root. Defaults to `.copilot-tracking/research/` when unset, empty, or whitespace. Must resolve to an existing directory inside the workspace.
 
 ## Scope and Override
 
@@ -20,52 +29,48 @@ Enter consolidation directly. Skip Task Researcher Phase 2, recommendation-orien
 
 Run at most one subagent invocation total, and only when bounded citation or conflict validation cannot be completed directly. Transfer only sanitized retained normalized records and require the subagent to return citation validity or conflict disposition without recommendations.
 
-## Canonical Input Contract
+## Discovery Contract
 
-Treat `.copilot-tracking/research/` as the only input root. Read only the sidecar at `${input:assessmentManifestPath}` and the artifacts it names. Do not search, glob, select the latest, or infer a sidecar or artifact. Build and freeze one sanitized in-memory manifest before consolidating content. No fallback input path is permitted.
+Treat the resolved research root as the only input root. Enumerate `.md` files under it recursively and sort by normalized workspace-relative path using ordinal comparison. Do not use file modification time to select among candidates. Do not read files outside the research root, follow symbolic links out of it, accept absolute paths, or accept paths containing traversal segments or alternate separators. Normalize paths to `/` while preserving repository path case.
 
-The exact caller-supplied valid sidecar is the production contract and sole authority for repository, assessment ID, revision, prompt ID, schema ID, completion status, and required or applicability status. Do not require these values in artifact frontmatter and do not assume any upstream frontmatter or sidecar-generation behavior. A missing or invalid sidecar stops `Blocked`.
+Extract each candidate's prompt ID from its filename. Match the first case-insensitive occurrence of one of these anchored tokens: `researcher-<id>`, `prompt-<id>`, or `research-<id>`, where `<id>` is exactly one of `0`, `1a`, `1b`, or `2` through `19`. Reject filenames whose extracted ID is missing, whose match resolves to more than one distinct ID, or whose ID falls outside the allowed set.
 
-The sidecar contains exactly these top-level fields: `schemaVersion`, `repository`, `assessmentId`, `revision`, `status`, `generatedAt`, and `artifacts`. Each `artifacts` entry contains exactly `promptId`, `path`, `required`, `completionStatus`, `schemaId`, and `contentSha256`. Reject additional properties at both levels. `artifacts` is an array and `required` is a Boolean. Every other named field is a string. Require all named fields and apply these exact constraints:
+Confirm the extracted prompt ID against the artifact body. Read the file's first non-empty heading plus its front matter or first 40 lines and require an explicit reference to the same prompt ID (for example `Prompt <id>`, `Researcher <id>`, or a producer schema identifier of the form `hve-resiliency-researcher-<id>`). Reject any candidate whose filename ID and body ID disagree, and any candidate that carries no body reference to a prompt ID.
 
-* `schemaVersion` is `hve-resiliency-assessment-manifest/v1`.
-* `status` and every `completionStatus` are `Complete`.
-* `generatedAt` is an RFC 3339 UTC timestamp ending in `Z`.
-* `promptId` is one of `0`, `1a`, `1b`, or `2` through `19` as a string.
-* `schemaId` is exactly `hve-resiliency-researcher-<promptId>/v1` for its entry.
-* `path` values are unique normalized workspace-relative `/` strings under `.copilot-tracking/research/`.
-* `contentSha256` is exactly 64 lowercase hexadecimal characters and matches the SHA-256 digest computed from the safely sanitized artifact content encoded as UTF-8 without a byte-order mark.
+Exclude the following even when their filenames match a prompt ID token:
 
-Accept the sidecar only when its repository identity matches deterministic current repository metadata; all entries represent its one assessment ID and revision; prompt IDs and paths are unique; and every constraint above passes. Reject absolute paths, traversal, alternate separators, links or indirections outside the input root, and paths whose preserved repository path case does not match the workspace.
+* Any file whose normalized workspace-relative path is under `<researchRoot>/subagents/`, `<researchRoot>/validator/`, or `<researchRoot>/sandbox/`.
+* Any prior consolidation output, identified by a title that starts with `# HVE Task Research -` or a body that declares schema version `hve-resiliency-consolidation/v1`.
+* Planner outputs, optimization or update studies, subagent studies, sandboxes, unrelated repositories, and incomplete, blocked, malformed, unreadable, or unsafe artifacts. Do not admit an artifact by filename alone.
 
-Prompt 0, Prompt 1a, Prompt 1b, and Prompts 2-7 are required and their sidecar entries must set `required` to `true`. Service Prompt 8-19 entries must set `required` to `false` and are permitted only when applicable to dependencies confirmed in Section 1 of accepted Prompt 1a or Prompt 1b. An absent service entry is not a conflict when that service is inapplicable. A sidecar `required` value cannot weaken these rules.
+Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, and `7`. Service prompt IDs `8` through `19` are optional and applicable only when their dependency category or service appears in Section 1 of an accepted Prompt 1a or Prompt 1b artifact. Applicability is determined solely by accepted 1a and 1b evidence; an absent service artifact is not a conflict when that service is inapplicable.
 
-For every named artifact, require its bytes to match the sidecar path and SHA-256, then validate the producer heading and body schema, required fields, completion content, evidence, repository relevance, dependency applicability, and exclusion rules. Sidecar metadata establishes run compatibility but cannot override malformed or incompatible artifact content.
+When more than one candidate resolves to the same prompt ID after body confirmation, select the candidate whose normalized workspace-relative path has the lexicographically largest dated ancestor segment matching `YYYY-MM-DD`. If no candidate carries a dated segment, or if dated segments tie, select the candidate whose normalized path sorts last using ordinal comparison. Record every non-selected duplicate as a retained normalized record with disposition `exact duplicate` and preserve its provenance. Do not use file modification time.
 
-Stop `Blocked` with no fallback when the exact sidecar, a required artifact, or required compatibility proof is absent, ambiguous, malformed, incompatible, unreadable, unsafe, or hash-mismatched.
+Read each accepted artifact's bytes exactly once and validate:
 
-Admit only artifacts that satisfy every condition:
+* Presence of the expected producer heading and the artifact's completion status.
+* Conformance to the producer body schema for its prompt ID, including required sections, required field labels, and file-line citations.
+* Repository relevance: identifiers, paths, and workspace references cited by the artifact belong to the current workspace.
+* Dependency applicability: contents cover only dependencies confirmed in Prompt 1a or 1b Section 1; dependencies in Prompt 1a or 1b Sections 2 and 3 are excluded from downstream and service evidence.
 
-* Identify a completed Prompt 0-7 artifact, including Prompt 1a, Prompt 1b, and Prompt 7 logging, or an applicable completed service Prompt 8-19 artifact
-* Match the sidecar path and content digest and pass the producer schema selected by the sidecar prompt ID and schema ID
-* Conform to the expected producer heading and evidence schema and contain all required fields, file-line citations, completion content, and readable parse status
-* Cover only dependencies confirmed in Prompt 1a or 1b Section 1; dependencies in Prompt 1a or 1b Sections 2 and 3 are excluded from downstream and service evidence
+Compute a lowercase SHA-256 hexadecimal digest over each accepted artifact's sanitized bytes to derive stable identity for retained records. This digest is internal integrity metadata; it does not need to match an external value and does not gate acceptance beyond confirming that the same bytes are used for parsing, sanitization, and record identity.
 
-Exclude consolidations, planner outputs, optimization or update studies, subagent studies, sandboxes, unrelated repositories, and incomplete, blocked, malformed, unreadable, or unsafe artifacts. Do not admit an artifact by filename alone.
+Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when any required prompt ID has zero admitted candidates; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity.
 
-Duplicate prompt IDs or paths stop `Blocked`; do not apply source precedence to sidecar entries. Never choose the latest artifact, use modification time, or infer among ambiguous candidates.
+Freeze the discovery result after selection. Duplicate prompt IDs are resolved by the tie-break above rather than by stopping. Never choose an artifact by filename alone and never infer coverage from an artifact whose body did not confirm its prompt ID.
 
 ## Discovery and Read Bounds
 
-Sort sidecar artifact candidates by normalized path using ordinal comparison, then process no more than 100 candidates and retain no more than 2,000 normalized findings. Reaching either cap stops new admission but permits bounded reconciliation of already retained records.
+Sort discovered candidates by normalized workspace-relative path using ordinal comparison, then process no more than 100 candidates and retain no more than 2,000 normalized findings. Reaching either cap stops new admission but permits bounded reconciliation of already retained records.
 
-Read each accepted artifact's bytes exactly once for baseline processing. From that same in-memory buffer, parse metadata, headings, and body and compute and verify SHA-256. Permit at most one defect-specific corrective reread per artifact tied to a named parse or citation defect and at most one owner or source indirection read for each evidence-backed dependency, at depth 1.
+Read each accepted artifact's bytes exactly once for baseline processing. From that same in-memory buffer, parse metadata, headings, and body and compute the stable SHA-256 identity digest. Permit at most one defect-specific corrective reread per artifact tied to a named parse or citation defect and at most one owner or source indirection read for each evidence-backed dependency, at depth 1.
 
 Total owner or source indirection reads must not exceed the 2,000 normalized-record cap. Do not repeat discovery. Do not reread an artifact for confidence or broader exploration.
 
 ## Sanitization
 
-Sanitize raw content immediately after reading and before any write, hash, comparison, manifest entry, normalized record, subagent transfer, or output. Never retain or reproduce secret values. Normalize workspace-relative paths to `/` while preserving repository path case, collapse prose whitespace to one ASCII space, encode text as UTF-8 without a byte-order mark, and use lowercase SHA-256 hexadecimal digests for content and records.
+Sanitize raw content immediately after reading and before any write, hash, comparison, index entry, normalized record, subagent transfer, or output. Never retain or reproduce secret values. Normalize workspace-relative paths to `/` while preserving repository path case, collapse prose whitespace to one ASCII space, encode text as UTF-8 without a byte-order mark, and use lowercase SHA-256 hexadecimal digests for content and records.
 
 For potential secrets, retain only the secret type, normalized file path and line, key or symbol name, and a stable redacted identity derived from sanitized metadata. Mark an artifact unsafe and stop `Blocked` when sanitization cannot be guaranteed. Do not hash, compare, transfer, or write unsafe raw content.
 
@@ -83,7 +88,7 @@ For potential secrets, retain only the secret type, normalized file path and lin
 Convert each source finding into a normalized source record and preserve every record and provenance ID through terminal disposition. Each record contains:
 
 * Stable record ID derived from a hash of the sanitized canonical identity tuple
-* Source prompt ID, artifact path, assessment run, revision, and original finding ID
+* Source prompt ID, artifact path, and original finding ID
 * Dependency or category, scenario, failure mode, priority, ownership, impacts, evidence, existing mitigations, and constraints
 * Citation-validation state, conflict state, disposition, and output finding ID when retained
 
@@ -99,10 +104,10 @@ Apply source precedence only to equivalent claims: validated file-line evidence 
 
 Apply the conflict matrix before rendering:
 
-* Required conflicts cover repository, assessment, revision, required prompt coverage, dependency applicability, priority, scenario, failure mode, citation, finding or output identity, and unsafe evidence. Any unresolved required conflict stops `Blocked`.
+* Required conflicts cover repository identity, required prompt coverage, dependency applicability, priority, scenario, failure mode, citation, finding or output identity, and unsafe evidence. Any unresolved required conflict stops `Blocked`.
 * Optional gaps cover only missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds, plus unresolved optional conflicts after bounded correction. Successfully accepted, validated, and rendered applicable service artifacts increase coverage and never force `Incomplete`.
 
-Every retained record receives one terminal disposition: rendered, exact duplicate, excluded by Prompt 1a or 1b, rejected with reason, or unresolved. Every rendered finding and evidence-derived substantive claim must map to one or more retained terminal record IDs. Status reasons, coverage metrics, and schema-safe empty-state text map to the frozen sidecar and manifest and need no normalized finding ID. Do not render raw or unretained evidence.
+Every retained record receives one terminal disposition: rendered, exact duplicate, excluded by Prompt 1a or 1b, rejected with reason, or unresolved. Every rendered finding and evidence-derived substantive claim must map to one or more retained terminal record IDs. Status reasons, coverage metrics, and schema-safe empty-state text map to the frozen discovery result and accepted artifact set and need no normalized finding ID. Do not render raw or unretained evidence.
 
 ## Schema-Safe Values
 
@@ -112,17 +117,17 @@ Render a finding only when it has a canonical dependency or category, P0-P3 prio
 
 Permit `Unknown: evidence unavailable` only in these nullable prose fields: ownership boundary, impacts, existing mitigations, constraints and limitations, and notes or unknowns. Ownership remains nullable and a schema-safe ownership value does not block `Complete`. Preserve every field label. Retain without rendering any record missing a closed field, then select status through the conflict matrix.
 
-Use bounded `Not observed in completed sources` only in nullable prose fields under partial coverage. Reserve `None found` for complete accepted-manifest coverage validated for that scope. Permitted nullable prose values do not by themselves force `Incomplete`.
+Use bounded `Not observed in completed sources` only in nullable prose fields under partial coverage. Reserve `None found` for complete accepted-artifact coverage validated for that scope. Permitted nullable prose values do not by themselves force `Incomplete`.
 
 ## Status and Stopping
 
 Set one explicit status with reasons and coverage metrics. Status precedence is `Blocked`, then `Incomplete`, then `Complete`.
 
-Stop `Blocked` for any sidecar failure, missing or ambiguous required input or proof, unsafe evidence, required unreadable artifacts, incompatible repository, assessment, revision, schema, completion, or hash metadata, duplicate prompt IDs or paths, or unresolved required conflicts.
+Stop `Blocked` for a missing, unreadable, or empty research root; for any required prompt ID with zero admitted candidates; for unsafe evidence; for required artifacts that are unreadable, malformed, or fail body-schema validation; for disagreement on repository identity across accepted artifacts; or for any unresolved required conflict.
 
 Stop `Incomplete` only for missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds, or unresolved optional conflicts after bounded correction, when no `Blocked` condition exists.
 
-Stop `Complete` only after the manifest is frozen, every accepted artifact is processed once, every retained record has a terminal disposition, no conflicts remain, all citations validate, every required section and index entry reconciles, and one full bounded verification pass produces no changes. Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
+Stop `Complete` only after the discovery result is frozen, every accepted artifact is processed once, every retained record has a terminal disposition, no conflicts remain, all citations validate, every required section and index entry reconciles, and one full bounded verification pass produces no changes. Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
 
 Do not continue exploring after a terminal status is established. A `Blocked` or `Incomplete` artifact remains evidence-only and must not fill gaps by inference.
 
@@ -134,7 +139,7 @@ Measure peak simultaneously retained source bytes, total sanitized source bytes,
 
 Sort retained normalized records by section number, priority from P0 through P3, dependency or category, scenario, normalized evidence path and line, and record ID. Assign stable sequential `F-00X` IDs after sorting.
 
-Render once from the sorted retained normalized records. Permit at most one corrective render total for a named verification defect. Include schema version, status, reasons, manifest metrics, accepted prompt coverage, rejected artifact counts by reason, citation totals, conflict totals, hard-limit state, normalized-record totals, peak simultaneously retained source bytes, sanitized source bytes, and post-release retained normalized-record bytes in the assessment scope and notes. Do not add assessment domains or additional numbered sections.
+Render once from the sorted retained normalized records. Permit at most one corrective render total for a named verification defect. Include schema version, status, reasons, coverage metrics, accepted prompt coverage, rejected artifact counts by reason, citation totals, conflict totals, hard-limit state, normalized-record totals, peak simultaneously retained source bytes, sanitized source bytes, and post-release retained normalized-record bytes in the assessment scope and notes. Do not add assessment domains or additional numbered sections.
 
 Use schema version `hve-resiliency-consolidation/v1` and the following direct Sections 1-9 structure.
 
@@ -152,13 +157,13 @@ Assessment Scope:
 * Schema Version: hve-resiliency-consolidation/v1
 * Consolidation Status: Blocked | Incomplete | Complete
 * Status Reasons: <sanitized reasons>
-* Manifest Coverage: <accepted>/<required>, <accepted>/<applicable optional>, <rejected by reason>
+* Coverage: <accepted>/<required>, <accepted>/<applicable optional>, <rejected by reason>
 * Processing Metrics: <candidates>, <accepted>, <normalized>, <rendered>, <duplicates>, <citation results>, <conflicts>, <hard-limit state>, <peak retained source bytes>, <sanitized source bytes>, <post-release retained normalized-record bytes>
 
 Notes:
 
 * This document is the evidence-only authoritative research input for HVE Task Planner.
-* Every rendered finding and evidence-derived substantive claim maps to retained normalized record IDs; status, coverage, and empty-state text map to the frozen sidecar and manifest.
+* Every rendered finding and evidence-derived substantive claim maps to retained normalized record IDs; status, coverage, and empty-state text map to the accepted artifact set discovered under the research root.
 * No remediation or design guidance is included.
 
 ## 1. Repository Context
@@ -236,6 +241,6 @@ Use this schema exactly once for every finding in Sections 2.1 and 3-8:
 
 ## Verification
 
-Perform at most two verification passes total: one initial pass and, only after the single permitted corrective render, one post-correction pass. Confirm that the exact sidecar passed every type and constraint and remained the sole run-metadata authority; the sidecar and manifest are frozen; each accepted artifact used one baseline byte read; sanitization preceded all retention and transfer; raw buffers and noncollision canonical serializations were released; required byte metrics reconcile; semantically equivalent claims merged with all contributing IDs while material differences remained separate; accepted service evidence and permitted nullable prose did not cause `Incomplete`; Sections 1-9 remain in order; every finding has canonical dependency or category, all required field labels, P0-P3, one allowed scenario, a material failure mode, at least one validated file-line citation, and retained record IDs; every index entry maps to one finding; no unretained evidence appears; and no prohibited recommendation or implementation content is present.
+Perform at most two verification passes total: one initial pass and, only after the single permitted corrective render, one post-correction pass. Confirm that discovery ran only under the resolved research root; the discovery result is frozen after selection; every required prompt ID has at least one accepted artifact with a body-confirmed prompt ID; each accepted artifact used one baseline byte read; sanitization preceded all retention and transfer; raw buffers and noncollision canonical serializations were released; required byte metrics reconcile; semantically equivalent claims merged with all contributing IDs while material differences remained separate; accepted service evidence and permitted nullable prose did not cause `Incomplete`; Sections 1-9 remain in order; every finding has canonical dependency or category, all required field labels, P0-P3, one allowed scenario, a material failure mode, at least one validated file-line citation, and retained record IDs; every index entry maps to one finding; no unretained evidence appears; and no prohibited recommendation or implementation content is present.
 
 If verification identifies a specific render-only defect, correct it once and repeat verification without rediscovery or source rereads. Otherwise apply the stopping rules.

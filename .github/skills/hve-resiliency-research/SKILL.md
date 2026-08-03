@@ -37,7 +37,16 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 10. Run `/clear`.
 11. Run `/hve-resiliency-researcher-4`.
 12. Run `/clear`.
-13. Run `/hve-resiliency-researcher-5`.
+13. Prompt 5 has been split into a bounded pipeline. Run these in order, with `/clear` between each step:
+    1. `/hve-resiliency-researcher-5-0-scaffold` (validates Prompt 1a and 1b Section 1, freezes the eligible-dependency inventory, emits skeleton + manifest sidecar).
+    2. `/hve-resiliency-researcher-5-1-startup-failure`.
+    3. `/hve-resiliency-researcher-5-2-silent-degradation`.
+    4. `/hve-resiliency-researcher-5-3-data-loss-partial-processing`.
+    5. `/hve-resiliency-researcher-5-4-blocking-transactions`.
+    6. `/hve-resiliency-researcher-5-verify` (audits the four fragments against the manifest and workspace source).
+    7. `/hve-resiliency-researcher-5-finalize` (assembles fragments into the single Prompt 5 artifact consumed by consolidation).
+    * The four outcome fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
+    * `/hve-resiliency-researcher-5` is retained as a deprecated redirect to the scaffold entry point.
 14. Run `/clear`.
 15. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
 16. Run `/clear`.
@@ -77,30 +86,47 @@ Phase 2 runs only after Phase 1 is complete. Run only the prompts matching depen
 
 ### Phase 3: Consolidation
 
+Consolidation has been split into a bounded pipeline. Run these in order, with `/clear` between each step:
+
 42. Run `/clear`.
-43. Run `/hve-resiliency-researcher-consolidate` to merge all research outputs from Prompts 0-7 and any service-specific prompts into a single consolidated research document.
-44. Review the consolidated report at `.copilot-tracking/research/`.
+43. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
+44. Run `/clear`, then run each section-fill prompt against the manifest emitted in step 43. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
+    * `/hve-resiliency-consolidate-1-repository-context`
+    * `/hve-resiliency-consolidate-2-dependency-inventory`
+    * `/hve-resiliency-consolidate-3-region-zone`
+    * `/hve-resiliency-consolidate-4-state-data`
+    * `/hve-resiliency-consolidate-5-failure-degraded`
+    * `/hve-resiliency-consolidate-6-shared-cross-repo`
+    * `/hve-resiliency-consolidate-7-secrets`
+    * `/hve-resiliency-consolidate-8-other`
+45. Run `/clear`.
+46. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
+47. Run `/clear`.
+48. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
+49. Run `/clear`.
+50. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
+51. Review the consolidated report at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 
-45. Run `/clear`.
-46. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
-47. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
-48. Run `/clear`.
-49. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
-50. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
+52. Run `/clear`.
+53. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
+54. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
+55. Run `/clear`.
+56. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
+57. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
 
 ### Phase 5: Code-Level Resiliency Assessment Report
 
-51. Run `/clear`.
-52. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
-53. Run `/clear`.
-54. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
-55. Run `/clear`.
-56. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
-57. Run `/clear`.
-58. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
-59. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+58. Run `/clear`.
+59. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
+60. Run `/clear`.
+61. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
+62. Run `/clear`.
+63. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
+64. Run `/clear`.
+65. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
+66. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 
@@ -278,24 +304,50 @@ status: current
 
 ### Prompt 5 Deliverable Template
 
+The Prompt 5 pipeline emits four outcome fragments plus a manifest sidecar, and finalize assembles them into a single artifact with four subsections. The Required Row Schema is defined in the [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md) and applies uniformly to every rendered row.
+
+Outputs produced by the pipeline:
+
+* Skeleton and final artifact: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.md`
+* Manifest sidecar: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.manifest.md`
+* Fragments: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/{startup-failure,silent-degradation,data-loss-partial-processing,blocking-transactions}.md`
+* Verify audit: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/verify-audit.md`
+
+Row shape (each row is emitted with an outcome-scoped ID such as `F-5-startup-001`, `F-5-degradation-001`, `F-5-data-loss-001`, or `F-5-blocking-001`):
+
 ```text
-# Prompt 5 Research Output
+### F-5-<outcome>-00X
 
 - Failure mode:
 - Priority: P0 / P1 / P2 / P3
-- Triggering dependency + failure type (timeout/DNS/auth/partial outage):
+- Triggering dependency + failure type (timeout / DNS failure / authentication failure / partial outage):
+- Scenario: West US 2 zone failure | West US 2 to West US regional failover
 - Code path / entrypoint:
-- Observed behavior (startup fail/degrade/data loss/blocking):
-- User/customer-visible impact:
+- Observed behavior (startup failure / silent degradation / data loss or partial processing / blocking transactions):
+- User or customer-visible impact:
 - Business impact:
 - Blast radius:
 - Data loss potential:
 - Data consistency risk:
 - Detection signals:
 - Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
+- Constraints or limitations (evidence):
 - Manual ops workaround (references):
 - Evidence citations (files + line numbers):
+```
+
+Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finalize`):
+
+```text
+# <repo-name> Failure and Degraded Mode Behavior (Researcher 5)
+
+## Scope and Assumptions
+## Task Implementation Requests
+## 5.1 Startup Failure
+## 5.2 Silent Functional Degradation
+## 5.3 Data Loss or Partial Processing
+## 5.4 Blocking Transactions
+## Ledger and Terminal Outcomes
 ```
 
 ### Prompt 6 Deliverable Template
@@ -331,15 +383,19 @@ status: current
 
 ### Consolidated Report Deliverable Template
 
+The consolidated report is produced by the split consolidation pipeline (scaffold, section-fill, verify, finalize). The Required Finding Schema for Sections 2.1 and 3-8 is defined in the [Consolidation Shared Contract](../../instructions/hve-resiliency-consolidation-shared.instructions.md); finalize reconciles section-scoped finding IDs into the authoritative `F-00X` scheme.
+
 ```text
-# HVE Task Research — <repo-name>
+# HVE Task Research - <repo-name>
 
 Assessment Scope:
-- Repository: <repo-name>
-- Focus: Zone survivability and regional failover
-- Regions Evaluated: West US 2 → West US
-- Assessment Date: YYYY-MM-DD
-- Generated By: HVE Task Researcher
+
+* Repository: <repo-name>
+* Focus: West US 2 zone failure and West US 2 to West US regional failover
+* Regions Evaluated: West US 2 to West US
+* Assessment Date: YYYY-MM-DD
+* Generated By: HVE Task Researcher
+* Schema Version: hve-resiliency-consolidation/v1
 
 ## 1. Repository Context
 
@@ -349,9 +405,6 @@ Assessment Scope:
 ### 2.3 Not Applicable Dependency Categories
 
 ## 3. Region and Zone Assumptions
-(Per-finding template: Finding ID, Priority, What is true, Evidence,
-Why risk, Failure mode(s), What could happen, Existing mitigations,
-Constraints/limitations, Notes/unknowns)
 
 ## 4. State and Data Characteristics
 
@@ -359,6 +412,28 @@ Constraints/limitations, Notes/unknowns)
 
 ## 6. Shared and Cross-Repository Dependencies
 
-## 7. Research Findings Index (Authoritative)
+## 7. Hard-Coded Values or Secrets in Code or Files
+
+## 8. Other Findings Not Categorized Above
+
+## 9. Research Findings Index (Authoritative)
+```
+
+Each rendered finding under Sections 2.1 and 3-8 uses the Required Finding Schema:
+
+```text
+### Finding F-00X
+
+* Dependency or Category:
+* Priority: P0 | P1 | P2 | P3
+* Ownership:
+* Scenario: West US 2 zone failure | West US 2 to West US regional failover
+* Description:
+* Failure Mode and Scenario-Specific Risk:
+* Impacts:
+* Evidence: <normalized-path>:L<start>-L<end>
+* Source Record IDs:
+* Existing Mitigations:
+* Constraints and Limitations:
 ```
 
