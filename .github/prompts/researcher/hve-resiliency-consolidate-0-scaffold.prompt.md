@@ -112,7 +112,7 @@ Notes:
 
 ## 8. Other Findings Not Categorized Above
 
-<!-- section-8 placeholder: filled by hve-resiliency-consolidate-8-other -->
+<!-- section-8 placeholder: filled by the hve-resiliency-consolidate-8-* split pipeline (scaffold, five group fills, verify, finalize) -->
 
 ## 9. Research Findings Index (Authoritative)
 
