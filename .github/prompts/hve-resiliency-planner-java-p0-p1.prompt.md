@@ -1,6 +1,7 @@
 ---
+name: hve-resiliency-planner-java-p0-p1
 description: "Plans Java-only P0/P1 code changes from a Code-Level Resiliency Assessment, delegating to the HVE Task Planner"
-agent: Task Planner
+agent: "Task Planner"
 argument-hint: "[assessment=...] [findings=...] [chat={true|false}]"
 ---
 
@@ -71,33 +72,33 @@ Formats to specify in the plan:
 
 * New Java type or method — Javadoc above the declaration:
 
-  ```java
-  /**
-   * Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint.
-   */
-  ```
+	```java
+	/**
+	 * Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint.
+	 */
+	```
 
 * Existing Java type or method that already carries Javadoc — a final line inside the existing block:
 
-  ```java
-  /**
-   * Existing description of the method.
-   *
-   * Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint.
-   */
-  ```
+	```java
+	/**
+	 * Existing description of the method.
+	 *
+	 * Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint.
+	 */
+	```
 
 * Modified Java statement or block — single-line comment immediately above the change:
 
-  ```java
-  // Resiliency finding P0-013: The provider call chain has no operator timeout or deadline.
-  ```
+	```java
+	// Resiliency finding P0-013: The provider call chain has no operator timeout or deadline.
+	```
 
 * Build-manifest dependency added for a Java change — single-line comment on the dependency:
 
-  ```groovy
-  // Resiliency finding P0-005 (dependency prerequisite): Federated identity chain runs per request with no timeout.
-  ```
+	```groovy
+	// Resiliency finding P0-005 (dependency prerequisite): Federated identity chain runs per request with no timeout.
+	```
 
 ## Required Protocol
 
