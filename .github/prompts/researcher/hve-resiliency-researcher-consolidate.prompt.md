@@ -1,20 +1,10 @@
 ---
-description: Deprecated - superseded by the split consolidation pipeline (scaffold, section-fill, verify, finalize)
+description: Consolidate completed Application resiliency evidence into the authoritative Task Planner research handoff
 agent: "Task Researcher"
 argument-hint: "(no required arguments; optional: researchRoot=.copilot-tracking/research/)"
 ---
 
 # Application HVE Researcher Consolidate
-
-> **Deprecated:** This single-run consolidation prompt is superseded by the bounded split consolidation pipeline. Prefer running the pipeline, which reads a small subset of artifacts per invocation and isolates discovery, fill, verification, and finalization into separate prompts:
->
-> 1. `/hve-resiliency-consolidate-0-scaffold` - run discovery once; emit the skeleton and the frozen manifest sidecar.
-> 2. `/hve-resiliency-consolidate-1-repository-context` through `/hve-resiliency-consolidate-7-secrets` - fill Sections 1-7 fragments (may run in parallel).
-> 3. Run the Section 8 split sub-pipeline: `/hve-resiliency-consolidate-8-0-scaffold`, then the five group fills (`-8-1-core-context` through `-8-5-services`, may run in parallel), then `/hve-resiliency-consolidate-8-verify`, then `/hve-resiliency-consolidate-8-finalize` to assemble `sections/section-8.md`.
-> 4. `/hve-resiliency-consolidate-verify-1-4` and `/hve-resiliency-consolidate-verify-5-8` - audit the section fragments.
-> 5. `/hve-resiliency-consolidate-9-finalize` - assemble, reconcile IDs, set status once, build the Section 9 index.
->
-> Shared rules live in [Consolidation Shared Contract](../../instructions/hve-resiliency-consolidation-shared.instructions.md). The single-run contract below is retained for reference only.
 
 Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md) for inherited platform scenarios, dependency applicability rules, and P0-P3 definitions. If inherited instructions conflict with this prompt, this consolidation-only evidence contract takes precedence.
 

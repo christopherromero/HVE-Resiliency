@@ -25,7 +25,8 @@ recommendations, alternatives, or code examples.
 1. Qualify only frontmatter with exact `source-prompt`
    `hve-resiliency-researcher-1a` or `hve-resiliency-researcher-1b`, plus
    `schema-version: 1`, `status: current`, and the matching body heading:
-   `## Section 1 - Used External Dependencies (Evidence Confirmed)` for Prompt 1a or Prompt 1b.
+   `## Section 1 - Used Azure Services (Evidence Confirmed)` for Prompt 1a or
+   `## Section 1 — Used External Dependencies (Evidence Confirmed)` for Prompt 1b.
    Frontmatter controls identity/status.
 1. Other counts are Blocked. Read only both Section 1 bodies. Absent Application
    Gateway/App Gateway is Not Applicable. Stop before traversal.

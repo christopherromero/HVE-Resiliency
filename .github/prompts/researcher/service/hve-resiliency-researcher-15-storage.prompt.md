@@ -75,9 +75,11 @@ must use `source-prompt: hve-resiliency-researcher-1b`. `status: current` is
 the producer-completed signal. `ms.date` must match the `<YYYY-MM-DD>` segment
 of the artifact path. After frontmatter, require one H1 with any nonempty
 text, then these three H2 headings once and in order with no other H1 or H2;
-accept either ASCII hyphen `-` or em-dash `—` as the separator in each H2:
+accept either ASCII hyphen `-` or em-dash `—` as the separator in each H2. The
+Section 1 heading text differs by producer:
 
-1. `## Section 1 - Used External Dependencies (Evidence Confirmed)`
+1. `## Section 1 - Used Azure Services (Evidence Confirmed)` for Prompt 1a, or
+   `## Section 1 — Used External Dependencies (Evidence Confirmed)` for Prompt 1b
 2. `## Section 2 - Checked but Not Present`
 3. `## Section 3 - Not Applicable`
 

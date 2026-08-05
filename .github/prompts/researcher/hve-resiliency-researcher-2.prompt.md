@@ -45,7 +45,7 @@ reference one region or zone.
 
 1. Read each provided prerequisite artifact once. Do not search the repository
    for alternate copies.
-2. Require Prompt 1a `Section 1 - Used External Dependencies (Evidence Confirmed)` with
+2. Require Prompt 1a `Section 1 - Used Azure Services (Evidence Confirmed)` with
    no `Status: Incomplete`, and Prompt 1b `Section 1 — Used External Dependencies
    (Evidence Confirmed)`. Treat only these completed sections as the confirmed
    dependency inventories for Prompt 2.

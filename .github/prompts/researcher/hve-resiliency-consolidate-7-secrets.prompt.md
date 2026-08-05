@@ -32,4 +32,4 @@ Write the Section 7 fragment to `<consolidatedDocDir>/sections/section-7.md` beg
 
 ## Completion
 
-Report the artifacts swept, the finding count, retained record totals, and the fragment path. Confirm no secret value was reproduced. End with a next-step suggestion to run the Section 8 split pipeline starting at `/hve-resiliency-consolidate-8-0-scaffold`.
+Report the artifacts swept, the finding count, retained record totals, and the fragment path. Confirm no secret value was reproduced. End with a next-step suggestion to run the Section 8 fill prompt.

@@ -14,10 +14,9 @@ Use [Application Platform Context](hve-resiliency-platform-context.instructions.
 The consolidation workflow is a bounded pipeline that replaces the single monolithic consolidate prompt:
 
 1. Scaffold: run discovery once, emit the consolidated skeleton plus a frozen manifest sidecar.
-2. Section fill (Sections 1-7): each prompt reads only its granted scope and writes one section fragment file.
-3. Section 8 split sub-pipeline: a nested pipeline (scaffold, five group fills, verify, finalize) writes the single Section 8 fragment (`sections/section-8.md`) consumed by the outer verify and outer finalize. See [Consolidate 8 Split Contract](hve-resiliency-consolidate-8-split.instructions.md).
-4. Verify (Sections 1-4 and 5-8): audit the section fragments against routed source artifacts.
-5. Finalize: assemble fragments, run index-level dedup and section precedence, reconcile IDs, set status once, build the Section 9 index.
+2. Section fill (Sections 1-8): each prompt reads only its granted scope and writes one section fragment file.
+3. Verify (Sections 1-4 and 5-8): audit the section fragments against routed source artifacts.
+4. Finalize: assemble fragments, run index-level dedup and section precedence, reconcile IDs, set status once, build the Section 9 index.
 
 Every consolidated artifact uses schema version `hve-resiliency-consolidation/v1` and targets the current repository.
 
@@ -97,8 +96,6 @@ Merge semantically equivalent source records into one rendered finding that carr
 ## Section-Scoped Finding IDs
 
 Section-fill prompts allocate section-scoped finding IDs of the form `F-<section>-00X` (for example `F-1-001`, `F-3-002`) so parallel fill prompts never collide. The finalize prompt reconciles section-scoped IDs into the authoritative sequential `F-00X` scheme exactly once. Never renumber into the `F-00X` scheme before finalize.
-
-Section 8 uses a further sub-fill axis by source artifact group. Section 8 group-fill prompts allocate IDs of the form `F-8-<group-key>-00X` where `<group-key>` is one of `core-context`, `platform-state`, `failure-crossrepo`, `secrets-adjacent`, `services`. The Section 8 nested finalize prompt preserves these IDs verbatim in the assembled `sections/section-8.md`; the outer finalize prompt reconciles them into the authoritative sequential `F-00X` scheme by canonical tuple order exactly as it does for `F-<section>-00X` IDs.
 
 ## Schema-Safe Values
 

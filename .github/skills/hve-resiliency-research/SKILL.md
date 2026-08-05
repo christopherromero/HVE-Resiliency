@@ -50,17 +50,7 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 14. Run `/clear`.
 15. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
 16. Run `/clear`.
-17. Prompt 7 Logging has been split into a bounded pipeline. Run these in order, with `/clear` between each step:
-    1. `/hve-resiliency-researcher-7-logging-0-scaffold` (validates Prompt 1a and 1b Section 1, freezes the eligible-dependency inventory and payment applicability, emits skeleton + manifest sidecar).
-    2. `/hve-resiliency-researcher-7-logging-1-startup-health`.
-    3. `/hve-resiliency-researcher-7-logging-2-transactions`.
-    4. `/hve-resiliency-researcher-7-logging-3-correlation-context`.
-    5. `/hve-resiliency-researcher-7-logging-4-log-hygiene`.
-    6. `/hve-resiliency-researcher-7-logging-5-silent-outage-diagnostics`.
-    7. `/hve-resiliency-researcher-7-logging-verify` (audits the five category fragments against the manifest and workspace source).
-    8. `/hve-resiliency-researcher-7-logging-finalize` (assembles fragments into the single Prompt 7 artifact and builds the Section 3 planning handoff).
-    * The five category fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
-    * `/hve-resiliency-researcher-7-logging` is retained as a deprecated redirect to the scaffold entry point.
+17. Run `/hve-resiliency-researcher-7-logging` (Logging).
 
 ### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial)
 
@@ -100,7 +90,7 @@ Consolidation has been split into a bounded pipeline. Run these in order, with `
 
 42. Run `/clear`.
 43. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
-44. Run `/clear`, then run each Sections 1-7 fill prompt against the manifest emitted in step 43. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
+44. Run `/clear`, then run each section-fill prompt against the manifest emitted in step 43. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
     * `/hve-resiliency-consolidate-1-repository-context`
     * `/hve-resiliency-consolidate-2-dependency-inventory`
     * `/hve-resiliency-consolidate-3-region-zone`
@@ -108,43 +98,35 @@ Consolidation has been split into a bounded pipeline. Run these in order, with `
     * `/hve-resiliency-consolidate-5-failure-degraded`
     * `/hve-resiliency-consolidate-6-shared-cross-repo`
     * `/hve-resiliency-consolidate-7-secrets`
-45. Run `/clear`, then run the Section 8 split sub-pipeline (scaffold, five group fills, verify, finalize). Group fills write independent sub-fragment files under `<consolidatedDocDir>/sections/section-8-fragments/` and may run in parallel chats; the sub-pipeline finalize writes `<consolidatedDocDir>/sections/section-8.md`:
-    * `/hve-resiliency-consolidate-8-0-scaffold` (emits the Section 8 sub-skeleton and frozen sub-manifest)
-    * `/hve-resiliency-consolidate-8-1-core-context`
-    * `/hve-resiliency-consolidate-8-2-platform-state`
-    * `/hve-resiliency-consolidate-8-3-failure-crossrepo`
-    * `/hve-resiliency-consolidate-8-4-secrets-adjacent`
-    * `/hve-resiliency-consolidate-8-5-services`
-    * `/hve-resiliency-consolidate-8-verify`
-    * `/hve-resiliency-consolidate-8-finalize`
-46. Run `/clear`.
-47. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
-48. Run `/clear`.
-49. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
-50. Run `/clear`.
-51. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
-52. Review the consolidated report at `.copilot-tracking/research/`.
+    * `/hve-resiliency-consolidate-8-other`
+45. Run `/clear`.
+46. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
+47. Run `/clear`.
+48. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
+49. Run `/clear`.
+50. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
+51. Review the consolidated report at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 
-53. Run `/clear`.
-54. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
-55. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
-56. Run `/clear`.
-57. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
-58. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
+52. Run `/clear`.
+53. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
+54. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
+55. Run `/clear`.
+56. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
+57. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
 
 ### Phase 5: Code-Level Resiliency Assessment Report
 
-59. Run `/clear`.
-60. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
-61. Run `/clear`.
-62. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
-63. Run `/clear`.
-64. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
-65. Run `/clear`.
-66. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
-67. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+58. Run `/clear`.
+59. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
+60. Run `/clear`.
+61. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
+62. Run `/clear`.
+63. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
+64. Run `/clear`.
+65. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
+66. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 
@@ -381,74 +363,6 @@ Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finaliz
 - Evidence: <file path>:<line>
 - Existing mitigations present (if any): with evidence
 - Constraints/limitations (if any): with evidence
-```
-
-### Prompt 7 Logging Deliverable Template
-
-The Prompt 7 Logging pipeline emits five category fragments plus a manifest sidecar, and finalize assembles them into a single artifact with Section 1 (inventory rows) and Section 2 (findings) organized by category, followed by a Section 3 planning handoff. The Required Inventory Row Schema and Required Finding Schema are defined in the [Researcher 7 Logging Split Contract](../../instructions/hve-resiliency-researcher-7-logging-split.instructions.md) and apply uniformly to every rendered row and finding.
-
-Outputs produced by the pipeline:
-
-* Skeleton and final artifact: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-7-logging-research.md`
-* Manifest sidecar: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-7-logging-research.manifest.md`
-* Fragments: `<researchRoot>/YYYY-MM-DD/prompt-7-logging-fragments/{startup-health,transactions,correlation-context,log-hygiene,silent-outage-diagnostics}.md`
-* Verify audit: `<researchRoot>/YYYY-MM-DD/prompt-7-logging-fragments/verify-audit.md`
-
-Inventory row shape (each row is emitted with a category-scoped ID such as `I-7-startup-health-001`, `I-7-transactions-001`, `I-7-correlation-context-001`, `I-7-log-hygiene-001`, or `I-7-silent-outage-diagnostics-001`):
-
-```text
-### I-7-<category-key>-00X
-
-- Component or module:
-- Dependency or workflow:
-- Logged events or states:
-- Fields:
-- Level and format:
-- Sink or telemetry:
-- Evidence citations (files + line numbers):
-```
-
-Finding row shape (each finding is emitted with a category-scoped ID such as `F-7-startup-health-001`, `F-7-transactions-001`, `F-7-correlation-context-001`, `F-7-log-hygiene-001`, or `F-7-silent-outage-diagnostics-001`):
-
-```text
-### F-7-<category-key>-00X
-
-- Dependency or workflow:
-- Concern or sub-category:
-- Production owner or entrypoint:
-- Diagnostic outcome:
-- Observed behavior:
-- Priority: P0 | P1 | P2 | P3
-- Scenario: West US 2 zone failure | West US 2 to West US regional failover
-- Optional impact:
-- Diagnostic impact:
-- Operational impact:
-- Mitigation:
-- Constraints:
-- Workaround:
-- Evidence citations (files + line numbers):
-```
-
-Finalized artifact structure (assembled by `/hve-resiliency-researcher-7-logging-finalize`):
-
-```text
-# <repo-name> Logging and Observability (Researcher 7)
-
-## Scope and Assumptions
-## Section 1 - Logging Inventory
-### 1.1 Startup and Health
-### 1.2 Transactions
-### 1.3 Correlation and Context
-### 1.4 Log Hygiene
-### 1.5 Silent Outage Diagnostics
-## Section 2 - Logging Findings
-### 2.1 Startup and Health
-### 2.2 Transactions
-### 2.3 Correlation and Context
-### 2.4 Log Hygiene
-### 2.5 Silent Outage Diagnostics
-## Section 3 - Planning Handoff
-## Ledger and Terminal Outcomes
 ```
 
 ### Service-Specific Prompts (8-19) Deliverable Template

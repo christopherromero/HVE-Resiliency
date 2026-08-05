@@ -60,9 +60,11 @@ Validate both input artifacts before repository discovery:
 3. Require equal `repository`, `assessmentId`, and `revision` across the artifacts. Require timestamps no
    more than 24 hours apart and neither later than current UTC plus five minutes. Artifact age does not
    establish currency; exact current-revision equality does.
-4. Validate the producer body schema and every prerequisite file-line citation. Map Prompt 1a and Prompt 1b
-   `Section 1 - Used External Dependencies (Evidence Confirmed)`, `Section 2 - Checked but Not Present`, and
-   `Section 3 - Not Applicable`. Reject malformed or
+4. Validate the producer body schema and every prerequisite file-line citation. Map Prompt 1a
+   `Section 1 - Used Azure Services (Evidence Confirmed)`, `Section 2 - Checked but Not Present`, and
+   `Section 3 - Not Applicable`, and Prompt 1b
+   `Section 1 — Used External Dependencies (Evidence Confirmed)`, `Section 2 — Checked but Not Present`, and
+   `Section 3 — Not Applicable`. Reject malformed or
    conflicting mappings.
 5. Enter discovery only when Prompt 1a confirms Azure Cosmos DB through product-specific production
    binding evidence. Generic MongoDB dependencies, names, protocols, or configuration alone do not

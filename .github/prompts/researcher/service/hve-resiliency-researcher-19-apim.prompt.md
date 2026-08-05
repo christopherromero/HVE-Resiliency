@@ -11,7 +11,8 @@ Use [Application Platform Context](../../../instructions/hve-resiliency-platform
 
 Run Prompt 19 directly. Before any repository discovery, use only Prompt 1a or
 Prompt 1b inventory confirmation to identify eligible APIM dependencies. Treat
-Prompt 1a and Prompt 1b `Section 1 - Used External Dependencies (Evidence Confirmed)` as equivalent positive
+Prompt 1a `Section 1 - Used Azure Services (Evidence Confirmed)` and Prompt 1b
+`Section 1 — Used External Dependencies (Evidence Confirmed)` as equivalent positive
 APIM inventory gates. These are the sole eligibility gates. Do not infer APIM use
 from repository matches, another prompt, or architecture assumptions.
 
@@ -169,8 +170,8 @@ Place exactly one of these mutually exclusive statuses in the report-level statu
 block. Apply them in this order and stop immediately when a round-0 or production
 blocking status applies:
 
-1. `Invalid-input`: the supplied Prompt 1a or Prompt 1b
-  `Section 1 - Used External Dependencies (Evidence Confirmed)` inventory is missing
+1. `Invalid-input`: the supplied Prompt 1a `Section 1 - Used Azure Services (Evidence Confirmed)`
+  or Prompt 1b `Section 1 — Used External Dependencies (Evidence Confirmed)` inventory is missing
   or structurally unusable.
 2. `Not Applicable`: a usable positive inventory section does not confirm APIM as used
   or an exclusion section classifies APIM as excluded.
@@ -192,7 +193,7 @@ repository name as the filename prefix. Keep non-finding and blocked states outs
 issue rows in this compact report-level block:
 
 * Status: <one report outcome>
-* Eligibility: <Prompt 1a or Prompt 1b Used External Dependencies Section 1 evidence or terminal gate reason>
+* Eligibility: <Prompt 1a Used Azure Services or Prompt 1b Used External Dependencies Section 1 evidence or terminal gate reason>
 * Discovery outcome: <terminal outcomes or Not started>
 * Finding count: <count>
 * Limitations: <named Unknown or production gaps, or None>

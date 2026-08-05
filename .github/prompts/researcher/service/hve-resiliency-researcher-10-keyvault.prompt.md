@@ -69,10 +69,10 @@ Validate both input paths before repository research:
    Frontmatter metadata never overrides malformed producer body content. Required
    dependency records include a dependency or service identity, classification, repository and revision
    identity, producer completion state, and supporting file-line citations.
-5. Map Prompt 1a `Section 1 - Used External Dependencies (Evidence Confirmed)` to confirmed dependencies.
+5. Map Prompt 1a `Section 1 - Used Azure Services (Evidence Confirmed)` to confirmed dependencies.
    Treat `Section 2 - Checked but Not Present` and `Section 3 - Not Applicable` as exclusions.
-6. Map Prompt 1b `Section 1 - Used External Dependencies (Evidence Confirmed)` to confirmed dependencies.
-   Treat `Section 2 - Checked but Not Present` and `Section 3 - Not Applicable` as exclusions.
+6. Map Prompt 1b `Section 1 — Used External Dependencies (Evidence Confirmed)` to confirmed dependencies.
+   Treat `Section 2 — Checked but Not Present` and `Section 3 — Not Applicable` as exclusions.
 7. Continue only when the validated confirmed-dependency sections establish Key Vault applicability.
 
 Select `Not Applicable` only when both validated artifacts provide compatible exclusion evidence for Key
