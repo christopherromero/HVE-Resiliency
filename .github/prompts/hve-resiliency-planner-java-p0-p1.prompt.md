@@ -59,18 +59,18 @@ Every change site carries a comment naming the finding it remediates, so the dif
 * `Resiliency finding` is a fixed marker string; audit tooling greps for it. Use finding IDs verbatim from the assessment headings.
 * Include the finding's short title. Keep each annotation on one line under 120 characters, truncating the title at a clause boundary.
 * Annotate each change site once. Repeat the same annotation when one finding spans several sites; list several IDs in one comment when one site covers several findings.
-* For a deletion with no surviving statement, annotate the enclosing declaration and state the removal, for example `// Resiliency finding P1-008: appCode coercion removed; the downstream outcome is returned verbatim.`
+* For a deletion with no surviving statement, annotate the enclosing declaration and state the removal, for example `// Resiliency finding P1-XXX: swallowed exception handler removed; the original failure now propagates.`
 * Do not annotate unchanged code or test code, and do not restate the assessment's Issue or Recommended Fix text.
 
 Placement by target:
 
 | Target | Placement | Example |
 | --- | --- | --- |
-| New type or method | Javadoc above the declaration | `/** Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint. */` |
-| Declaration that already has Javadoc | Final line inside the existing block, never a second block | `* Resiliency finding P0-007: No dependency health is surfaced to any probe endpoint.` |
-| Modified statement or block | Line comment immediately above | `// Resiliency finding P0-013: The provider call chain has no operator timeout or deadline.` |
-| Build-manifest dependency | Line comment on the dependency | `// Resiliency finding P1-003: No resilience4j or circuit breaker library on the classpath.` |
-| Configuration key | Line comment immediately above the key | `# Resiliency finding P0-002: Actuator probe groups are not explicitly configured.` |
+| New type or method | Javadoc above the declaration | `/** Resiliency finding P0-XXX: <short title from the assessment>. */` |
+| Declaration that already has Javadoc | Final line inside the existing block, never a second block | `* Resiliency finding P0-XXX: <short title from the assessment>.` |
+| Modified statement or block | Line comment immediately above | `// Resiliency finding P0-XXX: <short title from the assessment>.` |
+| Build-manifest dependency | Line comment on the dependency | `// Resiliency finding P1-XXX: <short title from the assessment>.` |
+| Configuration key | Line comment immediately above the key | `# Resiliency finding P0-XXX: <short title from the assessment>.` |
 
 ## Protocol
 
