@@ -127,7 +127,7 @@ In both modes, the agent MUST first compute the applicable prompt set by mapping
 * `/hve-resiliency-researcher-13-sql` (SQL Server)
 * `/hve-resiliency-researcher-14-redis` (Redis)
 * `/hve-resiliency-researcher-15-storage` (Azure Storage)
-* `/hve-resiliency-researcher-16-kafka` (Kafka - active-passive design) **or** `/hve-resiliency-researcher-16-kafka-active-active` (Kafka - active-active mirror-topic + feature-flag design). Select exactly one Kafka prompt per assessment based on the target architecture; do not run both in the same pass.
+* `/hve-resiliency-researcher-16-kafka` (Kafka - active-passive design), `/hve-resiliency-researcher-16-kafka-active-standby-confluent` (Confluent-managed active-standby design), **or** `/hve-resiliency-researcher-16-kafka-active-active` (Kafka - active-active mirror-topic + feature-flag design). Select exactly one Kafka prompt per assessment based on the target architecture; do not run more than one in the same pass.
 * `/hve-resiliency-researcher-17-networking` (Networking)
 * `/hve-resiliency-researcher-18-entraid` (Entra ID)
 * `/hve-resiliency-researcher-19-apim` (APIM)
