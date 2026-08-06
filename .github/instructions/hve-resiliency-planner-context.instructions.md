@@ -12,6 +12,7 @@ Apply this context to all resiliency Task Planner prompts.
 * It reflects the current implementation of this repository with respect to zone survivability and regional failover
 * Do not challenge, reinterpret, or add new findings beyond those in the research artifact
 * Use the research as fixed constraints
+* Never paraphrase referenced code. If a finding or recommendation uses code, keep it accurate to the file it comes from - matching path, line numbers, and exact text - and ensure any proposed fix builds on exactly that code
 
 ## Engagement Context
 
@@ -188,17 +189,21 @@ When writing findings and recommendations, keep the following system topology in
 
 All output files and reports must use the current repository name (or a user-supplied context variable) as the prefix, not a hardcoded value. For example, output to `.copilot-tracking/research/<repo-name>-planner-report.md`.
 
+## Context Management
+
+A context reset (`/clear` or a new chat) is a clarity and cost tool, not a correctness requirement: durable artifacts under `.copilot-tracking/` carry context forward between prompts. For manual, one-prompt-per-turn runs, a reset before each prompt keeps input scoped to the prior artifact plus the current prompt (the Mode A cost optimization); it is recommended for cost and optional for correctness. At minimum, reset at phase boundaries and when switching agents. The resiliency orchestrator agents manage context automatically by dispatching each step to a fresh subagent, so no manual reset is needed when using them.
+
 ## Next Step Suggestions
 
 After completing each planner prompt output, end the response with a next-step suggestion the user can click. Format as:
 
-> **Next step:** Run `/command-name`
+> **Next step:** `/command-name`
 
 Follow this sequence:
 
 | Current Prompt         | Next Step                                                                                |
 |------------------------|------------------------------------------------------------------------------------------|
 | `/hve-resiliency-planner-0` | `/hve-resiliency-planner-1`                                                                    |
-| `/hve-resiliency-planner-1` | Run `/clear`, then `/hve-resiliency-planner-0` to re-lock evidence, then `/hve-resiliency-planner-2` |
+| `/hve-resiliency-planner-1` | Run `/hve-resiliency-planner-0` to re-lock evidence, then `/hve-resiliency-planner-2` |
 | `/hve-resiliency-planner-2` | `/hve-resiliency-planner-3`                                                                    |
 | `/hve-resiliency-planner-3` | Workflow complete                                                                        |

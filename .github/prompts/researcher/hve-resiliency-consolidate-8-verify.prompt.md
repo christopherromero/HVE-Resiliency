@@ -1,7 +1,7 @@
 ---
 description: Verify the five group sub-fragments of the split Consolidate 8 pipeline against the Section 8 sub-manifest and routed source artifacts, report-only
 agent: "Task Researcher"
-argument-hint: "subManifestPath=..."
+argument-hint: "[subManifestPath=...]"
 ---
 
 # HVE Resiliency Consolidate 8 - Verify
@@ -10,7 +10,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 
 ## Inputs
 
-* ${input:subManifestPath}: (Required) Exact workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`.
+* ${input:subManifestPath}: (Optional) Workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`. When omitted, auto-locate it per the Sub-Manifest Auto-Location rule in the Consolidate 8 Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -66,4 +66,4 @@ Do not edit sub-fragments. Do not modify the sub-skeleton or the sub-manifest. D
 
 Report the sub-fragments audited, disposition totals, cross-fragment issue count, manual-review count, and terminal verify status (`Blocked`, `Incomplete`, or `Complete`).
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-consolidate-8-finalize`
+> **Next step:** Run `/hve-resiliency-consolidate-8-finalize`

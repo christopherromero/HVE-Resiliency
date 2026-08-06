@@ -1,7 +1,7 @@
 ---
 description: Scaffold the split Consolidate 8 (Other Findings) pipeline - validate the outer consolidation manifest, freeze the Section 8 group-routing table, emit the Section 8 sub-skeleton fragment and a frozen sub-manifest sidecar
 agent: "Task Researcher"
-argument-hint: "outerManifestPath=... [consolidatedDocPath=...]"
+argument-hint: "[outerManifestPath=...] [consolidatedDocPath=...]"
 ---
 
 # HVE Resiliency Consolidate 8 - 0 - Scaffold
@@ -10,7 +10,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 
 ## Inputs
 
-* ${input:outerManifestPath}: (Required) Exact workspace-relative path to the frozen outer consolidation manifest sidecar emitted by `hve-resiliency-consolidate-0-scaffold`.
+* ${input:outerManifestPath}: (Optional) Workspace-relative path to the frozen outer consolidation manifest sidecar emitted by `hve-resiliency-consolidate-0-scaffold`. When omitted, auto-locate it per the Manifest Auto-Location rule in the Consolidation Shared Contract.
 * ${input:consolidatedDocPath}: (Optional) Path to the consolidated document; used only to derive `consolidatedDocDir`. Defaults to the outer manifest's companion document.
 
 ## Direct Invocation and Prerequisite
@@ -77,4 +77,4 @@ Create the sub-fragment directory `<consolidatedDocDir>/sections/section-8-fragm
 
 Report the outer manifest path, the accepted-artifact count per group, the `servicesApplicability` value, the sub-skeleton path, the sub-manifest path, and the sub-fragment directory. Set the scaffold stage status to `Complete` when the outer manifest validated, the sub-manifest wrote successfully, and the sub-skeleton wrote successfully. Otherwise `Blocked` with the specific reason.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-consolidate-8-1-core-context`
+> **Next step:** Run `/hve-resiliency-consolidate-8-1-core-context`

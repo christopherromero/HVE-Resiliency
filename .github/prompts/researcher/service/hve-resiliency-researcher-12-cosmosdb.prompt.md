@@ -294,7 +294,7 @@ run to Prompt 11. For every successful or bounded-partial applicable Prompt 12 r
 validated-artifact routing to the next applicable service-specific prompt beginning with Prompt 13, or
 to consolidation when no applicable service prompt remains:
 
-> **Next step:** Run `/clear`, then `/<selected-command>`
+> **Next step:** Run `/<selected-command>`
 
 ---
 

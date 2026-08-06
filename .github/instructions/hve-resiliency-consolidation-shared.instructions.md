@@ -46,6 +46,10 @@ The manifest also records the section-routing map and a frozen coverage snapshot
 
 Each finding routes to exactly one primary section. The scopes above define which artifacts a fill prompt may read, not duplicate rendering of the same finding.
 
+## Manifest Auto-Location
+
+When a prompt's manifest path input is omitted, auto-locate the frozen outer consolidation manifest sidecar instead of asking the user. Enumerate `.md` files whose name ends with `-research.manifest.md` directly under `.copilot-tracking/research/` and under any `.copilot-tracking/research/YYYY-MM-DD/` dated subdirectory, excluding anything under `sections/`, `subagents/`, `validator/`, or `sandbox/`. Prefer a candidate whose body declares schema version `hve-resiliency-consolidation/v1`. Select the candidate under the lexicographically largest `YYYY-MM-DD` dated segment; if dated segments tie or are absent, select the one whose normalized path sorts last using ordinal comparison. Never use file modification time. If exactly one manifest resolves, use it. If none resolve, stop `Blocked` with `outer manifest not found; run hve-resiliency-consolidate-0-scaffold first`. An explicitly supplied path always overrides auto-location.
+
 ## Section-to-Source Mapping
 
 | Output section | Primary source artifacts |
@@ -80,6 +84,7 @@ For potential secrets, retain only the secret type, normalized file path and lin
 * Copy file paths and line numbers verbatim from source research artifacts.
 * If multiple research artifacts reference different line ranges, preserve each separately.
 * If line numbers cannot be validated, mark: `Line number requires manual verification`.
+* Never paraphrase referenced code. Copy any quoted code verbatim so every snippet matches the source file exactly at the cited path and lines.
 
 ## Normalized-Record Identity and ID Allocation
 

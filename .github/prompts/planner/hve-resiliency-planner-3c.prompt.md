@@ -135,4 +135,4 @@ Do not overwrite the existing content.
 
 After completing this prompt:
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-planner-3d`
+> **Next step:** Run `/hve-resiliency-planner-3d`

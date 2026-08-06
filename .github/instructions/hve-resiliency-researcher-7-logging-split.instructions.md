@@ -38,6 +38,10 @@ The manifest records:
 * `fragmentDir`: normalized workspace-relative directory holding the five category fragments.
 * `sources`: the accepted Prompt 1a and Prompt 1b artifact records. Each record carries `promptId` (`1a` or `1b`), normalized `path`, `completionStatus`, and `contentSha256` (lowercase SHA-256 hexadecimal digest of the sanitized bytes).
 * `eligibleDependencies`: the frozen list of dependencies confirmed as used in Section 1 of the accepted 1a and 1b artifacts, excluding every entry classified in Section 2 or Section 3. Each record carries `dependency` (canonical name), `source` (`1a` or `1b`), and `evidence` (`<normalized-path>:L<start>-L<end>` copied verbatim from the source artifact).
+
+## Manifest Auto-Location
+
+When a prompt's `manifestPath` input is omitted, auto-locate the frozen Prompt 7 Logging manifest sidecar instead of asking the user. Enumerate files whose name ends with `-hve-resiliency-researcher-7-logging-research.manifest.md` under the research root (`.copilot-tracking/research/` and its `YYYY-MM-DD/` dated subdirectories). Select the candidate under the lexicographically largest dated segment; if dated segments tie or are absent, select the one whose normalized path sorts last using ordinal comparison. Never use file modification time. If exactly one resolves, use it. If none resolve, stop `Blocked` with `Prompt 7 Logging manifest not found; run hve-resiliency-researcher-7-logging-0-scaffold first`. An explicitly supplied path always overrides auto-location.
 * `categoryRouting`: the five fixed routing keys `startup-health`, `transactions`, `correlation-context`, `log-hygiene`, and `silent-outage-diagnostics`, each mapped to its fill prompt ID and its fragment file name.
 * `paymentApplicability`: `applicable` when payment evidence is confirmed in Section 1 of either accepted 1a or 1b artifact, otherwise `not-applicable`. This value is frozen; downstream stages do not re-derive it.
 

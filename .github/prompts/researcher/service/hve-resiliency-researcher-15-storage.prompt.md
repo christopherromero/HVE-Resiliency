@@ -388,7 +388,7 @@ content.
 * `Coverage:` Manifest files, search invocations, read invocations, unique cached paths, corrective rereads, and sanitized retained bytes as used/cap
 
 For `Completed with findings`, `Completed with zero findings`, or `Bounded
-partial`, end with the platform HVE next step: run `/clear`, then the next
+partial`, end with the platform HVE next step: run the next
 applicable service-specific prompt confirmed by the prerequisite scope contract,
 or `/hve-resiliency-researcher-consolidate` when none remains. For either blocked
 status, name only the prerequisite or capability that must be restored before

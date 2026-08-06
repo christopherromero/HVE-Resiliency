@@ -1,7 +1,7 @@
 ---
 description: Fill the startup-health fragment of the split Prompt 7 Logging pipeline - emit inventory rows and findings only for the startup-health assessment category
 agent: Task Researcher
-argument-hint: "manifestPath=..."
+argument-hint: "[manifestPath=...]"
 ---
 
 # HVE Resiliency Researcher 7 Logging - 1 - Startup Health
@@ -10,7 +10,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Inputs
 
-* `${input:manifestPath}`: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`.
+* `${input:manifestPath}`: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`. When omitted, auto-locate it per the Manifest Auto-Location rule in the Researcher 7 Logging Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -64,4 +64,4 @@ Do not modify the skeleton artifact. Do not touch any other fragment.
 
 Report the inventory row count, the finding count, the count of findings carrying any `Unknown: not found after bounded search <scope>` descriptor, the fragment path, and the terminal fragment status.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-7-logging-2-transactions`
+> **Next step:** Run `/hve-resiliency-researcher-7-logging-2-transactions`

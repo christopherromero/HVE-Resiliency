@@ -120,4 +120,4 @@ Do not overwrite the existing content.
 
 After completing this prompt:
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-planner-3c`
+> **Next step:** Run `/hve-resiliency-planner-3c`

@@ -134,4 +134,4 @@ Use the priority framework from the platform context without restating its defin
 
 End the response with the inherited next step:
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-7-logging`
+> **Next step:** Run `/hve-resiliency-researcher-7-logging`

@@ -1,7 +1,7 @@
 ---
 description: Verify the five category fragments of the split Prompt 7 Logging pipeline against the frozen manifest and workspace source, report-only
 agent: Task Researcher
-argument-hint: "manifestPath=..."
+argument-hint: "[manifestPath=...]"
 ---
 
 # HVE Resiliency Researcher 7 Logging - Verify
@@ -10,7 +10,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Inputs
 
-* `${input:manifestPath}`: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`.
+* `${input:manifestPath}`: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`. When omitted, auto-locate it per the Manifest Auto-Location rule in the Researcher 7 Logging Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -66,4 +66,4 @@ Do not edit fragments. Do not modify the skeleton. Do not touch the manifest.
 
 Report the fragments audited, disposition totals, cross-fragment issue count, manual-review count, and terminal verify status (`Blocked`, `Incomplete`, or `Complete`).
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-7-logging-finalize`
+> **Next step:** Run `/hve-resiliency-researcher-7-logging-finalize`

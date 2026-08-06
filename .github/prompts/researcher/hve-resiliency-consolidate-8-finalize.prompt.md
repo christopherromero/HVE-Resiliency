@@ -1,7 +1,7 @@
 ---
 description: Finalize the split Consolidate 8 pipeline - assemble the five group sub-fragments into the single Section 8 fragment (sections/section-8.md) consumed by the outer verify-5-8 and outer finalize prompts
 agent: "Task Researcher"
-argument-hint: "subManifestPath=..."
+argument-hint: "[subManifestPath=...]"
 ---
 
 # HVE Resiliency Consolidate 8 - Finalize
@@ -10,7 +10,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 
 ## Inputs
 
-* ${input:subManifestPath}: (Required) Exact workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`.
+* ${input:subManifestPath}: (Optional) Workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`. When omitted, auto-locate it per the Sub-Manifest Auto-Location rule in the Consolidate 8 Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -55,4 +55,4 @@ Report the provisional finding count per group, the count of overlap annotations
 
 The assembled `sections/section-8.md` is now consumable by `hve-resiliency-consolidate-verify-5-8` and by `hve-resiliency-consolidate-9-finalize`.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-consolidate-verify-5-8`
+> **Next step:** Run `/hve-resiliency-consolidate-verify-5-8`

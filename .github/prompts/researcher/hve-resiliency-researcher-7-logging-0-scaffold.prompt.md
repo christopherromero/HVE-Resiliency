@@ -102,4 +102,4 @@ Report the accepted 1a and 1b artifact paths, the eligible dependency count, the
 
 End with the single next-step suggestion required by the platform context.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-7-logging-1-startup-health`
+> **Next step:** Run `/hve-resiliency-researcher-7-logging-1-startup-health`

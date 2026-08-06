@@ -42,7 +42,7 @@ The framework ships as a set of Copilot skills:
 
 ## Quick start
 
-1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the `Task Researcher` and `Task Planner` agents are available in Copilot Chat.
+1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the shared `Researcher Subagent` worker (used by the orchestrator agents) and the HVE agents are available in Copilot Chat.
 2. Install this framework into the **root** of the codebase you want to assess. From your target repo's root:
 
    ```powershell
@@ -51,19 +51,45 @@ The framework ships as a set of Copilot skills:
    ```
 
    The installer copies `.github/skills/`, `.github/prompts/`, and `.github/instructions/` into your `.github/` folder. Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then commit the `.github/` additions so the rest of your team gets the same workflow.
-3. In Chat, run `/hve-resiliency-research`.
-4. Choose an execution mode when prompted:
+3. Reload VS Code so the new agents appear in the picker: **Developer: Reload Window**.
 
-   - **Mode A (Interactive).** One prompt per turn, with an optional `/clear` between prompts.
-   - **Mode B (Autonomous).** Each prompt runs as an isolated subagent.
-5. **Switch the active agent in Copilot Chat to match each phase**: select `Task Researcher` for Phases 1-3 (research and consolidation), and `Task Planner` for Phases 4-5 (planning and assessment). Each prompt's frontmatter declares the agent it expects; mismatched agents will produce off-spec output.
-6. Follow the phase sequence: Core Research → Service Research → Consolidation → Planning → Assessment.
+### Run it (recommended: two clicks)
+
+The fastest path is the two **orchestrator agents**. Each runs its entire phase in one shot - no per-prompt commands, no manual `/clear`. You start by **selecting the agent in the picker**, then sending a plain message (not a slash command).
+
+**Research (Phases 1-3):**
+
+1. In Copilot Chat, open the **agent picker** at the top of the chat panel and select **Resiliency Research Orchestrator**.
+2. Send exactly:
+
+   ```text
+   Run the resiliency research pipeline for this repository.
+   ```
+
+   It runs discovery, then the analysis prompts in parallel, then consolidation, and points you to the consolidated research document under `.copilot-tracking/research/`. It only pauses for the Kafka topology question, a large-repo warning, or a verification failure.
+
+**Planning (Phases 4-5):**
+
+1. Switch the **agent picker** to **Resiliency Planning Orchestrator** (start a new chat when switching agents).
+2. Send exactly:
+
+   ```text
+   Run the resiliency planning pipeline from the consolidated research.
+   ```
+
+   It produces the executive Master report, the Developer Guide, and the final **Code-Level Resiliency Assessment** report under `Microsoft-Assessment/`.
+
+> Tip: add `autonomy=checkpointed` to either kickoff message to pause for review at phase boundaries.
+
+### Manual alternative (one prompt at a time)
+
+Prefer to drive each step yourself? Run `/hve-resiliency-research` in Chat and follow the numbered steps in the skill: select a research agent for Phases 1-3 (Core Research, Service Research, Consolidation) and a planning agent for Phases 4-5 (Planning, Assessment). A context reset between prompts is optional - see below.
 
 After a completed run, produce an executive ROI report with `/hve-resiliency-telemetry-report`. See the [Telemetry Report Workflow](docs/telemetry-report-workflow.md) cheatsheet for the fast path.
 
-### Purpose of `/clear` between prompts
+### About `/clear` between prompts
 
-Running `/clear` between prompts is optional but recommended. It will not confuse the agent: this workflow carries state through the artifacts on disk (research docs, plans, the assessment), not through chat history. Each prompt re-reads the artifacts it needs from `.copilot-tracking/` before doing its work, so a cleared context still has everything required to continue. Clearing simply drops the accumulated prior turns that would otherwise grow the context window, raise cost, and risk context degradation. Mode B achieves the same isolation by running each prompt as a fresh subagent.
+A context reset (`/clear` or a new chat) is **optional, not required**. State is carried by the artifacts on disk under `.copilot-tracking/` (research docs, plans, the assessment), not by chat history - each prompt re-reads what it needs before it works. A reset just drops accumulated prior turns to lower cost and avoid context bloat, so it is recommended for cost in the manual path but never needed for correctness. The **orchestrator agents manage context automatically** by dispatching each step to a fresh subagent, so you do not run `/clear` at all when using them.
 
 See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md) for the authoritative workflow definition.
 

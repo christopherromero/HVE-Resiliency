@@ -1,7 +1,7 @@
 ---
 description: Fill Section 6 (Shared and Cross-Repository Dependencies) of the consolidated resiliency research document from Prompt 6 evidence
 agent: "Task Researcher"
-argument-hint: "manifestPath=... [consolidatedDocPath=...]"
+argument-hint: "[manifestPath=...] [consolidatedDocPath=...]"
 ---
 
 # HVE Resiliency Consolidate 6 - Shared and Cross-Repository Dependencies
@@ -10,7 +10,7 @@ Follow the [Consolidation Shared Contract](../../instructions/hve-resiliency-con
 
 ## Inputs
 
-* ${input:manifestPath}: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by the scaffold prompt.
+* ${input:manifestPath}: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by the scaffold prompt. When omitted, auto-locate it per the Manifest Auto-Location rule in the Consolidation Shared Contract.
 * ${input:consolidatedDocPath}: (Optional) Path to the consolidated document; used only to derive the fragment output directory. Defaults to the manifest's companion document.
 
 ## Scope

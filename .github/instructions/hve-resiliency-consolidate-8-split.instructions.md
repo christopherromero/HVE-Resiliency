@@ -44,6 +44,10 @@ The sub-manifest records:
 * `sources`: the accepted source artifact records copied verbatim from the outer manifest, each carrying `promptId`, normalized `path`, `completionStatus`, and `contentSha256`.
 * `servicesApplicability`: `applicable` when the outer manifest records at least one accepted optional service artifact (Prompt IDs `8`-`19`), otherwise `not-applicable`. This value is frozen; downstream stages do not re-derive it.
 
+## Sub-Manifest Auto-Location
+
+When a prompt's `subManifestPath` input is omitted, auto-locate the frozen Section 8 sub-manifest sidecar instead of asking the user. Enumerate files named `section-8.manifest.md` under `.copilot-tracking/research/` within any `sections/section-8-fragments/` directory. Select the candidate under the lexicographically largest `YYYY-MM-DD` dated ancestor segment; if dated segments tie or are absent, select the one whose normalized path sorts last using ordinal comparison. Never use file modification time. If exactly one resolves, use it. If none resolve, stop `Blocked` with `Section 8 sub-manifest not found; run hve-resiliency-consolidate-8-0-scaffold first`. An explicitly supplied path always overrides auto-location. When `-8-0-scaffold` runs with `outerManifestPath` omitted, resolve it through the outer Manifest Auto-Location rule in the Consolidation Shared Contract.
+
 Downstream stages read the outer manifest through this sub-manifest's `outerManifestPath`; they never re-run outer discovery. If the outer manifest's SHA-256 drifts between stages, the affected stage stops `Blocked` with `outer manifest drift`.
 
 ## Artifact Groups (inherited by every group-fill prompt)

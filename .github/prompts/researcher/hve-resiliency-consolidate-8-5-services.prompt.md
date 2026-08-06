@@ -1,7 +1,7 @@
 ---
 description: Fill the services sub-fragment of the split Consolidate 8 pipeline - emit provisional Section 8 residual candidates only for artifact group services (applicable optional Prompts 8-19)
 agent: "Task Researcher"
-argument-hint: "subManifestPath=..."
+argument-hint: "[subManifestPath=...]"
 ---
 
 # HVE Resiliency Consolidate 8 - 5 - Services
@@ -10,7 +10,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 
 ## Inputs
 
-* ${input:subManifestPath}: (Required) Exact workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`.
+* ${input:subManifestPath}: (Optional) Workspace-relative path to the frozen Section 8 sub-manifest sidecar emitted by `hve-resiliency-consolidate-8-0-scaffold`. When omitted, auto-locate it per the Sub-Manifest Auto-Location rule in the Consolidate 8 Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -83,4 +83,4 @@ Do not modify the sub-skeleton artifact. Do not touch any other sub-fragment. Do
 
 Report the accepted service artifact `promptId` values read (or the `not-applicable` state and negative-check scope), the provisional finding count, the retained source-record totals, the sub-fragment path, and the terminal sub-fragment status.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-consolidate-8-verify`
+> **Next step:** Run `/hve-resiliency-consolidate-8-verify`

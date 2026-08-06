@@ -220,7 +220,7 @@ End the artifact and response with the next applicable service-specific prompt c
 by Prompt 1 Section 1. When no confirmed service remains, use
 `/hve-resiliency-researcher-consolidate`. Format the response handoff as:
 
-> **Next step:** Run `/clear`, then `/command-name`
+> **Next step:** Run `/command-name`
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 description: Finalize the split Prompt 7 Logging pipeline - assemble the five category fragments into the single Prompt 7 research artifact and build the Section 3 planning handoff
 agent: Task Researcher
-argument-hint: "manifestPath=..."
+argument-hint: "[manifestPath=...]"
 ---
 
 # HVE Resiliency Researcher 7 Logging - Finalize
@@ -10,7 +10,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Inputs
 
-* `${input:manifestPath}`: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`.
+* `${input:manifestPath}`: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-7-logging-0-scaffold`. When omitted, auto-locate it per the Manifest Auto-Location rule in the Researcher 7 Logging Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -53,4 +53,4 @@ Report the total inventory row count per category, the total finding count per c
 
 The final artifact is now consumable by the downstream consolidation and planner prompts.
 
-> **Next step:** Run `/clear`, then the first applicable service-specific prompt from Phase 2, or `/hve-resiliency-consolidate-0-scaffold` if none apply
+> **Next step:** Run the first applicable service-specific prompt from Phase 2, or `/hve-resiliency-consolidate-0-scaffold` if none apply

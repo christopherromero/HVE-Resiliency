@@ -38,6 +38,10 @@ The manifest records:
 * `fragmentDir`: normalized workspace-relative directory holding the four outcome fragments.
 * `sources`: the accepted Prompt 1a and Prompt 1b artifact records. Each record carries `promptId` (`1a` or `1b`), normalized `path`, `completionStatus`, and `contentSha256` (lowercase SHA-256 hexadecimal digest of the sanitized bytes).
 * `eligibleDependencies`: the frozen list of dependencies confirmed as used in Section 1 of the accepted 1a and 1b artifacts, excluding every entry classified in Section 2 or Section 3. Each record carries `dependency` (canonical name), `source` (`1a` or `1b`), and `evidence` (`<normalized-path>:L<start>-L<end>` copied verbatim from the source artifact).
+
+## Manifest Auto-Location
+
+When a prompt's `manifestPath` input is omitted, auto-locate the frozen Prompt 5 manifest sidecar instead of asking the user. Enumerate files whose name ends with `-hve-resiliency-researcher-5-research.manifest.md` under the research root (`.copilot-tracking/research/` and its `YYYY-MM-DD/` dated subdirectories). Select the candidate under the lexicographically largest dated segment; if dated segments tie or are absent, select the one whose normalized path sorts last using ordinal comparison. Never use file modification time. If exactly one resolves, use it. If none resolve, stop `Blocked` with `Prompt 5 manifest not found; run hve-resiliency-researcher-5-0-scaffold first`. An explicitly supplied path always overrides auto-location.
 * `outcomeRouting`: the four fixed routing keys `startup-failure`, `silent-degradation`, `data-loss-partial-processing`, and `blocking-transactions`, each mapped to its fill prompt ID and its fragment file name.
 
 Downstream stages never read Prompt 1a or Prompt 1b directly. They read the manifest and use the frozen `eligibleDependencies` list.

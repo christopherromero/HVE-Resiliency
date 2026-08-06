@@ -1,7 +1,7 @@
 ---
 description: Finalize the split Prompt 5 pipeline - assemble the four outcome fragments into the single Prompt 5 research artifact consumed by Consolidate 5
 agent: Task Researcher
-argument-hint: "manifestPath=..."
+argument-hint: "[manifestPath=...]"
 ---
 
 # HVE Resiliency Researcher 5 - Finalize
@@ -10,7 +10,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Inputs
 
-* `${input:manifestPath}`: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-5-0-scaffold`.
+* `${input:manifestPath}`: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by `hve-resiliency-researcher-5-0-scaffold`. When omitted, auto-locate it per the Manifest Auto-Location rule in the Researcher 5 Split Contract.
 
 ## Direct Invocation and Prerequisite
 
@@ -50,4 +50,4 @@ Report the total row count per outcome, the count of overlap annotations added, 
 
 The final artifact is now consumable by `hve-resiliency-consolidate-5-failure-degraded`.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-6`
+> **Next step:** Run `/hve-resiliency-researcher-6`

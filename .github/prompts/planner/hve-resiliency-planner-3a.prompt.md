@@ -141,4 +141,4 @@ Create the file new. Subsequent prompts (3b, 3c, 3d) will append to this file.
 
 After completing this prompt:
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-planner-3b`
+> **Next step:** Run `/hve-resiliency-planner-3b`

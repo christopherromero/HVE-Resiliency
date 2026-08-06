@@ -17,6 +17,19 @@ Auto-load this skill for requests related to resiliency, Azure zone survivabilit
 
 When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (8-19) without completing Prompts 0-7 first.
 
+## Automated Orchestration (Recommended)
+
+For a one-invocation run of each phase, use the orchestrator agents instead of running prompts one at a time:
+
+* Select **Resiliency Research Orchestrator** from the agent picker to run Phases 1-3 (produces the consolidated research document).
+* Select **Resiliency Planning Orchestrator** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report).
+
+The orchestrators dispatch each step below to a fresh subagent, so they parallelize independent steps and manage context automatically. No manual `/clear` is needed when using them. The Required Workflow below is the manual, one-prompt-per-turn path.
+
+## Context Management
+
+A context reset (`/clear` or a new chat) is a clarity and cost tool, not a correctness requirement: durable artifacts in `.copilot-tracking/research/` carry context forward between prompts. In the manual workflow below, a reset before each prompt keeps the input scoped to the prior artifact plus the current prompt (the Mode A cost optimization); it is recommended for cost and optional for correctness. At minimum, reset at phase boundaries and when switching agents. When using the orchestrator agents, context is managed automatically and no manual reset is needed.
+
 ## Required Workflow
 
 Phases are strictly sequential. Each phase must complete before the next phase begins.
@@ -27,17 +40,12 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 
 1. Run `/hve-resiliency-researcher-0` first to establish the repository context frame.
 2. Review the resulting research artifact in `.copilot-tracking/research/`.
-3. Run `/clear` before each next prompt.
-4. Run `/hve-resiliency-researcher-1a`, review its Section 1 Azure services, run `/clear`, then run `/hve-resiliency-researcher-1b` and review its Section 1 external dependencies.
-5. Treat the combined Prompt 1a and Prompt 1b Section 1 entries as the evidence-confirmed dependency set. Exclude every dependency classified only in either artifact's Section 2 or Section 3 from subsequent prompts.
-6. Run `/clear`.
-7. Run `/hve-resiliency-researcher-2`.
-8. Run `/clear`.
-9. Run `/hve-resiliency-researcher-3`.
-10. Run `/clear`.
-11. Run `/hve-resiliency-researcher-4`.
-12. Run `/clear`.
-13. Prompt 5 has been split into a bounded pipeline. Run these in order, with `/clear` between each step:
+3. Run `/hve-resiliency-researcher-1a`, review its Section 1 Azure services, then run `/hve-resiliency-researcher-1b` and review its Section 1 external dependencies.
+4. Treat the combined Prompt 1a and Prompt 1b Section 1 entries as the evidence-confirmed dependency set. Exclude every dependency classified only in either artifact's Section 2 or Section 3 from subsequent prompts.
+5. Run `/hve-resiliency-researcher-2`.
+6. Run `/hve-resiliency-researcher-3`.
+7. Run `/hve-resiliency-researcher-4`.
+8. Prompt 5 has been split into a bounded pipeline. Run these in order:
     1. `/hve-resiliency-researcher-5-0-scaffold` (validates Prompt 1a and 1b Section 1, freezes the eligible-dependency inventory, emits skeleton + manifest sidecar).
     2. `/hve-resiliency-researcher-5-1-startup-failure`.
     3. `/hve-resiliency-researcher-5-2-silent-degradation`.
@@ -47,50 +55,35 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
     7. `/hve-resiliency-researcher-5-finalize` (assembles fragments into the single Prompt 5 artifact consumed by consolidation).
     * The four outcome fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
     * `/hve-resiliency-researcher-5` is retained as a deprecated redirect to the scaffold entry point.
-14. Run `/clear`.
-15. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
-16. Run `/clear`.
-17. Run `/hve-resiliency-researcher-7-logging` (Logging).
+9. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
+10. Run `/hve-resiliency-researcher-7-logging` (Logging).
 
 ### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial)
 
 Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b. Skip services found only in Sections 2-3 or not found. Recommend applicable prompts from the combined Prompt 1a and Prompt 1b results.
 
-18. Run `/clear`.
-19. Run `/hve-resiliency-researcher-8-appgw` (App Gateway)
-20. Run `/clear`.
-21. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
-22. Run `/clear`.
-23. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
-24. Run `/clear`.
-25. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
-26. Run `/clear`.
-27. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
-28. Run `/clear`.
-29. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
-30. Run `/clear`.
-31. Run `/hve-resiliency-researcher-14-redis` (Redis)
-32. Run `/clear`.
-33. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
-34. Run `/clear`.
-35. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
+11. Run `/hve-resiliency-researcher-8-appgw` (App Gateway)
+12. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
+13. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
+14. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
+15. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
+16. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
+17. Run `/hve-resiliency-researcher-14-redis` (Redis)
+18. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
+19. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
     * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
     * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
     * Neither confirmed -> Ask the user which Kafka topology the application uses before proceeding
-36. Run `/clear`.
-37. Run `/hve-resiliency-researcher-17-networking` (Networking)
-38. Run `/clear`.
-39. Run `/hve-resiliency-researcher-18-entraid` (Entra ID)
-40. Run `/clear`.
-41. Run `/hve-resiliency-researcher-19-apim` (APIM)
+20. Run `/hve-resiliency-researcher-17-networking` (Networking)
+21. Run `/hve-resiliency-researcher-18-entraid` (Entra ID)
+22. Run `/hve-resiliency-researcher-19-apim` (APIM)
 
 ### Phase 3: Consolidation
 
-Consolidation has been split into a bounded pipeline. Run these in order, with `/clear` between each step:
+Consolidation has been split into a bounded pipeline. Run these in order:
 
-42. Run `/clear`.
-43. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
-44. Run `/clear`, then run each section-fill prompt against the manifest emitted in step 43. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
+23. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
+24. Run each section-fill prompt against the manifest emitted in step 23. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
     * `/hve-resiliency-consolidate-1-repository-context`
     * `/hve-resiliency-consolidate-2-dependency-inventory`
     * `/hve-resiliency-consolidate-3-region-zone`
@@ -99,34 +92,25 @@ Consolidation has been split into a bounded pipeline. Run these in order, with `
     * `/hve-resiliency-consolidate-6-shared-cross-repo`
     * `/hve-resiliency-consolidate-7-secrets`
     * `/hve-resiliency-consolidate-8-other`
-45. Run `/clear`.
-46. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
-47. Run `/clear`.
-48. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
-49. Run `/clear`.
-50. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
-51. Review the consolidated report at `.copilot-tracking/research/`.
+25. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
+26. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
+27. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
+28. Review the consolidated report at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 
-52. Run `/clear`.
-53. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
-54. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
-55. Run `/clear`.
-56. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
-57. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
+29. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
+30. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
+31. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
+32. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
 
 ### Phase 5: Code-Level Resiliency Assessment Report
 
-58. Run `/clear`.
-59. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
-60. Run `/clear`.
-61. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
-62. Run `/clear`.
-63. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
-64. Run `/clear`.
-65. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
-66. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+33. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
+34. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
+35. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
+36. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
+37. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 

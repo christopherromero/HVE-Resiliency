@@ -229,4 +229,4 @@ with this centralized service schema:
 Preserve every field. Do not add ownership or recommendation fields. End the response with the inherited
 next step:
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-11-aks-istio`
+> **Next step:** Run `/hve-resiliency-researcher-11-aks-istio`

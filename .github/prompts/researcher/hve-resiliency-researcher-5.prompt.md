@@ -27,4 +27,4 @@ Do not render failure-mode rows from this file. Do not read Prompt 1a or Prompt 
 
 Report that the monolithic Prompt 5 is deprecated and direct the operator to the pipeline entry point.
 
-> **Next step:** Run `/clear`, then `/hve-resiliency-researcher-5-0-scaffold`
+> **Next step:** Run `/hve-resiliency-researcher-5-0-scaffold`

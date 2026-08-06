@@ -1,7 +1,7 @@
 ---
 description: Assemble section fragments, resolve overlaps, reconcile finding IDs, set status once, and build the Section 9 index for the consolidated resiliency research document
 agent: "Task Researcher"
-argument-hint: "manifestPath=... [consolidatedDocPath=...] [verifyReports=...]"
+argument-hint: "[manifestPath=...] [consolidatedDocPath=...] [verifyReports=...]"
 ---
 
 # HVE Resiliency Consolidate 9 - Finalize
@@ -10,7 +10,7 @@ Follow the [Consolidation Shared Contract](../../instructions/hve-resiliency-con
 
 ## Inputs
 
-* ${input:manifestPath}: (Required) Exact workspace-relative path to the frozen manifest sidecar emitted by the scaffold prompt.
+* ${input:manifestPath}: (Optional) Workspace-relative path to the frozen manifest sidecar emitted by the scaffold prompt. When omitted, auto-locate it per the Manifest Auto-Location rule in the Consolidation Shared Contract.
 * ${input:consolidatedDocPath}: (Optional) Path to the consolidated scaffold document to finalize. Defaults to the manifest's companion document.
 * ${input:verifyReports}: (Optional) Paths to the Section 1-4 and Section 5-8 verify audit reports; used to aggregate per-section signals for status.
 
