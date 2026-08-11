@@ -20,22 +20,33 @@ Read the frozen manifest, the consolidated scaffold document, all section fragme
 
 ## Finalize Protocol
 
-1. Assemble each section fragment into its reserved placeholder in the scaffold, in Section 1-9 order.
-2. Run an index-level dedup reconciliation pass across the assembled fragments to catch any cross-section duplicate finding on the shared canonical-tuple identity, before numbering.
-3. Apply the deterministic section-precedence tie-break when the same canonical tuple appears in more than one fragment: Section 7 retains any secret finding; otherwise the lowest section number retains the finding; Section 8 provisional residual candidates are dropped whenever any of Sections 1-7 already claimed the tuple. This preserves the invariant that each finding renders in exactly one section.
-4. Sort retained findings by section number, then priority P0 through P3, then dependency or category, scenario, normalized evidence path and line, and record ID. Reconcile section-scoped IDs (`F-<section>-00X`) into the authoritative sequential `F-00X` scheme in this sorted order.
-5. Apply the conflict matrix, then set exactly one terminal status by precedence:
-   * `Blocked` for a missing, unreadable, or empty research root; any required prompt ID with zero admitted candidates; unsafe evidence; required artifacts that are unreadable, malformed, or fail body-schema validation; disagreement on repository identity; or any unresolved required conflict.
-   * `Incomplete` only for missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds, or unresolved optional conflicts, when no `Blocked` condition exists.
+Compute the full reconciliation plan first, then apply it to the scaffold **one section at a time** per Incremental Assembly. Never regenerate the whole document in a single write.
+
+1. Compute the reconciliation plan across all fragments before rendering any section body: run an index-level dedup reconciliation pass across the fragments to catch any cross-section duplicate finding on the shared canonical-tuple identity, before numbering.
+2. Apply the deterministic section-precedence tie-break when the same canonical tuple appears in more than one fragment: Section 7 retains any secret finding; otherwise the lowest section number retains the finding; Section 8 provisional residual candidates are dropped whenever any of Sections 1-7 already claimed the tuple. This preserves the invariant that each finding renders in exactly one section.
+3. Sort retained findings by section number, then priority P0 through P3, then dependency or category, scenario, normalized evidence path and line, and record ID. Reconcile section-scoped IDs (`F-<section>-00X`) into the authoritative sequential `F-00X` scheme in this sorted order.
+4. Apply the conflict matrix, then determine exactly one terminal status by precedence:
+   * `Blocked` for a missing, unreadable, or empty research root; unsafe evidence; required artifacts that are unreadable, malformed, or fail body-schema validation; disagreement on repository identity; or any unresolved required conflict.
+   * `Incomplete` for any required prompt ID with zero admitted candidates; for missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds; or for unresolved optional conflicts; when no `Blocked` condition exists.
    * `Complete` only after every fragment is assembled, every retained record has a terminal disposition, no conflicts remain, all citations validate, and the Section 9 index reconciles.
    Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
-6. Build Section 9 Research Findings Index with columns `Finding ID | Priority | Category | Short Description | Evidence (File:Line)`; include source record IDs in the `Evidence (File:Line)` cell. Every index entry maps to exactly one rendered finding.
-7. Update the Assessment Scope header: set `Consolidation Status`, `Status Reasons`, `Coverage`, and `Processing Metrics` (candidates, accepted, normalized, rendered, duplicates, citation results, conflicts, hard-limit state).
+5. Apply the plan with Incremental Assembly: replace each section placeholder (Sections 1-8) in the scaffold with its reconciled, renumbered fragment content, one section per separate edit, in Section 1-8 order.
+6. Build the Section 9 Research Findings Index with columns `Finding ID | Priority | Category | Short Description | Evidence (File:Line)`; include source record IDs in the `Evidence (File:Line)` cell. Every index entry maps to exactly one rendered finding. Replace the Section 9 placeholder in its own separate edit.
+7. Update the Assessment Scope header in its own separate edit: set `Consolidation Status`, `Status Reasons`, `Coverage`, and `Processing Metrics` (candidates, accepted, normalized, rendered, duplicates, citation results, conflicts, hard-limit state).
 8. Run one final bounded verification pass; permit at most one corrective render for a named defect, then stop.
+
+## Incremental Assembly
+
+Assemble by editing the existing scaffold document in place, never by regenerating it in a single write. This bounds each write to one section and keeps finalize resumable after an interruption.
+
+* Operate on the scaffold document at `consolidatedDocPath`, which already carries one reserved placeholder comment per section. Replace exactly one placeholder per edit, in Section 1-8 order, then Section 9, then the header.
+* Each edit writes only that one section's reconciled content in place of its placeholder comment. Never re-emit or re-edit a section that is already assembled, and never hold more than one section's rendered body in a single write.
+* Compute the reconciliation plan (dedup, precedence, `F-00X` ID map, sort, terminal status) once up front and reuse it across every section edit, so per-section writes carry no cross-section recomputation.
+* Treat the operation as resumable and idempotent: before each section edit, if that placeholder is already replaced with assembled content, skip it. A re-dispatched finalize continues from a partially assembled document without duplicating, renumbering, or reordering findings.
 
 ## Output
 
-Write the assembled, numbered, status-set consolidated document to `consolidatedDocPath`. Do not add assessment domains or additional numbered sections.
+Apply the assembly as in-place edits to the existing scaffold document at `consolidatedDocPath`, one section per edit per Incremental Assembly. Do not regenerate the whole document in a single write, do not add assessment domains, and do not add additional numbered sections.
 
 ## Completion
 

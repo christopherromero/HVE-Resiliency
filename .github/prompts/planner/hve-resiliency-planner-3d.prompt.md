@@ -35,6 +35,10 @@ The generated report must **never** reference "East US", "eastus", or any East r
 
 **Append** the following three sections to the existing `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md` file. Do not overwrite or regenerate any existing content.
 
+### Incremental Write
+
+Append Sections 4, 5, and 6 as three separate edits, one section per write, rather than a single combined write, to avoid a single oversized write that is prone to transient network failures. Before writing each section, check whether its H1 heading already appears in the file; if it does, skip it so a re-dispatched run resumes cleanly.
+
 ### Section 4 — IaC Gap Analysis
 
 Use `# 4. IaC Gap Analysis` as the heading.

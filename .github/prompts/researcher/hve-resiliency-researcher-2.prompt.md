@@ -43,19 +43,30 @@ reference one region or zone.
 
 ### Step 1: Validate Prerequisites And Scope
 
+Resolve prerequisites in this order and prefer proceeding over blocking.
+
 1. Read each provided prerequisite artifact once. Do not search the repository
    for alternate copies.
-2. Require Prompt 1a `Section 1 - Used Azure Services (Evidence Confirmed)` with
-   no `Status: Incomplete`, and Prompt 1b `Section 1 — Used External Dependencies
-   (Evidence Confirmed)`. Treat only these completed sections as the confirmed
-   dependency inventories for Prompt 2.
+2. Build the confirmed dependency inventory from Prompt 1a `Section 1 - Used
+   Azure Services (Evidence Confirmed)` and Prompt 1b `Section 1 — Used External
+   Dependencies (Evidence Confirmed)`. Use whichever qualifying Section 1
+   inventories are available; an artifact marked `Status: Incomplete` still
+   contributes its committed Section 1 entries.
 3. Exclude Prompt 1a Sections 2 and 3 and Prompt 1b Sections 2 and 3. Do not
-   analyze a dependency absent from both confirmed inventories.
-4. Stop as `Blocked` before repository traversal if an input is missing,
-   unreadable, belongs to another repository, has `Status: Incomplete`, lacks a
-   completed required Section 1 inventory, or makes the allowed dependency
-   scope ambiguous. Report the exact prerequisite problem and request the
-   corrected path. Do not write the research artifact or suggest Prompt 3.
+   analyze a dependency absent from both confirmed inventories. If only one of
+   Prompt 1a or Prompt 1b qualifies, proceed with the available Section 1
+   inventory and record the missing side as an `Unknown: external evidence
+   required` entry at the report level.
+4. Stop as `Blocked` before repository traversal only when neither Prompt 1a nor
+   Prompt 1b can be resolved: every supplied input is missing, unreadable,
+   belongs to another repository, or is malformed, and no qualifying Section 1
+   inventory remains on either side. Report the exact prerequisite problem and
+   request the corrected path. Do not write the research artifact or suggest
+   Prompt 3.
+5. If both prerequisites resolve but the combined confirmed Section 1 inventory
+   contains zero dependencies in scope for Prompt 2, do not block; emit
+   `Complete: bounded no evidence` with a single note that no confirmed
+   dependency was in scope, and list the resolved prerequisite paths.
 
 ### Step 2: Build The Manifest And Candidate Ledger
 

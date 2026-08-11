@@ -21,6 +21,7 @@ Include a dedicated "Priority Legend" section near the top using exactly:
 
 For each finding (do not add new findings):
 - Reference the exact evidence
+- Capture any code shown verbatim from the cited repository file - exact text, whitespace, signatures, field and variable names, string literals, and annotations - and record the precise `path:Lx-Ly` (use `Lx` for a single line) for each snippet, so the downstream assessment prompts (`planner-3b`/`3c`/`3d`) can reuse it without re-reading source. Do not paraphrase, fabricate, or insert placeholder tokens into quoted code. If the repository contradicts the finding, surface the contradiction rather than guessing.
 - Explain the resiliency risk
 - Describe the recommended pattern
 - Provide code examples in the repository's primary language
@@ -41,7 +42,13 @@ OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
    - Hard-coded security values check: list any hard-coded secrets/keys/certs/security endpoints or explicitly state "No hard-coded security values found for this finding."
    - Recommended pattern (named):
    - Implementation guidance (step-by-step):
-   - Code examples (repo's language) and where to apply them:
+   - Code examples (repo's language), quoted verbatim from the cited file with its `path:Lx-Ly`, and where to apply them:
    - Testing/validation notes (how to prove it works):
    - Health then GLB readiness contract (if applicable): (a) what /ready (or equivalent) means, including which dependencies are included/excluded, and (b) GLB probe expectations (path/port/method/thresholds/timeouts) expressed as testable acceptance criteria.
+
+INCREMENTAL WRITE (avoid one oversized write that is prone to transient network failures):
+- First create or update <repo-name>-Developer-Guide.md with only sections 1-3 (Title, Priority Legend, How to Use This Guide) plus an empty "Findings and Recommended Patterns" heading. This is one small write.
+- Then append findings into that section one finding at a time, each as a separate edit, in P0, then P1, then P2, then P3 order. Never regenerate the whole document in a single write and never hold more than one finding's rendered body in a single write.
+- Treat the operation as resumable and idempotent: before appending a finding, check whether its Finding ID (F-###) already appears in the file; if it does, skip it. A re-dispatched run continues from a partially written guide without duplicating or reordering findings.
+- Preserve the exact section order and per-finding template above; only the write is incremental, not the output format.
 ```

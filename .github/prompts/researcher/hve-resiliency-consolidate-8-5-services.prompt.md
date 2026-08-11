@@ -15,7 +15,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 ## Direct Invocation and Prerequisite
 
 * Run only the `services` fill stage. Do not run any other group fill, verify, or finalize behavior.
-* Require the sub-manifest to exist, be readable, be sanitizable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If the sub-manifest is missing, ambiguous, malformed, unsafe, or does not list `services` in `groupRouting`, stop `Blocked` with the specific reason and do not create a sub-fragment file.
+* Require the sub-manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If it is missing, unreadable, structurally invalid, or does not list `services` in `groupRouting`, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not create a sub-fragment file.
 * Require the outer manifest at the sub-manifest's `outerManifestPath` to still be readable and its sanitized SHA-256 digest to match `outerManifestSha256`. On mismatch, stop `Blocked` with `outer manifest drift`.
 
 ## Read Scope

@@ -15,7 +15,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 ## Direct Invocation and Prerequisite
 
 * Run only the log-hygiene fill stage. Do not run any other category fill, verify, or finalize behavior.
-* Require the manifest to exist, be readable, be sanitizable, and be well-formed per the Frozen Manifest Sidecar Contract. If the manifest is missing, ambiguous, malformed, unsafe, or lists zero eligible dependencies, stop `Blocked` with the specific reason and do not create a fragment file.
+* Require the manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Manifest Sidecar Contract. If it is missing, unreadable, or structurally invalid, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not create a fragment file. If the manifest is well-formed but lists zero eligible dependencies, do not block: emit this stage's fragment file with no rows and terminal status `Complete`, note that no eligible dependency was in scope, then stop.
 
 ## Read Scope
 
@@ -40,7 +40,7 @@ Never emit a row or finding solely because redaction documentation is unavailabl
 
 ## Sanitization Extra Care
 
-Log-hygiene fills observe secret-shaped and PII-shaped values with higher likelihood than other categories. Sanitize immediately after read and before hash, comparison, or emission. Retain only the type, path, line, and a stable redacted identity. If any observed value cannot be sanitized safely, stop `Blocked` with `unsafe evidence encountered` and do not write the fragment.
+Log-hygiene fills observe secret-shaped and PII-shaped values with higher likelihood than other categories. Sanitize immediately after read and before hash, comparison, or emission. Retain only the type, path, line, and a stable redacted identity. If an individual observed value cannot be sanitized safely, drop that value and keep the finding using only its safe location metadata (type, path, line, redacted identity); never render the raw value and never block for this reason, per Status and Failure Semantics.
 
 ## Bounded Discovery
 

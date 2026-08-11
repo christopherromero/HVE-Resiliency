@@ -16,7 +16,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 ## Direct Invocation and Prerequisite
 
 * Run only the scaffold stage. Do not run any group fill, verify, or finalize behavior.
-* Require the outer consolidation manifest at `outerManifestPath` to exist, be readable, be sanitizable, and be well-formed per the outer Frozen Manifest Sidecar Contract. If the outer manifest is missing, ambiguous, malformed, unsafe, or lists zero accepted required artifacts, name the specific defect and stop `Blocked` before writing anything.
+* Require the outer consolidation manifest at `outerManifestPath`, produced by a prior step, to exist, be readable, and be well-formed per the outer Frozen Manifest Sidecar Contract. If the outer manifest is missing, unreadable, structurally invalid, or lists zero accepted required artifacts, a prior step failed or ran out of order: name the specific defect and stop `Blocked` per Status and Failure Semantics before writing anything.
 * Require the outer manifest to record the Section 8 residual scope and the accepted-artifact set with `promptId`, normalized `path`, `completionStatus`, and `contentSha256` for every entry. If any required outer prompt ID (`0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, `7`) is absent from the accepted-artifact set, stop `Blocked` with `outer required prompt missing`.
 
 ## Group Routing Derivation

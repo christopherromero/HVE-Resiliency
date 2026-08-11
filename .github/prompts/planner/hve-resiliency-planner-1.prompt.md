@@ -49,4 +49,11 @@ OUTPUT FORMAT for <repo-name>-Master.md (use this exact section order):
    - Owner suggestion (team/component)
 7) Open Questions
 8) External Provider Considerations
+
+INCREMENTAL WRITE (avoid one oversized write that is prone to transient network failures):
+- First create <repo-name>-Master.md with sections 1-5 (Title, Overview Summary, Priority Legend, Application Summary, Architecture and Dependency Map) plus the Prioritized Findings heading and its table header row. This is one small write.
+- Then append the Prioritized Findings rows in priority order (P0, then P1, then P2, then P3), a few rows per edit, never regenerating the whole document in a single write.
+- Then append Open Questions and External Provider Considerations.
+- Treat the operation as resumable and idempotent: before appending a finding row, check whether its Finding ID already appears in the file; if it does, skip it. A re-dispatched run continues from a partial document without duplicating or reordering findings.
+- Preserve the exact section order and output format above; only the write is incremental.
 ```

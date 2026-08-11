@@ -14,6 +14,31 @@ Apply this context to all resiliency Task Planner prompts.
 * Use the research as fixed constraints
 * Never paraphrase referenced code. If a finding or recommendation uses code, keep it accurate to the file it comes from - matching path, line numbers, and exact text - and ensure any proposed fix builds on exactly that code
 
+## Status and Failure Semantics
+
+Every prompt ends in exactly one terminal state: `Complete`, `Incomplete`, or `Blocked`. Blocking is reserved for one condition only and is never used for anything discovered inside the repository or the consolidated research it is planning from. This section is never overridden by a prompt's stage-specific rules.
+
+**Repository and content conditions are findings, never failures.** Anything the research evidence or repository shows is recorded in-band and the run continues. Never stop `Blocked` and never mark the run `Incomplete` for any of these:
+
+* Ambiguous, contradictory, or unprovable evidence: render the affected field with the schema's `Unknown` / `Unknown: evidence unavailable` value and continue.
+* A dependency, service, or file that is out of scope or owned by another repository: record it as an out-of-scope item that names the boundary and, where useful, notes that the owning repository should verify it. Do not issue instructions to that other repository beyond that suggestion.
+* Source content that cannot be safely rendered (for example a secret value): sanitize and keep the item using only its safe location metadata. Never block for unsafe content.
+* No evidence found for an in-scope item: record the schema's negative value (`Not observed`, `None found`, or `Not Applicable`). Absence of evidence is a valid completed result.
+
+**The only `Blocked` condition is a broken pipeline.** Stop `Blocked` only when a required input produced by a prior pipeline step (the consolidated research document or a prior planner artifact) is genuinely absent, unreadable, or structurally invalid, meaning a prior step failed or the steps ran out of order. The orchestrator gates each step on the prior step returning `Complete`, so in a correctly orchestrated run this state cannot occur; when it does it is a pipeline defect, not a property of the evidence. Stop with a single message of the form `prerequisite from a prior step is missing or invalid - rerun <the producing step>`, and never synthesize the missing input. Do not use `Blocked` as a graceful branch for content, and do not enumerate content-based block reasons.
+
+## Evidence Fidelity Contract
+
+Code evidence is verified once, where it first enters the pipeline: the Developer Guide (`/hve-resiliency-planner-2`) captures each code example verbatim from the cited repository file. Downstream prompts treat the Developer Guide as the authoritative, already-verified source and must not re-derive or paraphrase its code. This keeps the source-reading cost in one place instead of repeating a full source read at every planning step.
+
+Responsibilities by stage:
+
+* **Developer Guide (`planner-2`)** - the single verification point. Capture each code snippet verbatim from the real file, record its exact `path:Lx-Ly`, and confirm every asserted literal (configuration keys, secret names, method and field names, count claims) exists in that file. This is where source reading happens.
+* **Assessment builders (`planner-3b`, `planner-3c`, `planner-3d`)** - copy `**File:**` and `**Fix:**` code from the Developer Guide faithfully, preserving exact text, line numbers, and whitespace. Do not re-read source to reconstruct a snippet unless the Developer Guide is missing it, in which case read only that one range.
+* **All stages** - keep each finding's `**File:**` citation synchronized with its restatements in the Full Finding Matrix, IaC Gap Analysis, and Microsoft Standards Alignment sections, and never insert placeholder tokens or editorial comments into a `**File:**` block.
+
+When code cannot be captured or verified during the build, run `/fix-assessment-finding` (Phase 6) afterward to reconcile citations against the repository.
+
 ## Engagement Context
 
 * **Customer**: Albertsons

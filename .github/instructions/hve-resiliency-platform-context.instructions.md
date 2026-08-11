@@ -17,6 +17,19 @@ Apply this context to all Application Platform resiliency research prompts.
 * Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)
 * Output research artifacts to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
 
+## Status and Failure Semantics
+
+Every prompt ends in exactly one terminal state: `Complete`, `Incomplete`, or `Blocked`. Blocking is reserved for one condition only and is never used for anything discovered inside the repository under assessment. This section is never overridden by a prompt's stage-specific rules.
+
+**Repository and content conditions are findings, never failures.** Anything learned by scanning the repository under assessment is recorded in-band and the run continues. Never stop `Blocked` and never mark the run `Incomplete` for any of these:
+
+* Ambiguous, contradictory, or unprovable evidence in the repository: render the affected field or finding with the schema's `Unknown` / `Unknown: evidence unavailable` value and continue.
+* A dependency, service, or file that is out of scope or owned by another repository: record it as an out-of-scope finding that names the boundary and, where useful, notes that the owning repository should verify it. Do not issue instructions to that other repository beyond that suggestion.
+* Source content that cannot be safely rendered (for example a secret value): sanitize and keep the finding using only its safe location metadata. Never block for unsafe content.
+* No evidence found for an in-scope check: record the schema's negative value (`Not observed`, `None found`, or `Not Applicable`). Absence of evidence is a valid completed result.
+
+**The only `Blocked` condition is a broken pipeline.** Stop `Blocked` only when a required input produced by a prior pipeline step (a prerequisite artifact or frozen manifest) is genuinely absent, unreadable, or structurally invalid, meaning a prior step failed or the steps ran out of order. The orchestrator gates each step on the prior step returning `Complete`, so in a correctly orchestrated run this state cannot occur; when it does it is a pipeline defect, not a property of the repository. Stop with a single message of the form `prerequisite from a prior step is missing or invalid - rerun <the producing step>`, and never synthesize the missing input. Do not use `Blocked` as a graceful branch for repository content, and do not enumerate content-based block reasons.
+
 ## Platform-Managed Regional Failover
 
 * Albertsons uses platform-managed regional failover
@@ -40,10 +53,11 @@ Apply this context to all Application Platform resiliency research prompts.
 
 ## Database-to-Kafka Pairing Standard
 
+* Kafka runs on Confluent Cloud (managed). Treat Confluent Cloud as the confirmed Kafka platform for both topologies; never ask the operator which Kafka provider, product, or environment is in use.
 * Databases that support Active-Active multi-master writes (for example Cosmos DB via Mongo API) pair with Kafka Active-Active
 * Databases that support only Active-Standby single-master writes (for example Azure SQL) pair with Kafka Active-Standby
 * An application using both an Active-Active and an Active-Standby database pairs with Kafka Active-Standby
-* Before running the Kafka service-specific prompt (16), confirm whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then select `hve-resiliency-researcher-16-kafka-active-active` or `hve-resiliency-researcher-16-kafka-active-standby-confluent` accordingly
+* Before running the Kafka service-specific prompt (16), confirm whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then select `hve-resiliency-researcher-16-kafka-active-active` or `hve-resiliency-researcher-16-kafka-active-standby-confluent` accordingly. When neither is confirmed, do not auto-select; ask the operator which Kafka topology the application uses before selecting the prompt.
 * Kafka service-specific prompts (16) must record whether the repository's confirmed database resiliency model matches the Kafka topology assumed by the selected prompt, and flag any mismatch as a finding
 
 ## Context Management

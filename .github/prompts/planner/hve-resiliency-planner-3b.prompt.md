@@ -97,6 +97,14 @@ Priority labels:
 
 Do **not** add `[Back to Top](#top)` at the end of Section 2 yet — that will be added by prompt 3c after P2/P3 findings are appended.
 
+### Incremental Write
+
+Append findings one at a time to avoid a single oversized write that is prone to transient network failures:
+
+* Write the `# 2. Resilient Focused Recommendations` heading and the first `## P0` priority block heading, then append each finding individually as a separate edit, in P0 order then P1 order.
+* Never regenerate previously written content and never hold more than one finding's rendered body (including its two code blocks) in a single write.
+* Treat the operation as resumable and idempotent: before appending a finding, check whether its `PX-NNN` ID already appears in the report file; if it does, skip it. A re-dispatched run continues from a partially written section without duplicating or reordering findings.
+
 ## Formatting Conventions
 
 * Aligned pipe tables — all pipes vertically aligned across all rows.

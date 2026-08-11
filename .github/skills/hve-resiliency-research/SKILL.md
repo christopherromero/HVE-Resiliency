@@ -22,7 +22,7 @@ When this skill is activated (via `/hve-resiliency-research` or by matching the 
 For a one-invocation run of each phase, use the orchestrator agents instead of running prompts one at a time:
 
 * Select **Resiliency Research Orchestrator** from the agent picker to run Phases 1-3 (produces the consolidated research document).
-* Select **Resiliency Planning Orchestrator** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report).
+* Select **Resiliency Planning Orchestrator** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report). Pass `audit=on` to also run the optional Phase 6 evidence audit per tier after the report is assembled.
 
 The orchestrators dispatch each step below to a fresh subagent, so they parallelize independent steps and manage context automatically. No manual `/clear` is needed when using them. The Required Workflow below is the manual, one-prompt-per-turn path.
 
@@ -70,10 +70,10 @@ Phase 2 runs only after Phase 1 is complete. Run only the prompts matching depen
 16. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
 17. Run `/hve-resiliency-researcher-14-redis` (Redis)
 18. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
-19. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)):
+19. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)). Kafka runs on Confluent Cloud; do not ask which Kafka provider is in use.
     * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
     * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
-    * Neither confirmed -> Ask the user which Kafka topology the application uses before proceeding
+    * Neither confirmed -> Do not auto-select; ask the user which Kafka topology the application uses before proceeding
 20. Run `/hve-resiliency-researcher-17-networking` (Networking)
 21. Run `/hve-resiliency-researcher-18-entraid` (Entra ID)
 22. Run `/hve-resiliency-researcher-19-apim` (APIM)
@@ -111,6 +111,19 @@ Consolidation has been split into a bounded pipeline. Run these in order:
 35. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
 36. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
 37. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+
+### Phase 6: Assessment Evidence Audit (Optional)
+
+Phase 6 verifies that every source citation, verbatim code block, and fix block in the completed assessment is faithful to the repository, and keeps all cross-references in sync. It is optional: when the Phase 5 builders followed the Evidence Fidelity Contract (see [Resiliency Task Planner Context](../../instructions/hve-resiliency-planner-context.instructions.md)), this pass should find little to correct. Run it as a backstop, or when the report was assembled quickly.
+
+38. Run `/fix-assessment-finding` with a scope argument. Process tiers in ascending order so edits to the single report file never collide:
+    1. `/fix-assessment-finding P0`
+    2. `/fix-assessment-finding P1`
+    3. `/fix-assessment-finding P2`
+    4. `/fix-assessment-finding P3`
+    * `/fix-assessment-finding all` runs every tier in one pass, pausing after each tier for review. Prefer per-tier invocation for the tightest context.
+    * Scope may also be a single finding ID (e.g. `/fix-assessment-finding P1-025`) for a targeted correction.
+39. Review the corrected report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 

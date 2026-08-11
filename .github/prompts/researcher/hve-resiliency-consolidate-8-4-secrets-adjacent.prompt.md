@@ -15,7 +15,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 ## Direct Invocation and Prerequisite
 
 * Run only the `secrets-adjacent` fill stage. Do not run any other group fill, verify, or finalize behavior.
-* Require the sub-manifest to exist, be readable, be sanitizable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If the sub-manifest is missing, ambiguous, malformed, unsafe, or does not list `secrets-adjacent` in `groupRouting`, stop `Blocked` with the specific reason and do not create a sub-fragment file.
+* Require the sub-manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If it is missing, unreadable, structurally invalid, or does not list `secrets-adjacent` in `groupRouting`, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not create a sub-fragment file.
 * Require the outer manifest at the sub-manifest's `outerManifestPath` to still be readable and its sanitized SHA-256 digest to match `outerManifestSha256`. On mismatch, stop `Blocked` with `outer manifest drift`.
 
 ## Read Scope
@@ -43,7 +43,7 @@ Never emit a candidate solely because Prompt 7 mentions a topic; require positiv
 
 ## Sanitization
 
-Never reproduce a secret value or a reversible derivative. For any candidate touching a secret-adjacent surface, retain only the secret type, normalized file path and line, key or symbol name, and stable redacted identity carried by the Prompt 7 record. Mark the sub-fragment unsafe and stop `Blocked` when sanitization cannot be guaranteed.
+Never reproduce a secret value or a reversible derivative. For any candidate touching a secret-adjacent surface, retain only the secret type, normalized file path and line, key or symbol name, and stable redacted identity carried by the Prompt 7 record. If an individual value cannot be safely sanitized, drop that value and keep the finding using only its safe location metadata; never render the raw value and never block for this reason, per Status and Failure Semantics.
 
 ## Residual Discipline
 

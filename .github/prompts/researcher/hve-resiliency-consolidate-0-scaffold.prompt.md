@@ -49,7 +49,7 @@ Read each accepted artifact's bytes once and validate:
 * Conformance to the producer body schema for its prompt ID.
 * Repository relevance: identifiers, paths, and workspace references cited by the artifact belong to the current workspace.
 
-Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when any required prompt ID (`0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, `7`) has zero admitted candidates; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity.
+Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity. A required prompt ID (`0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, `7`) with zero admitted candidates does not block: record it as absent in the coverage snapshot and proceed, leaving its section to render bounded no evidence; finalize sets the terminal status to reflect the missing required coverage.
 
 Freeze the discovery result after selection. Duplicate prompt IDs are resolved by the tie-break above rather than by stopping.
 

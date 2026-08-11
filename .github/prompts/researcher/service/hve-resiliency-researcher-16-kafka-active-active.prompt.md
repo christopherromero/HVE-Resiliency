@@ -7,6 +7,8 @@ agent: "Task Researcher"
 
 Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
 
+Kafka runs on Confluent Cloud; treat that as a confirmed platform fact and do not ask the operator which Kafka provider or environment is in use.
+
 ## Eligibility And Scope
 
 Run Prompt 16 directly and only when the provided Prompt 1 output meets both entry

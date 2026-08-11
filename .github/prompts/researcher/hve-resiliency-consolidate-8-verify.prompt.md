@@ -15,7 +15,7 @@ Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-cons
 ## Direct Invocation and Prerequisite
 
 * Run only the verify stage. Do not run any group fill or the finalize behavior.
-* Require the sub-manifest to exist, be readable, be sanitizable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If the sub-manifest is missing, malformed, or unsafe, stop `Blocked` with the specific reason and do not write an audit report.
+* Require the sub-manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Sub-Manifest Sidecar Contract. If it is missing, unreadable, or structurally invalid, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not write an audit report.
 * Require the outer manifest at the sub-manifest's `outerManifestPath` to still be readable and its sanitized SHA-256 digest to match `outerManifestSha256`. On mismatch, stop `Blocked` with `outer manifest drift`.
 * Require all five sub-fragment files (`core-context.md`, `platform-state.md`, `failure-crossrepo.md`, `secrets-adjacent.md`, `services.md`) to exist under the sub-manifest's `subFragmentDir`. Missing sub-fragments are reported as `fragment-missing`; verification continues on the present sub-fragments.
 

@@ -45,6 +45,16 @@ In code examples and fix blocks, use placeholder values like `{primaryRegion}`, 
 
 ## Report Structure
 
+### Incremental Write
+
+Build the report with in-place edits, never a single oversized write that is prone to transient network failures:
+
+* First create the file with the Document Header, Table of Contents, and Section 1 (Assessment Overview) only. This is one bounded write.
+* Then append findings under Sections 2 and 3 one finding at a time, each as a separate edit, in P0, P1, P2, then P3 order.
+* Then append Sections 4, 5, and 6 as separate edits, one section per write.
+* Never regenerate previously written content and never hold more than one finding's rendered body (including its two code blocks) in a single write.
+* Treat the operation as resumable and idempotent: before appending a finding, check whether its `PX-NNN` ID already appears in the file; if it does, skip it. Before appending a section, check whether its H1 heading already appears; if it does, skip it. A re-dispatched run continues from a partial report without duplicating or reordering content.
+
 ### Document Header
 
 ```text

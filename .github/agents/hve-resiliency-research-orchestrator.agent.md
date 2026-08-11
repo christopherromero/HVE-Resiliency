@@ -79,7 +79,7 @@ Then compute the frozen scope from Section 1 of the 1a and 1b artifacts: build t
 
 **Gates:**
 
-* **Kafka decision:** if neither Cosmos DB nor Azure SQL is confirmed in Section 1, pause and ask the operator which Kafka topology the application uses before selecting the Kafka prompt.
+* **Kafka decision:** Kafka runs on Confluent Cloud, so do not ask which Kafka provider is in use. If neither Cosmos DB nor Azure SQL is confirmed in Section 1, do not auto-select the topology: pause and ask the operator which Kafka topology the application uses before selecting the Kafka prompt.
 * **Large-repo warning:** if the confirmed-dependency count is large enough that Stage 3 fan-out plus consolidation risks exceeding context limits, warn the operator with the count and the applicable service list and ask whether to proceed or narrow scope.
 * **Checkpointed:** if `autonomy=checkpointed`, pause for dependency-inventory review before Step 3.
 

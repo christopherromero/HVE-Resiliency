@@ -24,6 +24,19 @@ Every consolidated artifact uses schema version `hve-resiliency-consolidation/v1
 
 Preserve the evidence-only contract end to end. Do not introduce assessment areas or produce alternatives, recommendations, selected approaches, examples, implementation details, design changes, remediation, or advisory language. Skip Task Researcher Phase 2 and all deeper-research handoffs. Emit only sanitized, retained, evidence-backed records.
 
+## Status and Failure Semantics
+
+Every prompt ends in exactly one terminal state: `Complete`, `Incomplete`, or `Blocked`. Blocking is reserved for one condition only and is never used for anything discovered inside the repository under assessment or inside an accepted source artifact. This section is never overridden by a pipeline prompt's stage-specific rules.
+
+**Repository and content conditions are findings, never failures.** Anything learned from the repository under assessment or from accepted source artifacts is recorded in-band and the run continues. Never stop `Blocked` and never mark the run `Incomplete` for any of these:
+
+* Ambiguous, contradictory, or unprovable evidence: render the affected field or finding with the schema's `Unknown` / `Unknown: evidence unavailable` value and continue.
+* A dependency, service, or file that is out of scope or owned by another repository: record it as an out-of-scope finding that names the boundary and, where useful, notes that the owning repository should verify it. Do not issue instructions to that other repository beyond that suggestion.
+* Source content that cannot be safely rendered (for example a secret value): sanitize and keep the finding using only its safe location metadata, per Sanitization. Never block for unsafe content.
+* No evidence found for an in-scope check: record the schema's negative value (`Not observed in completed sources`, `None found`, or `Not Applicable`). Absence of evidence is a valid completed result.
+
+**The only `Blocked` condition is a broken pipeline.** Stop `Blocked` only when a required input produced by a prior pipeline step (a prerequisite artifact or a frozen manifest sidecar) is genuinely absent, unreadable, or structurally invalid, meaning a prior step failed or the steps ran out of order. The orchestrator gates each step on the prior step returning `Complete`, so in a correctly orchestrated run this state cannot occur; when it does it is a pipeline defect, not a property of the repository. Stop with a single message of the form `prerequisite from a prior step is missing or invalid - rerun <the producing step>`, and never synthesize the missing input. Do not use `Blocked` as a graceful branch for repository or artifact content, and do not enumerate content-based block reasons. The manifest auto-location rules below are the concrete application of this single condition.
+
 ## Frozen Manifest Sidecar Contract
 
 The scaffold prompt emits one frozen manifest sidecar next to the consolidated document (for example `<consolidated-doc-basename>.manifest.md`). Every downstream stage reads this manifest and never repeats discovery. The manifest is deterministic and stable across reads.
@@ -74,7 +87,7 @@ Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, and `7`. Servi
 
 Sanitize raw content immediately after reading and before any write, hash, comparison, index entry, normalized record, or output. Never retain or reproduce secret values. Normalize workspace-relative paths to `/` while preserving repository path case, collapse prose whitespace to one ASCII space, encode text as UTF-8 without a byte-order mark, and use lowercase SHA-256 hexadecimal digests for content and records.
 
-For potential secrets, retain only the secret type, normalized file path and line, key or symbol name, and a stable redacted identity derived from sanitized metadata. Mark an artifact unsafe and stop `Blocked` when sanitization cannot be guaranteed. Do not hash, compare, transfer, or write unsafe raw content.
+For potential secrets, retain only the secret type, normalized file path and line, key or symbol name, and a stable redacted identity derived from sanitized metadata. If an individual secret value cannot be safely sanitized, drop that value and keep the finding using only its safe location metadata; never write the raw value and never block for this reason. Reserve `Blocked` for an artifact that cannot be safely read or processed at all. Do not hash, compare, transfer, or write unsafe raw content.
 
 ## Line Number Integrity Rules
 

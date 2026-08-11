@@ -79,7 +79,7 @@ The fastest path is the two **orchestrator agents**. Each runs its entire phase 
 
    It produces the executive Master report, the Developer Guide, and the final **Code-Level Resiliency Assessment** report under `Microsoft-Assessment/`.
 
-> Tip: add `autonomy=checkpointed` to either kickoff message to pause for review at phase boundaries.
+> Tip: add `autonomy=checkpointed` to either kickoff message to pause for review at phase boundaries. Add `audit=on` to the planning message to also run the optional Phase 6 evidence audit (`/fix-assessment-finding`) per tier after the assessment is built.
 
 ### Manual alternative (one prompt at a time)
 
@@ -220,16 +220,18 @@ The framework follows an application-centric, evidence-first flow built on HVE C
 1. **Source code and IaC** in the target repository serve as primary evidence.
 2. **Task Researcher** runs Phase 1-2 prompts to produce per-area research artifacts (architecture, dependencies, failure paths, per-service findings), citing file and line for every claim.
 3. **Phase 3 consolidation** merges those artifacts into a single evidence document, deduplicating findings and normalizing terminology.
-4. **Task Planner** reads the consolidated document under evidence-lock-in rules and produces a prioritized P0-P3 plan plus a code-level resiliency assessment.
+4. **Task Planner** reads the consolidated document under evidence-lock-in rules and produces a prioritized P0-P3 plan plus a code-level resiliency assessment. Verbatim code first enters the pipeline here: the Developer Guide quotes each snippet exactly from the cited file, and the assessment builders copy from it.
 5. **Outputs** include forensic research artifacts, a Master plan and Developer Guide, and a backlog-ready assessment report with Microsoft Standards Alignment.
+6. **Optional evidence audit** (`fix-assessment-finding`) re-resolves every citation, verbatim code block, and fix block in the finished assessment against the repository, run per priority tier as a backstop.
 
 | Phase               | Prompts                                                          | Notes                                       |
 | ------------------- | ---------------------------------------------------------------- | ------------------------------------------- |
 | 1. Core Research    | `researcher-0` … `researcher-7-logging`                     | Sequential. Mode-aware.                     |
 | 2. Service Research | `researcher/service/*` (8-19, filtered to applicable services) | Mode B allows up to 3 concurrent subagents. |
-| 3. Consolidation    | `researcher-consolidate-0`, `-1`, `-2`                        | User-gated,`/clear` between steps.        |
+| 3. Consolidation    | `consolidate-0-scaffold` … `consolidate-9-finalize` (split pipeline with verify passes) | User-gated,`/clear` between steps.        |
 | 4. Planning         | `planner-0`, `planner-1`, `planner-0`, `planner-2`       | User-gated,`/clear` between steps.        |
-| 5. Assessment       | `assessment-builder-0` … `assessment-builder-3`             | User-gated,`/clear` between steps.        |
+| 5. Assessment       | `planner-3a` … `planner-3d`                                 | User-gated,`/clear` between steps.        |
+| 6. Evidence Audit (optional) | `fix-assessment-finding` (per tier: P0, P1, P2, P3)      | Backstop; verifies citations and code against the repo. |
 
 A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). Per-phase descriptions, workflow evolution diagrams, and the post-Phase-5 backlog import flow are covered in the guides linked from [Documentation](#documentation).
 
@@ -240,8 +242,8 @@ A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Leve
 | [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/)                         | Skill that orchestrates the full research workflow.                                                                                                                                  |
 | [.github/skills/hve-resiliency-telemetry-report/](.github/skills/hve-resiliency-telemetry-report/)         | Skill that turns a completed workflow run into an executive ROI and telemetry report, comparing the research, planning, and assessment phases against a manual baseline.             |
 | [.github/prompts/researcher/](.github/prompts/researcher/)                                                 | Phase 1 (core) and Phase 2 (per-service) research prompts, plus the consolidation prompt.                                                                                            |
-| [.github/prompts/planner/](.github/prompts/planner/)                                                       | Phase 4 planning prompts.                                                                                                                                                            |
-| [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/)                                 | Phase 5 assessment authoring prompts.                                                                                                                                                |
+| [.github/prompts/planner/](.github/prompts/planner/)                                                       | Phase 4 planning and Phase 5 assessment prompts (`planner-0` … `planner-3d`).                                                                                                        |
+| [.github/prompts/fix-assessment-finding.prompt.md](.github/prompts/fix-assessment-finding.prompt.md)       | Phase 6 optional evidence-audit prompt: verifies assessment citations and code against the repository, per priority tier.                                                            |
 | [.github/prompts/telemetry-report/](.github/prompts/telemetry-report/)                                     | Slash command that generates the executive ROI and telemetry report from a completed run.                                                                                           |
 | [.github/prompts/workitem-export/](.github/prompts/workitem-export/)                                       | Backlog export prompt for converting assessment findings into ADO or Jira import CSV files.                                                                                          |
 | [.github/prompts/workitem-import/](.github/prompts/workitem-import/)                                       | Bulk-import prompts for posting an export CSV directly into Azure DevOps or Jira Cloud.                                                                                              |
@@ -278,7 +280,7 @@ Mode B totals are 30-50% higher because the orchestrating agent retains conversa
 
 | Microsoft framework                                                                                        | How this framework aligns                                                                                                                                                                                                                             |
 | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)                     | Reliability pillar: availability, resiliency, and recovery. Phase 5 assessment maps every P0-P3 finding to WAF reliability patterns (see[`assessment-builder-3`](.github/prompts/assessment-builder/hve-resiliency-assessment-builder-3.prompt.md)). |
+| [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)                     | Reliability pillar: availability, resiliency, and recovery. Phase 5 assessment maps every P0-P3 finding to WAF reliability patterns (see [`planner-3d`](.github/prompts/planner/hve-resiliency-planner-3d.prompt.md)). |
 | [Azure Proactive Resiliency Library (APRL)](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/) | Design-time and detection-time resiliency guidance for Azure services, used as a reference for per-service findings in Phase 2.                                                                                                                       |
 | [Cloud Adoption Framework (CAF)](https://learn.microsoft.com/azure/cloud-adoption-framework/)               | Application readiness for cloud scale and reliability, supporting the transition to active/active multi-region operation.                                                                                                                             |
 

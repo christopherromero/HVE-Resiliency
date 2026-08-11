@@ -15,8 +15,9 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 ## Direct Invocation and Prerequisite
 
 * Run only the scaffold stage. Do not run any category fill, verify, or finalize behavior.
-* Require exactly one eligible Prompt 1a artifact and exactly one eligible Prompt 1b artifact. Eligibility qualifiers: inherited research location, matching prompt identity (filename ID and body ID agree), and a Section 1 confirmed-dependency inventory. An explicitly superseded artifact is stale; age alone is not.
-* If either prerequisite is missing, ambiguous (more than one eligible artifact and no dated tie-break winner), unreadable, unsafe, or contains no Section 1 confirmed dependency, name the missing or ambiguous prerequisite and stop `Blocked` before writing anything.
+* Require exactly one eligible Prompt 1a artifact and exactly one eligible Prompt 1b artifact. Eligibility qualifiers: inherited research location, matching prompt identity (filename ID and body ID agree), and a present Section 1 inventory, which may be empty. An explicitly superseded artifact is stale; age alone is not.
+* If either prerequisite artifact from a prior step is missing, unreadable, or structurally invalid, a prior step failed or ran out of order: name the prerequisite and stop `Blocked` per Status and Failure Semantics before writing anything. Auto-location resolves multiple candidates deterministically, so multiple candidates never block.
+* If both prerequisites resolve and are readable but their combined Section 1 inventory lists zero confirmed dependencies, do not block: emit the skeleton and a frozen manifest with an empty `eligibleDependencies` list, and record that no confirmed dependency was in scope.
 
 ## Discovery and Selection
 
