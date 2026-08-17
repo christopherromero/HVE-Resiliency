@@ -25,7 +25,7 @@ The only inputs to this stage are the manifest, the frozen eligible dependency l
 
 ## Outcome Focus
 
-Emit rows only for the observed outcome `startup-failure`: application fails to start or fails to reach a healthy state on boot when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to silent degradation, data loss or partial processing, or blocking transactions during steady-state request handling; those outcomes belong to their own fragments.
+Emit rows only for the observed outcome `startup-failure`: application fails to start or fails to reach a healthy state on boot when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to data loss or partial processing, or blocking transactions during steady-state request handling; those outcomes belong to their own fragments.
 
 Startup-failure discovery hints (evidence-only):
 
@@ -47,7 +47,7 @@ Exclude tests, fixtures, samples, generated output, documentation, and local-onl
 
 For every startup-failure row, emit the Required Row Schema from the shared contract. Use section-scoped IDs of the form `F-5-startup-00X`, assigned in emission order starting at `F-5-startup-001`.
 
-Never combine zone-failure and regional-failover evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
+Never combine regional-failover and partial-outage evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
 
 ## Output
 
@@ -57,4 +57,4 @@ Write the fragment to `<fragmentDir>/startup-failure.md`, where `<fragmentDir>` 
 
 Report the row count, the count of rows carrying any `Unknown: not found after bounded search <scope>` descriptor, the fragment path, and the terminal fragment status.
 
-> **Next step:** Run `/hve-resiliency-researcher-5-2-silent-degradation`
+> **Next step:** Run `/hve-resiliency-researcher-5-2-data-loss-partial-processing`

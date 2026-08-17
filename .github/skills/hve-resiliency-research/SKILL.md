@@ -1,6 +1,6 @@
 ---
 name: hve-resiliency-research
-description: Use for application resiliency research covering zone failure in West US 2 and regional failover from West US 2 to West US with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
+description: Use for application resiliency research covering regional failover between West US 2 and West US with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
 ---
 
 # HVE Resiliency Research
@@ -11,11 +11,11 @@ Use [Resiliency Research Platform Context](../../instructions/hve-resiliency-pla
 
 ## Activation Guidance
 
-Auto-load this skill for requests related to resiliency, Azure zone survivability, or regional failover research.
+Auto-load this skill for requests related to resiliency, Azure regional failover survivability research.
 
 ## Activation Behavior
 
-When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (8-19) without completing Prompts 0-7 first.
+When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (9-17) without completing Prompts 0-6 first.
 
 ## Automated Orchestration (Recommended)
 
@@ -48,42 +48,37 @@ Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 8. Prompt 5 has been split into a bounded pipeline. Run these in order:
     1. `/hve-resiliency-researcher-5-0-scaffold` (validates Prompt 1a and 1b Section 1, freezes the eligible-dependency inventory, emits skeleton + manifest sidecar).
     2. `/hve-resiliency-researcher-5-1-startup-failure`.
-    3. `/hve-resiliency-researcher-5-2-silent-degradation`.
-    4. `/hve-resiliency-researcher-5-3-data-loss-partial-processing`.
-    5. `/hve-resiliency-researcher-5-4-blocking-transactions`.
-    6. `/hve-resiliency-researcher-5-verify` (audits the four fragments against the manifest and workspace source).
-    7. `/hve-resiliency-researcher-5-finalize` (assembles fragments into the single Prompt 5 artifact consumed by consolidation).
-    * The four outcome fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
+    3. `/hve-resiliency-researcher-5-2-data-loss-partial-processing`.
+    4. `/hve-resiliency-researcher-5-3-blocking-transactions`.
+    5. `/hve-resiliency-researcher-5-verify` (audits the three fragments against the manifest and workspace source).
+    6. `/hve-resiliency-researcher-5-finalize` (assembles fragments into the single Prompt 5 artifact consumed by consolidation).
+    * The three outcome fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
     * `/hve-resiliency-researcher-5` is retained as a deprecated redirect to the scaffold entry point.
 9. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
-10. Run `/hve-resiliency-researcher-7-logging` (Logging).
 
-### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial)
+### Phase 2: Service-Specific Research (Prompts 9-17, Circumstantial)
 
 Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b. Skip services found only in Sections 2-3 or not found. Recommend applicable prompts from the combined Prompt 1a and Prompt 1b results.
 
-11. Run `/hve-resiliency-researcher-8-appgw` (App Gateway)
-12. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
-13. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
-14. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
-15. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
-16. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
-17. Run `/hve-resiliency-researcher-14-redis` (Redis)
-18. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
-19. Determine whether Cosmos DB and/or Azure SQL were confirmed in Prompt 1a Section 1, then run the matching Kafka prompt per the Database-to-Kafka Pairing Standard (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)). Kafka runs on Confluent Cloud; do not ask which Kafka provider is in use.
-    * Cosmos DB confirmed, Azure SQL not confirmed -> Run `/hve-resiliency-researcher-16-kafka-active-active`
-    * Azure SQL confirmed, with or without Cosmos DB -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
-    * Neither confirmed -> Do not auto-select; ask the user which Kafka topology the application uses before proceeding
-20. Run `/hve-resiliency-researcher-17-networking` (Networking)
-21. Run `/hve-resiliency-researcher-18-entraid` (Entra ID)
-22. Run `/hve-resiliency-researcher-19-apim` (APIM)
+10. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
+11. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
+12. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
+13. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
+14. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
+15. Run `/hve-resiliency-researcher-14-redis` (Redis)
+16. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
+17. Run the Kafka prompt that matches the explicitly provided Kafka strategy. The strategy is agreed by the development, architecture, and application teams before the assessment starts and is never inferred from the database model (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)). Kafka runs on Confluent Cloud; do not ask which Kafka provider is in use.
+    * `kafkaStrategy=Active-Active` -> Run `/hve-resiliency-researcher-16-kafka-active-active`
+    * `kafkaStrategy=Active-Standby` -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
+    * No strategy provided -> Do not auto-select and do not derive one from the database model; ask for the agreed strategy before proceeding
+18. Run `/hve-resiliency-researcher-17-entraid` (Entra ID)
 
 ### Phase 3: Consolidation
 
 Consolidation has been split into a bounded pipeline. Run these in order:
 
-23. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
-24. Run each section-fill prompt against the manifest emitted in step 23. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
+19. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
+20. Run each section-fill prompt against the manifest emitted in step 19. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
     * `/hve-resiliency-consolidate-1-repository-context`
     * `/hve-resiliency-consolidate-2-dependency-inventory`
     * `/hve-resiliency-consolidate-3-region-zone`
@@ -92,38 +87,38 @@ Consolidation has been split into a bounded pipeline. Run these in order:
     * `/hve-resiliency-consolidate-6-shared-cross-repo`
     * `/hve-resiliency-consolidate-7-secrets`
     * `/hve-resiliency-consolidate-8-other`
-25. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
-26. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
-27. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
-28. Review the consolidated report at `.copilot-tracking/research/`.
+21. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
+22. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
+23. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
+24. Review the consolidated report at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 
-29. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
-30. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
-31. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
-32. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
+25. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
+26. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
+27. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
+28. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
 
 ### Phase 5: Code-Level Resiliency Assessment Report
 
-33. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
-34. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
-35. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
-36. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
-37. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+29. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
+30. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
+31. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
+32. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
+33. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ### Phase 6: Assessment Evidence Audit (Optional)
 
 Phase 6 verifies that every source citation, verbatim code block, and fix block in the completed assessment is faithful to the repository, and keeps all cross-references in sync. It is optional: when the Phase 5 builders followed the Evidence Fidelity Contract (see [Resiliency Task Planner Context](../../instructions/hve-resiliency-planner-context.instructions.md)), this pass should find little to correct. Run it as a backstop, or when the report was assembled quickly.
 
-38. Run `/fix-assessment-finding` with a scope argument. Process tiers in ascending order so edits to the single report file never collide:
+34. Run `/fix-assessment-finding` with a scope argument. Process tiers in ascending order so edits to the single report file never collide:
     1. `/fix-assessment-finding P0`
     2. `/fix-assessment-finding P1`
     3. `/fix-assessment-finding P2`
     4. `/fix-assessment-finding P3`
     * `/fix-assessment-finding all` runs every tier in one pass, pausing after each tier for review. Prefer per-tier invocation for the tightest context.
     * Scope may also be a single finding ID (e.g. `/fix-assessment-finding P1-025`) for a targeted correction.
-39. Review the corrected report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+35. Review the corrected report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 
@@ -135,17 +130,69 @@ Phase 6 verifies that every source citation, verbatim code block, and fix block 
 * Write each research output to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
 * Planning outputs (Phase 4) may include remediation and code examples
 
-## Priority Definitions
+## Priority Legend
 
-* P0: Critical / Blocking. Causes outage, data loss, duplicate charges, or inability to fail over safely.
-* P1: Required, Non-Blocking. Materially increases application risk, data risk, or customer impact during failure.
-* P2: Improvement / Best Practice. Does not materially impact correctness but weakens resilience posture.
-* P3: Non-Blocking Code Consistency. Maintainability, readability, duplication, or inconsistent patterns that are non-blocking.
+Use this consistently in all outputs:
+
+* P0: Blocking/Critical Risk
+* P1: High Priority
+* P2: Improvement/Best Practice (Non-Blocking)
+* P3: Non-Blocking Code Consistency (Best Practices / Maintainability)
+
+### P0 — Critical Resiliency Risk
+
+**Definition**: Code or configuration changes required for the application to start and operate without crashing in both regions or for the global load balancer to determine regional health accurately.
+
+**Criteria** (any of the following):
+
+* Application code or configuration prevents successful startup or causes crashes in either region.
+* Region-specific configuration values must be added, changed, or externalized.
+* A health endpoint must be created because none exists.
+* An existing health probe does not include all critical application dependencies.
+* Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
+
+### P1 — Important Resiliency Risk
+
+**Definition**: Generic, region-agnostic resiliency changes required to preserve current production behavior after multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Retry logic or circuit breakers are required.
+* Timeout tuning is required.
+* Local caching must be replaced with distributed caching.
+* Idempotency controls are required.
+* Without the change, requests may still succeed, but latency, processing, logging, or exception handling could differ from current production behavior.
+
+### P2 — Code Quality / Non-Resiliency
+
+**Definition**: A new architectural pattern, component, or redesign that improves resiliency but is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Dead-letter queue implementation.
+* Saga or outbox pattern adoption.
+* Event-sourcing introduction.
+* Replication redesign.
+* Any comparable architecture-level change.
+
+**Important**: These findings should still be reported. But they do **not** belong in the resiliency bucket and should not be prioritized above P0/P1 resiliency items. Frame them as code-quality recommendations, not resiliency risks.
+
+### P3 — Noted for Completeness
+
+**Definition**: A best-practice, hardening, maintainability, readability, duplication, or consistency improvement that is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Maintainability or readability improvements.
+* Duplicate-code removal.
+* Naming, formatting, or pattern consistency.
+* Non-blocking hardening improvements.
+* Findings that do not match P0, P1, or P2.
 
 ## Service Exclusion Rule
 
 * After Prompts 1a and 1b complete, dependencies classified only in Section 2 (Checked But Not Present) or Section 3 (Not Applicable) are dropped from scope
-* Prompts 2-7, service-specific prompts (8-19), and the consolidation report analyze only dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b
+* Prompts 2-7, service-specific prompts (9-17), and the consolidation report analyze only dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b
 * In Phase 2, run only the service-specific prompts for dependencies found in either producer's Section 1
 
 ## Deliverable Templates
@@ -223,7 +270,7 @@ status: current
 - Service / Dependency name:
 - Evidence (file path + line number):
 - Brief description of how it is used:
-- Whether it materially impacts zone or region failover:
+- Whether it materially impacts region failover:
 - Existing mitigations present (if any), with evidence:
 - Health check present for this dependency?:
 - How health is determined, with evidence:
@@ -246,10 +293,10 @@ status: current
 ```text
 # Prompt 2 Research Output
 
-## Region and Zone Assumptions
+## Region Assumptions
 - Assumption:
 - Priority: P0 / P1 / P2 / P3
-- Failover relevance (West US 2 to West US):
+- Failover relevance (between West US 2 and West US):
 - Evidence: <file path>:<line>
 - Existing mitigations present (if any): with evidence
 - Constraints/limitations (if any): with evidence
@@ -285,7 +332,7 @@ status: current
 
 ## Data Loss Potential (Facts Only)
 - Where loss could occur:
-- Failure condition (zone loss/regional failover/partial outage):
+- Failure condition (regional failover/partial outage):
 - Writes/messages/records at risk:
 - Priority: P0 / P1 / P2 / P3
 - Evidence: <file path>:<line>
@@ -301,16 +348,16 @@ status: current
 
 ### Prompt 5 Deliverable Template
 
-The Prompt 5 pipeline emits four outcome fragments plus a manifest sidecar, and finalize assembles them into a single artifact with four subsections. The Required Row Schema is defined in the [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md) and applies uniformly to every rendered row.
+The Prompt 5 pipeline emits three outcome fragments plus a manifest sidecar, and finalize assembles them into a single artifact with three subsections. The Required Row Schema is defined in the [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md) and applies uniformly to every rendered row.
 
 Outputs produced by the pipeline:
 
 * Skeleton and final artifact: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.md`
 * Manifest sidecar: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.manifest.md`
-* Fragments: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/{startup-failure,silent-degradation,data-loss-partial-processing,blocking-transactions}.md`
+* Fragments: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/{startup-failure,data-loss-partial-processing,blocking-transactions}.md`
 * Verify audit: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/verify-audit.md`
 
-Row shape (each row is emitted with an outcome-scoped ID such as `F-5-startup-001`, `F-5-degradation-001`, `F-5-data-loss-001`, or `F-5-blocking-001`):
+Row shape (each row is emitted with an outcome-scoped ID such as `F-5-startup-001`, `F-5-data-loss-001`, or `F-5-blocking-001`):
 
 ```text
 ### F-5-<outcome>-00X
@@ -318,9 +365,9 @@ Row shape (each row is emitted with an outcome-scoped ID such as `F-5-startup-00
 - Failure mode:
 - Priority: P0 / P1 / P2 / P3
 - Triggering dependency + failure type (timeout / DNS failure / authentication failure / partial outage):
-- Scenario: West US 2 zone failure | West US 2 to West US regional failover
+- Scenario: Between West US 2 and West US regional failover
 - Code path / entrypoint:
-- Observed behavior (startup failure / silent degradation / data loss or partial processing / blocking transactions):
+- Observed behavior (startup failure / data loss or partial processing / blocking transactions):
 - User or customer-visible impact:
 - Business impact:
 - Blast radius:
@@ -341,9 +388,8 @@ Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finaliz
 ## Scope and Assumptions
 ## Task Implementation Requests
 ## 5.1 Startup Failure
-## 5.2 Silent Functional Degradation
-## 5.3 Data Loss or Partial Processing
-## 5.4 Blocking Transactions
+## 5.2 Data Loss or Partial Processing
+## 5.3 Blocking Transactions
 ## Ledger and Terminal Outcomes
 ```
 
@@ -355,14 +401,15 @@ Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finaliz
 ## Shared and Cross-Repository Dependencies
 - Dependency:
 - Priority: P0 / P1 / P2 / P3
-- Ownership boundary:
-- Zone or region failover risk implication:
+- Ownership boundary or entrypoint:
+- Evidence-backed causal chain of repository facts and deterministic code-semantics inferences:
+- Regional failover risk implication:
 - Evidence: <file path>:<line>
 - Existing mitigations present (if any): with evidence
 - Constraints/limitations (if any): with evidence
 ```
 
-### Service-Specific Prompts (8-19) Deliverable Template
+### Service-Specific Prompts (9-17) Deliverable Template
 
 ```text
 # Prompt N Research Output — <Service Name>
@@ -371,7 +418,7 @@ Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finaliz
 - Issue Description:
 - Risk Level (P0/P1/P2/P3):
 - Code location (file + line number):
-- Why this is a risk to app, zone or region failover:
+- Why this is a risk to app, regional failover:
 - Impact(s) if this is not changed:
 - Existing mitigations present (evidence):
 - Constraints/limitations (evidence):
@@ -388,8 +435,8 @@ The consolidated report is produced by the split consolidation pipeline (scaffol
 Assessment Scope:
 
 * Repository: <repo-name>
-* Focus: West US 2 zone failure and West US 2 to West US regional failover
-* Regions Evaluated: West US 2 to West US
+* Focus: Regional failover between West US 2 and West US
+* Regions Evaluated: West US 2 and West US
 * Assessment Date: YYYY-MM-DD
 * Generated By: HVE Task Researcher
 * Schema Version: hve-resiliency-consolidation/v1
@@ -401,7 +448,7 @@ Assessment Scope:
 ### 2.2 Checked but Not Present
 ### 2.3 Not Applicable Dependency Categories
 
-## 3. Region and Zone Assumptions
+## 3. Region Assumptions
 
 ## 4. State and Data Characteristics
 
@@ -424,7 +471,7 @@ Each rendered finding under Sections 2.1 and 3-8 uses the Required Finding Schem
 * Dependency or Category:
 * Priority: P0 | P1 | P2 | P3
 * Ownership:
-* Scenario: West US 2 zone failure | West US 2 to West US regional failover
+- Scenario: Between West US 2 and West US regional failover
 * Description:
 * Failure Mode and Scenario-Specific Risk:
 * Impacts:

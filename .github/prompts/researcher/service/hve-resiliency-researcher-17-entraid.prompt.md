@@ -1,28 +1,26 @@
 ---
-description: Research Entra ID resiliency for Application Platform zone and regional failure
+description: Research Entra ID resiliency for Application Platform regional failure
 ---
 
-# Application HVE Researcher 18 Entra ID
+# Application HVE Researcher 17 Entra ID
 
-Follow the safety-critical controls in this prompt. The linked
-[Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
-is supplementary because its current `applyTo` patterns do not cover this nested path.
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
 ## Scope
 
-Research only the existing Entra ID assessment surfaces:
+Entra ID is a global Azure service. Failover is handled by the service itself as part
+of the shared services design, so it does not fail over between West US 2 and West US
+and no application-owned failover behavior governs it.
+
+Research only the existing Entra ID assessment surface:
 
 * Token acquisition, validation, and refresh behavior
-* JWT signing key (JWKS) retrieval and caching
-* Conditional Access or MFA-dependent flows
-* Synchronous calls to Entra ID during request handling
-* Hybrid identity dependencies such as AD FS or on-premises services
-* Health-probe alignment between global load balancing and backend services
 
-Assess each applicable surface independently for:
+Assess that surface for:
 
-* Zone failure within West US 2
-* Full regional failover from West US 2 to West US
+* Full regional failover between West US 2 and West US
 
 Use repository evidence only. Do not provide remediation, recommendations, tuning,
 implementation guidance, or code examples. Do not infer Entra service topology,
@@ -105,7 +103,7 @@ Treat Microsoft Entra ID as one dependency and use these maximum budgets for the
 * 12 unique file reads with no rereads
 * 2 levels of reference indirection and 2 queued references per candidate
 * 16 unique candidate files and 12 unique issue candidates
-* 12 final finding rows across both failure scenarios
+* 12 final finding rows
 * 3 semantic citations per finding row
 * 2 retained excerpts per finding row, each at most 240 bytes
 * 12,000 bytes of retained sanitized evidence for the complete artifact
@@ -125,7 +123,7 @@ query-family results, normalized paths, file hashes, candidate dispositions, cit
 and sanitized excerpts. Reuse the cache instead of traversing or reading again. Merge
 path aliases and duplicate content before candidate or evidence counting.
 
-Use query families for only the assessment surfaces listed in Scope. A search operation
+Use query families for only the assessment surface listed in Scope. A search operation
 may combine related terms and file patterns. Follow references only when they can resolve
 production precedence or a listed surface, and count every followed file against the
 read and candidate budgets.
@@ -144,26 +142,10 @@ Use one terminal status:
 * `BLOCKED_PREREQUISITES`, `NOT_APPLICABLE`, `EVIDENCE_INSUFFICIENT`, or
    `ENTRA_PROOF_NOT_MET` as defined above
 
-## Priority Classification
-
-Classify only evidence-backed findings. Unknown or unsupported assumptions are not
-findings.
-
-* P0: Critical / Blocking. Causes outage, data loss, duplicate charges, or inability to
-   fail over safely during zone or regional failure.
-* P1: Required, Non-Blocking. Does not fully block failover but materially increases
-   application risk, data risk, or customer impact during failure.
-* P2: Improvement / Best Practice. Does not materially impact correctness during
-   failover but weakens resilience posture or operational clarity.
-* P3: Non-Blocking Code Consistency. Captures maintainability, readability, duplication,
-   or inconsistent pattern issues that are non-blocking.
-
-The risk rationale must cite the observed consequence for the named scenario. Use P3
-only for code consistency concerns that do not affect failover correctness.
 
 ## Research Artifact
 
-Create `.copilot-tracking/research/<repo-name>-hve-resiliency-researcher-18-entraid.md`,
+Create `.copilot-tracking/research/<repo-name>-hve-resiliency-researcher-17-entraid.md`,
 where `<repo-name>` is the current repository name. Create the artifact after the
 prerequisite gate and update it progressively after gate disposition, production
 discovery, candidate disposition, finding creation, and validation.
@@ -186,16 +168,13 @@ Under `Findings`, repeat this exact field schema for every finding row:
 * Issue Description:
 * Risk Level (P0/P1/P2/P3):
 * Code location (file + line number):
-* Why this is a risk to app, zone or region failover:
+* Why this is a risk to app region failover:
 * Impact(s) if this is not changed:
 * Existing mitigations present (evidence):
 * Constraints/limitations (evidence):
 * Remediation guidance: None (HVE Task Researcher role is evidence-only)
 
-Give each finding row a unique heading containing a finding ID and exactly one scenario.
-When the same issue affects both authoritative scenarios, emit two distinct rows with
-separate evidence, risk, and impact. Never combine zone-failure and regional-failover
-outcomes in one row.
+Give each finding row a unique heading containing a finding ID.
 
 Every field must be present, in the stated order, and nonempty. When evidence cannot
 resolve a value, write `Unknown:` and the bounded reason inside that field. Unknown must
@@ -210,8 +189,8 @@ write exactly `No finding rows emitted for terminal status: <status>.` under `Fi
 Before completion, validate that:
 
 * The Prompt 1a/1b gate and positive Entra proof disposition support the terminal status.
-* Both authoritative scenarios were independently assessed for every applicable surface.
-* Finding rows use the exact schema and separate scenarios.
+* The authoritative scenario was assessed for every applicable surface.
+* Finding rows use the exact schema.
 * Priority definitions, citations, sanitization, counters, evidence limits, and negative
    claims comply with this prompt.
 * The artifact path starts with the repository name and the file ends with one newline.

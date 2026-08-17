@@ -1,10 +1,10 @@
 ---
-description: Fill the services sub-fragment of the split Consolidate 8 pipeline - emit provisional Section 8 residual candidates only for artifact group services (applicable optional Prompts 8-19)
+description: Fill the services sub-fragment of the split Consolidate 8 pipeline - emit provisional Section 8 residual candidates only for artifact group services (applicable optional Prompts 9-17)
 agent: "Task Researcher"
 argument-hint: "[subManifestPath=...]"
 ---
 
-# HVE Resiliency Consolidate 8 - 5 - Services
+# HVE Resiliency Consolidate 8 - 4 - Services
 
 Follow the [Consolidate 8 Split Contract](../../instructions/hve-resiliency-consolidate-8-split.instructions.md) and the outer [Consolidation Shared Contract](../../instructions/hve-resiliency-consolidation-shared.instructions.md). This prompt fills the `services` sub-fragment only. It does not modify the sub-skeleton, does not read or edit other group sub-fragments, does not write `sections/section-8.md`, and does not set the nested-pipeline status.
 
@@ -26,7 +26,7 @@ Read only:
 
 * The Section 8 sub-manifest.
 * The outer consolidation manifest.
-* The accepted service source artifacts routed to `services` (applicable optional Prompt IDs `8` through `19`).
+* The accepted service source artifacts routed to `services` (applicable optional Prompt IDs `9` through `17`).
 
 Do not read source artifacts routed to other groups. Do not re-run outer discovery and do not re-derive the group routing table.
 
@@ -42,6 +42,8 @@ Services residual discovery hints (evidence-only):
 * Service artifact observations that Section 2.1 (service-finding scope over Section 2 Used Dependencies) does not claim.
 * Service artifact observations that map to no primary Sections 3-7 rule.
 * Cross-service context that describes an observable production behavior with a validated file-line citation to the service artifact and a canonical dependency or category.
+* Sanitized observations from this group's artifacts that describe a hard-coded value which is not a secret and which Section 7 does not primary-claim, restricted to observable production behavior with a validated file-line citation and a canonical dependency or category.
+* Configuration-lifecycle observations from this group's artifacts that carry no secret metadata and that map to no other section.
 
 Never emit a candidate solely because a service artifact mentions a topic; require positive evidence with a validated file-line citation and confirm that no other section's primary or scoped rule already claims the canonical tuple.
 
@@ -68,11 +70,9 @@ For every provisional finding, emit the Required Finding Schema from the shared 
 
 * `Disposition: provisional Section 8 residual candidate (resolved by outer finalize)`
 
-Never combine zone-failure and regional-failover evidence in one finding. If the same canonical dependency or category and observation applies to both scenarios with materially different evidence, emit two findings.
-
 ## Output
 
-Write the sub-fragment to `<subFragmentDir>/services.md`, where `<subFragmentDir>` is the `subFragmentDir` recorded in the sub-manifest. Begin the file with frontmatter recording `source-prompt: hve-resiliency-consolidate-8-5-services`, `group-key: services`, `services-applicability: <value from sub-manifest>`, `schema-version: hve-resiliency-consolidate-8-split/v1`, and the sub-fragment's terminal status.
+Write the sub-fragment to `<subFragmentDir>/services.md`, where `<subFragmentDir>` is the `subFragmentDir` recorded in the sub-manifest. Begin the file with frontmatter recording `source-prompt: hve-resiliency-consolidate-8-4-services`, `group-key: services`, `services-applicability: <value from sub-manifest>`, `schema-version: hve-resiliency-consolidate-8-split/v1`, and the sub-fragment's terminal status.
 
 * When `servicesApplicability` is `applicable`, follow the frontmatter with the subsection `## Group services Provisional Findings` containing every emitted provisional finding.
 * When `servicesApplicability` is `not-applicable`, follow the frontmatter with the subsection `## Group services Provisional Findings` containing a single acknowledgement line: `Services group not applicable per sub-manifest; negative-check scope recorded in the completion report.` Emit no provisional finding.

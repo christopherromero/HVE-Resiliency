@@ -5,7 +5,9 @@ agent: Task Researcher
 
 # Application HVE Researcher 14 Redis
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
 ## Eligibility And Scope
 
@@ -16,9 +18,19 @@ and report the eligibility block in the scope and terminal-outcome summaries. Do
 infer eligibility, search for replacement eligibility evidence, or fall back to Prompt
 0, another prompt, or conditional skill behavior.
 
-Review each confirmed dependency as Azure Managed Redis Enterprise in an active-active,
-multi-region configuration with eventual consistency. Assess readiness for zone failure
-within West US 2 and regional failover from West US 2 to West US.
+Review each confirmed dependency as Azure Managed Redis Enterprise. The target design
+is an active-active multi-region cache: the West US and West US 2 caches are both
+writable and kept in sync through Active Geo-Replication, rather than a single primary
+with a read-only geo-replica. West US is the current primary and West US 2 is the new
+primary region. Each regional application writes to the Managed Redis instance in its
+own region.
+
+The design gives low-latency local caching and rapid failover, but it introduces
+eventual consistency and complexity that the application must handle. Replication
+between regions, regional failover, and recovery of a region after failure belong to
+Managed Redis and are never application-code findings; correct application behavior on
+top of an eventually consistent, concurrently writable cache is in scope. Assess
+readiness for regional failover between West US 2 and West US.
 
 ## Task Researcher Boundary
 
@@ -30,21 +42,19 @@ Do not produce any of those materials.
 
 ## Assessment Areas
 
-Evaluate all 12 areas for every confirmed Redis dependency:
+Evaluate exactly these seven areas for every confirmed Redis dependency. Do not
+introduce another service concern or assessment area. Areas 1 through 3 are the
+findings the platform strategy requires. Areas 4 through 7 are the eventual-consistency
+complexity the same strategy states the application must handle; each is application
+code, not Managed Redis configuration.
 
-1. Does the app connect to a local Redis endpoint by default?
-2. Is region selection explicit and configurable?
-3. How does the app detect Redis failure (timeouts/errors)?
-4. Is there clear fallback logic to secondary/tertiary regions?
-5. Are retries bounded with backoff (no retry storms)?
-6. Does the app assume immediate cross-region consistency?
-7. On cache miss or stale data, does it safely fall back to the source of truth?
-8. Are hot keys or concurrent multi-region writes likely?
-9. Is Redis treated strictly as a cache (no durability assumptions)?
-10. Can the app start if Redis is unavailable?
-11. Does it fail back cleanly once the local region is healthy again?
-12. Are health probes aligned between GLB and backend services?
-
+1. Whether the application connects to the Redis endpoint of its own region. Record a
+   finding where a hardcoded endpoint is evidenced.
+2. Retry or circuit-breaker behavior on the Redis client or connector. Record a finding
+   where none is present.
+3. Whether regional Redis health is included in the application health endpoint. Record
+   a finding where it is not.
+   
 For each evidence-backed issue, assess the impact if it remains unchanged. Classify the
 issue as P0, P1, P2, or P3 under the Application Platform Context, explain why the
 classification applies, and cite the smallest supporting file and line range.
@@ -52,7 +62,7 @@ classification applies, and cite the smallest supporting file and line range.
 ## Cumulative Discovery Limits
 
 For each confirmed Redis dependency, initialize these action counters to zero and apply
-them cumulatively across all 12 assessment areas:
+them cumulatively across all seven assessment areas:
 
 * At most 2 repository searches
 * At most 3 file reads, each restricted to the smallest relevant line range
@@ -140,7 +150,7 @@ templates. Repeat these labels exactly, in this order, for each issue:
 * Issue Description:
 * Risk Level (P0/P1/P2/P3):
 * Code location (file + line number):
-* Why this is a risk to app, zone or region failover:
+* Why this is a risk to app region failover:
 * Impact(s) if this is not changed:
 * Existing mitigations present (evidence):
 * Constraints/limitations (evidence):

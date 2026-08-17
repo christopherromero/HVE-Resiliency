@@ -1,20 +1,19 @@
 ---
 description: Application Platform context and evidence-only rules for resiliency research prompts
-applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/service/hve-resiliency-researcher-*.prompt.md'
+applyTo: '.github/prompts/researcher/hve-resiliency-researcher-*.prompt.md, .github/prompts/researcher/service/hve-resiliency-researcher-*.prompt.md'
 ---
 
 # Application Platform Context
 
 Apply this context to all Application Platform resiliency research prompts.
 
-* Albertsons operates applications in Azure
-* Validating readiness for zone failure within West US 2
-* Validating readiness for full regional failover from West US 2 to West US
-* Scope is the current repository within the Application Platform
+* Albertsons currently operates its Azure applications in a single region, West US
+* Validating the target-state readiness for multi-region deployment across West US 2 and West US, with complete regional failover managed by a global load balancer such as Akamai
+* The scope is the current repository, representing a microservice or library currently deployed in West US
 * HVE Task Researcher rules: evidence only, no remediation, no code examples
 * All findings must cite file and line-level evidence
 * Never paraphrase referenced code. If a finding quotes or describes code, copy it verbatim from the source file and confirm the cited path and line numbers match that file exactly
-* Classify every finding using the priority framework: P0 (Blocking/Critical), P1 (High Priority), P2 (Improvement/Best Practice), P3 (Non-Blocking Code Consistency)
+* Classify every finding using the priority framework: P0 (Blocking/Critical: startup failure, region-specific configuration, or health-routing failure), P1 (High Priority: retry, circuit breaker, timeout tuning, distributed caching, or idempotency), P2 (Improvement/Best Practice: DLQ, saga, outbox, event sourcing, or replication redesign), P3 (Non-Blocking Code Consistency: maintainability, readability, duplication, or inconsistent patterns)
 * Output research artifacts to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
 
 ## Status and Failure Semantics
@@ -33,32 +32,141 @@ Every prompt ends in exactly one terminal state: `Complete`, `Incomplete`, or `B
 ## Platform-Managed Regional Failover
 
 * Albertsons uses platform-managed regional failover
-* For external traffic, Akamai performs global load balancing and redirects traffic to healthy regions during regional outages
-* Imperva provides WAF, DDoS protection, and security inspection but is not responsible for regional failover decisions
-* For Layer 4 traffic, F5 BIG-IP DNS provides DNS-based regional failover by directing clients to healthy regional endpoints
+* For external traffic, Akamai performs global load balancing and redirects traffic to healthy regions during regional outages based on health probes and routing policies. The application does not manage failover itself
 * Do not generate findings for missing application-level load balancing or traffic routing logic; assume the platform redirects traffic to a healthy region
-* Focus resiliency assessments on whether the application can operate successfully in the secondary region after failover, including deployment parity, configuration synchronization, dependency availability, data replication, state management, and regional capacity
+* Focus resiliency assessments on whether the application code and configuration enable instances deployed in both regions to process requests and operate successfully in a multi-region setup
 
-## Priority Definitions
 
-* P0: Critical / Blocking. Causes outage, data loss, duplicate charges, or inability to fail over safely during zone or regional failure.
-* P1: Required, Non-Blocking. Does not fully block failover but materially increases application risk, data risk, or customer impact during failure.
-* P2: Improvement / Best Practice. Does not materially impact correctness during failover but weakens resilience posture or operational clarity.
-* P3: Non-Blocking Code Consistency. Captures maintainability, readability, duplication, or inconsistent pattern issues that are non-blocking.
+## Priority Legend
+
+Use this consistently in all outputs:
+
+* P0: Blocking/Critical Risk
+* P1: High Priority
+* P2: Improvement/Best Practice (Non-Blocking)
+* P3: Non-Blocking Code Consistency (Best Practices / Maintainability)
+
+### P0 — Critical Resiliency Risk
+
+**Definition**: Code or configuration changes required for the application to start and operate without crashing in both regions or for the global load balancer to determine regional health accurately.
+
+**Criteria** (any of the following):
+
+* Application code or configuration prevents successful startup or causes crashes in either region.
+* Region-specific configuration values must be added, changed, or externalized.
+* A health endpoint must be created because none exists.
+* An existing health probe does not include all critical application dependencies.
+* Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
+
+### P1 — Important Resiliency Risk
+
+**Definition**: Generic, region-agnostic resiliency changes required to preserve current production behavior after multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Retry logic or circuit breakers are required.
+* Timeout tuning is required.
+* Local caching must be replaced with distributed caching.
+* Idempotency controls are required.
+* Without the change, requests may still succeed, but latency, processing, logging, or exception handling could differ from current production behavior.
+
+### P2 — Code Quality / Non-Resiliency
+
+**Definition**: A new architectural pattern, component, or redesign that improves resiliency but is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Dead-letter queue implementation.
+* Saga or outbox pattern adoption.
+* Event-sourcing introduction.
+* Replication redesign.
+* Any comparable architecture-level change.
+
+**Important**: These findings should still be reported. But they do **not** belong in the resiliency bucket and should not be prioritized above P0/P1 resiliency items. Frame them as code-quality recommendations, not resiliency risks.
+
+### P3 — Noted for Completeness
+
+**Definition**: A best-practice, hardening, maintainability, readability, duplication, or consistency improvement that is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Maintainability or readability improvements.
+* Duplicate-code removal.
+* Naming, formatting, or pattern consistency.
+* Non-blocking hardening improvements.
+* Findings that do not match P0, P1, or P2.
+
+## Categorization Decision Tree
+
+```text
+START: A finding or gap is identified
+  |
+  v
+Q1: Without this fix, does the application fail to start or crash in either region, existing or new?
+  |
+  +-- YES --> P0 - Blocking / Critical
+  |
+  +-- NO --> Q2: Is this a hardcoded region-specific value (URL, path, credential, region ID, ACR path, DNS, certificate, etc.)
+                 that must differ by region?
+                 |
+                 +-- YES --> P0 - Blocking / Critical
+                 |
+                 +-- NO --> Q3: Is this required for the global load
+                                balancer or Traffic Manager to detect
+                                regional health or route traffic correctly?
+                                |
+                                +-- YES --> P0 - Blocking / Critical
+                                |
+                                +-- NO --> Q4: Could introducing multi-region
+                                               deployment break current
+                                               production behavior related to
+                                               latency, data processing,
+                                               logging, or exception handling?
+                                               |
+                                               +-- YES --> Q5: Is the fix a
+                                               |           generic,
+                                               |           region-agnostic
+                                               |           resiliency pattern
+                                               |           with no new
+                                               |           architectural
+                                               |           component?
+                                               |           |
+                                               |           +-- YES --> P1 -
+                                               |           |           High Priority
+                                               |           |
+                                               |           +-- NO --> P2 -
+                                               |                       Improvement /
+                                               |                       Best Practice
+                                               |
+                                               +-- NO --> Q6: Does this introduce
+                                                           a new architectural
+                                                           pattern or component,
+                                                           such as a DLQ, saga,
+                                                           outbox, event sourcing,
+                                                           or replication redesign?
+                                                           |
+                                                           +-- YES --> P2 -
+                                                           |           Improvement /
+                                                           |           Best Practice
+                                                           |
+                                                           +-- NO --> P3 - Non-Blocking / Code Consistency
+                                                              
+                                                                       
+```
 
 ## Service Exclusion Rule
 
-* After Prompts 1a and 1b complete, dependencies classified in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are excluded from analysis in Prompts 2-7 and service-specific prompts (8-19)
-* Prompts 2-7 and service-specific prompts (8-19) analyze only dependencies confirmed as used in Section 1 of the Prompt 1a and 1b outputs
+* After Prompts 1a and 1b complete, dependencies classified in Section 2 (Checked But Not Present) and Section 3 (Not Applicable) are excluded from analysis in Prompts 2-7 and service-specific prompts (9-17)
+* Prompts 2-7 and service-specific prompts (9-17) analyze only dependencies confirmed as used in Section 1 of the Prompt 1a and 1b outputs
 
 ## Database-to-Kafka Pairing Standard
 
 * Kafka runs on Confluent Cloud (managed). Treat Confluent Cloud as the confirmed Kafka platform for both topologies; never ask the operator which Kafka provider, product, or environment is in use.
-* Databases that support Active-Active multi-master writes (for example Cosmos DB via Mongo API) pair with Kafka Active-Active
-* Databases that support only Active-Standby single-master writes (for example Azure SQL) pair with Kafka Active-Standby
-* An application using both an Active-Active and an Active-Standby database pairs with Kafka Active-Standby
-* Before running the Kafka service-specific prompt (16), confirm whether Cosmos DB and/or Azure SQL were confirmed in the Prompt 1 Section 1 dependency inventory, then select `hve-resiliency-researcher-16-kafka-active-active` or `hve-resiliency-researcher-16-kafka-active-standby-confluent` accordingly. When neither is confirmed, do not auto-select; ask the operator which Kafka topology the application uses before selecting the prompt.
-* Kafka service-specific prompts (16) must record whether the repository's confirmed database resiliency model matches the Kafka topology assumed by the selected prompt, and flag any mismatch as a finding
+* The Kafka strategy is explicitly provided for each application and is never inferred. Supply it to the Kafka service prompt as `kafkaStrategy`, agreed by the development, architecture, and application teams before the assessment starts. A wrongly detected strategy invalidates the run and requires a full rerun.
+* The database model is a cross-check on the provided strategy, not a selector for it. Multi-master writes (for example Cosmos DB via Mongo API) are consistent with Kafka Active-Active; single-master writes (for example Azure SQL) are consistent with Kafka Active-Standby; an application using both is consistent with Kafka Active-Standby
+* Where the confirmed database model contradicts the provided strategy, record the mismatch as a gate observation in the prerequisite ledger. It is not an application-code finding. Do not change the strategy and do not block the run
+* Before running the Kafka service-specific prompt (16), select the prompt from the provided `kafkaStrategy` value. The accepted values are exactly `Active-Active` and `Active-Standby`, matched case-insensitively after trimming surrounding whitespace: `Active-Active` selects `hve-resiliency-researcher-16-kafka-active-active`, `Active-Standby` selects `hve-resiliency-researcher-16-kafka-active-standby-confluent`. Treat any other value as unrecognized and ask for the agreed strategy. Do not select by database model.
+* Kafka service-specific prompts (16) must record whether the repository's confirmed database resiliency model matches the strategy the selected prompt was given, and flag any mismatch in the prerequisite ledger
 
 ## Context Management
 
@@ -81,16 +189,14 @@ Follow this sequence:
 | `/hve-resiliency-researcher-3`            | `/hve-resiliency-researcher-4`                                                                                                |
 | `/hve-resiliency-researcher-4`            | `/hve-resiliency-researcher-5-0-scaffold`                                                                                     |
 | `/hve-resiliency-researcher-5-0-scaffold` | `/hve-resiliency-researcher-5-1-startup-failure`                                                                              |
-| `/hve-resiliency-researcher-5-1-startup-failure` | `/hve-resiliency-researcher-5-2-silent-degradation`                                                                    |
-| `/hve-resiliency-researcher-5-2-silent-degradation` | `/hve-resiliency-researcher-5-3-data-loss-partial-processing`                                                       |
-| `/hve-resiliency-researcher-5-3-data-loss-partial-processing` | `/hve-resiliency-researcher-5-4-blocking-transactions`                                                    |
-| `/hve-resiliency-researcher-5-4-blocking-transactions` | `/hve-resiliency-researcher-5-verify`                                                                            |
+| `/hve-resiliency-researcher-5-1-startup-failure` | `/hve-resiliency-researcher-5-2-data-loss-partial-processing`                                                          |
+| `/hve-resiliency-researcher-5-2-data-loss-partial-processing` | `/hve-resiliency-researcher-5-3-blocking-transactions`                                                    |
+| `/hve-resiliency-researcher-5-3-blocking-transactions` | `/hve-resiliency-researcher-5-verify`                                                                            |
 | `/hve-resiliency-researcher-5-verify`     | `/hve-resiliency-researcher-5-finalize`                                                                                       |
 | `/hve-resiliency-researcher-5-finalize`   | `/hve-resiliency-researcher-6`                                                                                                |
 | `/hve-resiliency-researcher-5` (deprecated redirect) | `/hve-resiliency-researcher-5-0-scaffold`                                                                          |
-| `/hve-resiliency-researcher-6`            | `/hve-resiliency-researcher-7-logging`                                                                                        |
-| `/hve-resiliency-researcher-7-logging`    | First applicable service-specific prompt from Phase 2, or `/hve-resiliency-consolidate-0-scaffold` if none apply              |
-| Service-specific prompts (8-19)     | Next applicable service prompt for a Prompt 1 Section 1 dependency, or `/hve-resiliency-consolidate-0-scaffold` when complete  |
+| `/hve-resiliency-researcher-6`            | First applicable service-specific prompt from Phase 2, or `/hve-resiliency-consolidate-0-scaffold` if none apply              |
+| Service-specific prompts (9-17)     | Next applicable service prompt for a Prompt 1 Section 1 dependency, or `/hve-resiliency-consolidate-0-scaffold` when complete  |
 | `/hve-resiliency-consolidate-0-scaffold`  | `/hve-resiliency-consolidate-1-repository-context`, then `-2` through `-8` (fill each section; may run in parallel)            |
 | Section-fill prompts (`-1` … `-8`)  | `/hve-resiliency-consolidate-verify-1-4` and `/hve-resiliency-consolidate-verify-5-8`                                          |
 | Verify prompts (`-1-4`, `-5-8`)     | `/hve-resiliency-consolidate-9-finalize`                                                                                       |

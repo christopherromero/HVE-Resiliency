@@ -14,7 +14,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 ## Scope and Override
 
-Consolidate completed evidence-only research for the current repository into one authoritative artifact at `.copilot-tracking/research/YYYY-MM-DD-<repo-name>-research.md`. Assess only zone failure in West US 2 and regional failover from West US 2 to West US.
+Consolidate completed evidence-only research for the current repository into one authoritative artifact at `.copilot-tracking/research/YYYY-MM-DD-<repo-name>-research.md`. Assess only regional failover between West US 2 and West US.
 
 Enter consolidation directly. Skip Task Researcher Phase 2, recommendation-oriented completion criteria, and all deeper-research handoffs. Do not introduce assessment areas or produce alternatives, recommendations, selected approaches, examples, implementation details, design changes, remediation, or advisory language.
 
@@ -34,7 +34,7 @@ Exclude the following even when their filenames match a prompt ID token:
 * Any prior consolidation output, identified by a title that starts with `# HVE Task Research -` or a body that declares schema version `hve-resiliency-consolidation/v1`.
 * Planner outputs, optimization or update studies, subagent studies, sandboxes, unrelated repositories, and incomplete, blocked, malformed, unreadable, or unsafe artifacts. Do not admit an artifact by filename alone.
 
-Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, and `7`. Service prompt IDs `8` through `19` are optional and applicable only when their dependency category or service appears in Section 1 of an accepted Prompt 1a or Prompt 1b artifact. Applicability is determined solely by accepted 1a and 1b evidence; an absent service artifact is not a conflict when that service is inapplicable.
+Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, and `6`. Service prompt IDs `9` through `17` are optional and applicable only when their dependency category or service appears in Section 1 of an accepted Prompt 1a or Prompt 1b artifact. Applicability is determined solely by accepted 1a and 1b evidence; an absent service artifact is not a conflict when that service is inapplicable.
 
 When more than one candidate resolves to the same prompt ID after body confirmation, select the candidate whose normalized workspace-relative path has the lexicographically largest dated ancestor segment matching `YYYY-MM-DD`. If no candidate carries a dated segment, or if dated segments tie, select the candidate whose normalized path sorts last using ordinal comparison. Record every non-selected duplicate as a retained normalized record with disposition `exact duplicate` and preserve its provenance. Do not use file modification time.
 
@@ -89,7 +89,7 @@ Allocate IDs after sorting canonical tuples by their serialized bytes using ordi
 
 Deduplicate source records only on exact source-record canonical identity matches. Separate source-record identity from rendered claim identity. Derive each canonical claim key from normalized dependency or category, scenario, the normalized evidence-location set, and one controlled failure-mode class. The finite classes are `startup failure`, `request failure`, `timeout`, `DNS failure`, `authentication failure`, `partial outage`, `data loss`, `data inconsistency`, `blocked failover`, `degraded operation`, and `unknown observed failure`.
 
-Merge semantically equivalent source records into one rendered finding that carries every contributing retained record ID. Keep findings separate when scenario, failure-mode class, priority, ownership, impacts, existing mitigations, constraints and limitations, or evidence chain materially differs. Never combine zone and regional evidence. Use `unknown observed failure` only when validated evidence demonstrates an observed failure that does not map to another class; it is not a fallback for a missing failure mode.
+Merge semantically equivalent source records into one rendered finding that carries every contributing retained record ID. Keep findings separate when scenario, failure-mode class, priority, ownership, impacts, existing mitigations, constraints and limitations, or evidence chain materially differs. Never combine regional-failover and partial-outage evidence in one finding. Use `unknown observed failure` only when validated evidence demonstrates an observed failure that does not map to another class; it is not a fallback for a missing failure mode.
 
 Apply source precedence only to equivalent claims: validated file-line evidence over uncited summaries, service-specific evidence over general evidence for that service, and Prompt 1a or 1b over later prompts for dependency applicability. Preserve conflicting priorities and source values in normalized source records. Do not select a value without evidence.
 
@@ -141,8 +141,8 @@ Use schema version `hve-resiliency-consolidation/v1` and the following direct Se
 Assessment Scope:
 
 * Repository: <repo-name>
-* Focus: West US 2 zone failure and West US 2 to West US regional failover
-* Regions Evaluated: West US 2 to West US
+* Focus: Between West US 2 and West US regional failover
+* Regions Evaluated: West US 2 and West US
 * Assessment Date: YYYY-MM-DD
 * Generated By: HVE Task Researcher
 * Schema Version: hve-resiliency-consolidation/v1
@@ -181,9 +181,9 @@ Include retained record IDs in `Evidence Result`.
 
 Include retained record IDs in `Reason Not Applicable`.
 
-## 3. Region and Zone Assumptions
+## 3. Region Assumptions
 
-Render evidence-backed region or zone assumptions from code, configuration, deployment, or startup logic using the required finding schema.
+Render evidence-backed region assumptions from code, configuration, deployment, or startup logic using the required finding schema.
 
 ## 4. State and Data Characteristics
 
@@ -195,7 +195,7 @@ Render evidence-backed startup failure, runtime degradation, partial processing,
 
 ## 6. Shared and Cross-Repository Dependencies
 
-Render evidence-backed region coupling, zone dependency, and ownership boundary findings from shared libraries, centralized configuration, or platform utilities using the required finding schema.
+Render evidence-backed region coupling and ownership boundary findings from shared libraries, centralized configuration, or platform utilities using the required finding schema.
 
 ## 7. Hard-Coded Values or Secrets in Code or Files
 
@@ -221,7 +221,7 @@ Use this schema exactly once for every finding in Sections 2.1 and 3-8:
 * Dependency or Category: <canonical dependency or category>
 * Priority: P0 | P1 | P2 | P3
 * Ownership: <evidence-backed owner or schema-safe value>
-* Scenario: West US 2 zone failure | West US 2 to West US regional failover
+* Scenario: Between West US 2 and West US regional failover
 * Description: <evidence-based current behavior>
 * Failure Mode and Scenario-Specific Risk: <evidence-based risk>
 * Impacts: <operational, data, financial, and customer impacts supported by evidence>
