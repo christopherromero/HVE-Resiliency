@@ -9,7 +9,7 @@ argument-hint: "serviceName=... [reportTitle=...] [targetDeployment=...] [review
 
 * ${input:serviceName}: (Required) Service name matching the repo name; used to locate artifacts and populate all headers, sections, and repo references throughout the report.
 * ${input:reportTitle}: (Optional) H1 title. Default: "Code-Level Resiliency Assessment".
-* ${input:targetDeployment}: (Optional) Target deployment model. Default: "Active/Active".
+* ${input:targetDeployment}: (Optional) Target deployment model, `Active/Active` or `Active/Standby`. Default: "Active/Active". Derive every topology-dependent statement from this value; never assume a topology it does not name.
 * ${input:reviewPromptFiles:false}: (Optional) When true, cross-reference subagent research files against planner outputs; flag discrepancies in the Assessment Overview.
 
 ## Source Artifacts
@@ -25,7 +25,7 @@ Use the Developer Guide for code samples, Master Report for priorities and remed
 
 ## Critical Context
 
-This report serves the {customer} engagement. The customer is transitioning from a single-region deployment with a passive DR target to an active/active deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `Application-planner-context.instructions.md` for all priority assignments.
+This report serves the {customer} engagement. The customer is transitioning from a single-region deployment with a passive DR target to a multi-region deployment across two regions. Every finding must be evaluated through this lens. Use the classification rules and decision tree defined in `Application-planner-context.instructions.md` for all priority assignments.
 
 All section headers, H3 group names, finding titles, and repo references must use `{serviceName}` (the repo name), not hardcoded service names like "Braintree" or "Fiserv". The H3 shared-service groups should reflect the service's actual dependencies as discovered in the research (e.g., "Payment Gateway / Transaction Processing", "Azure SQL / Data Integrity", "AKS / Pod Lifecycle").
 
@@ -35,9 +35,11 @@ The generated report must **never** reference "East US", "eastus", or any East r
 
 Prefer region-agnostic terms throughout:
 
-* **Primary region** — the current production region
-* **Secondary region** or **failover region** — the target active/active peer
+* **Primary region** — the region serving production today
+* **Secondary region**, **failover region**, or **peer region** — the other region in the multi-region pair
 * **Both regions** — when referring to symmetric requirements
+
+The topology across the pair is either **active/active** (both regions serve production traffic concurrently) or **active/standby** (the peer carries no production traffic until failover). Treat the topology as evidence-determined, never assumed. Where a requirement holds under either topology, say **multi-region**; name the topology only when the requirement genuinely depends on it.
 
 "West US" and "West US 2" may be used when necessary (e.g., describing the customer's actual topology or referencing specific Helm values files), but prefer the generic terms above when the statement applies to any multi-region deployment.
 
@@ -124,7 +126,7 @@ Use `# 1. Assessment Overview` as the heading. Include:
     |--------------------|-----------|-------|--------------------------------------------------------------------------------|
     | **Resiliency**     | **P0**    | N     | Blocks failover from functioning or renders multi-region deployment meaningless |
     | **Resiliency**     | **P1**    | N     | Materially increases risk during failure; procedural workarounds or limited blast radius |
-    | **Resiliency**     | **P2**    | N     | Weakens resilience posture; best-practice improvements for zone/region survivability |
+    | **Resiliency**     | **P2**    | N     | Weakens resilience posture; best-practice improvements for regional survivability |
     | **Resiliency**     | **P3**    | N     | Referential entries or compound interaction descriptions                       |
     | **Non-Resiliency** | **P2**    | N     | Code quality, security hygiene, observability, and configuration improvements  |
     | **Non-Resiliency** | **P3**    | N     | Security-only observations and configuration hygiene items                     |
@@ -140,7 +142,7 @@ End with `[Back to Top](#top)`.
 
 Organize all findings under exactly two top-level H1 sections:
 
-* `# 2. Resilient Focused Recommendations` — findings where `Resiliency Related: Yes` (directly affect zone survivability, regional failover, data integrity, or recovery time).
+* `# 2. Resilient Focused Recommendations` — findings where `Resiliency Related: Yes` (directly affect regional failover, data integrity, or recovery time).
 * `# 3. Non-Resilient Focused Recommendations` — findings where `Resiliency Related: No` (security hygiene, configuration consistency, operational best practices).
 
 Four-level hierarchy within each H1:
@@ -171,16 +173,16 @@ Every P0, P1, P2, and P3 finding uses this exact format (field order must be pre
 
 **Finding field guidance:**
 
-* **Issue** (P0/P1): Explain how the issue is introduced or worsened by the transition from single-region to active/active. (P2/P3): Note that behavior is identical regardless of topology.
-* **Resiliency Impact**: Frame in terms of zone failure or regional failover impact. Required for all `Resiliency Related: Yes` findings.
+* **Issue** (P0/P1): Explain how the issue is introduced or worsened by the transition from single-region to multi-region. (P2/P3): Note that behavior is identical regardless of topology.
+* **Resiliency Impact**: Frame in terms of regional failover impact. Required for all `Resiliency Related: Yes` findings.
 * **Recommended Fix**: Must be specific enough for the customer's developers to implement independently without the team's involvement.
 
 Priority labels by level:
 
-* P0: `Failover-Blocking Risk`
-* P1: `Multi-Region Resiliency Gap`
-* P2: `Code Quality / Best Practice`
-* P3: `Code Consistency` or `Noted for Completeness`
+* P0: Blocking/Critical Risk
+* P1: High Priority
+* P2: Improvement/Best Practice (Non-Blocking)
+* P3: Non-Blocking Code Consistency (Best Practices / Maintainability) 
 
 Finding rules:
 
@@ -267,7 +269,7 @@ Before finalizing, confirm:
 * Every P0/P1/P2 finding draws from both the Master Report and the Developer Guide.
 * No hardcoded service names (e.g., "Braintree", "Fiserv") appear in H2, H3, or Repo(s) columns; use the generic shared-service group names and `{serviceName}`.
 * No references to "East US" or any East region variant appear anywhere in the report.
-* Region-specific names ("West US", "West US 2") are used only when necessary; generic terms ("primary region", "secondary region", "failover region") are preferred.
+* Region-specific names ("West US", "West US 2") are used only when necessary; generic terms ("primary region", "secondary region", "failover region", "peer region") are preferred.
 * When `reviewPromptFiles: true`, all research findings are accounted for.
 * Assessment Overview themes cross-reference finding IDs.
 * IaC Gap Analysis has both "Available to Review" and "Not Available" tables.

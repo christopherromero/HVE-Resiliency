@@ -36,9 +36,11 @@ Emit provisional Section 8 residual candidates only for the `platform-state` gro
 
 Platform-state residual discovery hints (evidence-only):
 
-* Region and zone observations from Prompt 2 that Section 3 (Region and Zone Assumptions) does not primary-claim and that map to no other section.
+* Region observations from Prompt 2 that Section 3 (Region Assumptions) does not primary-claim and that map to no other section.
 * State and data characteristics observations from Prompt 3 that Section 4 (State and Data Characteristics) does not primary-claim and that map to no other section.
 * Prompt 4 observations that Section 5 (Failure and Degraded-Mode Behavior) does not primary-claim and that map to no other section, restricted to platform-context evidence rather than direct failure-mode evidence.
+* Sanitized observations from this group's artifacts that describe a hard-coded value which is not a secret and which Section 7 does not primary-claim, restricted to observable production behavior with a validated file-line citation and a canonical dependency or category.
+* Configuration-lifecycle observations from this group's artifacts that carry no secret metadata and that map to no other section.
 
 Never emit a candidate solely because an artifact mentions a topic; require positive evidence with a validated file-line citation and confirm that no other section's primary or scoped rule already claims the canonical tuple.
 
@@ -64,8 +66,6 @@ Exclude any artifact whose `completionStatus` in the outer manifest is not `Comp
 For every provisional finding, emit the Required Finding Schema from the shared contract using section-scoped IDs of the form `F-8-platform-state-00X`, assigned in emission order starting at `F-8-platform-state-001`. Every finding block ends with the exact provisional marker line:
 
 * `Disposition: provisional Section 8 residual candidate (resolved by outer finalize)`
-
-Never combine zone-failure and regional-failover evidence in one finding. If the same canonical dependency or category and observation applies to both scenarios with materially different evidence, emit two findings.
 
 ## Output
 

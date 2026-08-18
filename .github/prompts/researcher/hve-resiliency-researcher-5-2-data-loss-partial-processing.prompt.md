@@ -25,17 +25,15 @@ The only inputs to this stage are the manifest, the frozen eligible dependency l
 
 ## Outcome Focus
 
-Emit rows only for the observed outcome `data-loss-partial-processing`: a message, record, or write may be lost, partially processed, duplicated in a way that violates business intent, or left in an inconsistent state when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to startup failure, silent degradation, or blocking transactions; those outcomes belong to their own fragments.
+Emit rows only for the observed outcome `data-loss-partial-processing`: a message, record, or write may be lost, partially processed, duplicated in a way that violates business intent, or left in an inconsistent state when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to startup failure or blocking transactions; those outcomes belong to their own fragments.
 
 Data-loss / partial-processing discovery hints (evidence-only):
 
 * Message-consumer commit strategy (auto commit vs. manual, before-execute vs. after-execute) on production topic paths.
 * Producer publish paths that acknowledge before durable persistence, or that drop on error without retry.
-* Multi-step transactions where a partial write can commit while a subsequent write fails silently.
 * Idempotency guards, dedupe keys, and unique indexes that are absent, incomplete, or bypassed on production paths.
 * Retry paths that produce duplicate side effects when downstream is only partially available.
 * Cache-write paths that update the cache but not the system of record, or vice versa, on partial dependency outages.
-* Reactive `.onErrorContinue` or `.onErrorResume` sites that drop or acknowledge the affected element without downstream compensation.
 
 Never emit a row solely because durability documentation is unavailable; require positive repository evidence that a code path can lose, duplicate, or partially process a record under the stated dependency failure type.
 
@@ -49,14 +47,14 @@ Exclude tests, fixtures, samples, generated output, documentation, and local-onl
 
 For every data-loss / partial-processing row, emit the Required Row Schema from the shared contract. Use section-scoped IDs of the form `F-5-data-loss-00X`, assigned in emission order starting at `F-5-data-loss-001`.
 
-Never combine zone-failure and regional-failover evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
+Never combine regional-failover and partial-outage evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
 
 ## Output
 
-Write the fragment to `<fragmentDir>/data-loss-partial-processing.md`, where `<fragmentDir>` is the `fragmentDir` recorded in the manifest. Begin the file with the `## 5.3 Data Loss or Partial Processing` heading followed by frontmatter recording `source-prompt: hve-resiliency-researcher-5-3-data-loss-partial-processing`, `outcome-key: data-loss-partial-processing`, and the fragment's terminal status. Do not modify the skeleton artifact. Do not touch any other fragment.
+Write the fragment to `<fragmentDir>/data-loss-partial-processing.md`, where `<fragmentDir>` is the `fragmentDir` recorded in the manifest. Begin the file with the `## 5.2 Data Loss or Partial Processing` heading followed by frontmatter recording `source-prompt: hve-resiliency-researcher-5-2-data-loss-partial-processing`, `outcome-key: data-loss-partial-processing`, and the fragment's terminal status. Do not modify the skeleton artifact. Do not touch any other fragment.
 
 ## Completion
 
 Report the row count, the count of rows carrying any `Unknown: not found after bounded search <scope>` descriptor, the fragment path, and the terminal fragment status.
 
-> **Next step:** Run `/hve-resiliency-researcher-5-4-blocking-transactions`
+> **Next step:** Run `/hve-resiliency-researcher-5-3-blocking-transactions`

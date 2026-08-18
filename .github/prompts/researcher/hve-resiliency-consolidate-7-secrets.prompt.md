@@ -15,7 +15,7 @@ Follow the [Consolidation Shared Contract](../../instructions/hve-resiliency-con
 
 ## Scope
 
-Read the frozen manifest, then apply the Section 7 secret sweep read scope: read the accepted Prompt 7 artifact and scan every other accepted artifact for sanitized hard-coded secret or value findings. This all-artifact read scope is intentional and is the residual scale risk flagged for runtime measurement.
+Read the frozen manifest, then apply the Section 7 secret sweep read scope: scan every accepted artifact for sanitized hard-coded secret or value findings. This all-artifact read scope is intentional and is the residual scale risk flagged for runtime measurement.
 
 Render sanitized evidence of hard-coded secrets or values. Never render a secret value or reversible derivative; retain only the secret type, normalized file path and line, key or symbol name, and a stable redacted identity. If a value cannot be safely sanitized, drop that value and keep the finding using only its safe location metadata (path, line, secret type, key or symbol name, redacted identity); never render the raw value and never block for this reason. Reserve `Blocked` for an artifact that cannot be safely read or processed at all.
 
@@ -24,7 +24,7 @@ Render sanitized evidence of hard-coded secrets or values. Never render a secret
 1. Load the manifest and confirm the Section 7 secret sweep scope.
 2. Read each artifact's bytes once; sanitize immediately, before any comparison or write.
 3. Normalize secret and hard-coded-value findings into source records and deduplicate within the section on the shared canonical-tuple identity, preserving every contributing record ID.
-4. Render each finding using the Required Finding Schema with section-scoped IDs `F-7-00X`. Never combine zone and regional evidence in one finding.
+4. Render each finding using the Required Finding Schema with section-scoped IDs `F-7-00X`.
 
 ## Output
 

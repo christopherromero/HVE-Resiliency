@@ -5,20 +5,30 @@ agent: Task Researcher
 
 # Application HVE Researcher 9 Azure Functions
 
-Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
-Define the required zone-failure and regional-failover expectations for
-{customerName} Azure Functions in West US 2 and West US. Assess only Azure
-Functions behavior and requirements that directly affect zone failure or
-regional failover.
+Define the required regional-failover expectations for
+Albertsons Azure Functions in West US 2 and West US. Assess only Azure
+Functions behavior and requirements that directly affect regional failover.
 
 ## Functions Requirements
 
-* Deployment follows an active-active model across West US 2 and West US
-* Both regions continuously serve production traffic
+* Azure Functions is deployed independently in each region, West US 2 and
+  West US
+* The deployment operates in either an active-active or an active-standby
+  model, as determined by the application architecture. Treat the topology as
+  a claim to verify from repository evidence and assess the application under
+  both models unless evidence fixes one
 * Each region can handle 100% of peak load during a regional outage
-* Azure Front Door provides global traffic management
-* Automatic failover uses health probes
+* Platform-managed global load balancing routes external traffic, per the
+  Application Platform Context. Do not assume Azure Front Door, Traffic
+  Manager, or any application-owned traffic manager
+* Failover is decided at the global load balancer. The application does not
+  fail itself over; for traffic-serving instances it must surface health
+  status to the global load balancer so that traffic can be rerouted on
+  failure
 * Health probes validate functional readiness of critical downstream
   dependencies, including storage, Key Vault, and messaging, rather than only
   HTTP reachability
@@ -87,7 +97,7 @@ Repeat for each finding:
 * Issue Description:
 * Risk Level (P0/P1/P2/P3):
 * Code location (file + line number):
-* Why this is a risk to app, zone or region failover:
+* Why this is a risk to app regional failover:
 * Impact(s) if this is not changed:
 * Existing mitigations present (evidence):
 * Constraints/limitations (evidence):

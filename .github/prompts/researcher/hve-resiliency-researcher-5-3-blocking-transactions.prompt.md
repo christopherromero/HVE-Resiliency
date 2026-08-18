@@ -25,7 +25,7 @@ The only inputs to this stage are the manifest, the frozen eligible dependency l
 
 ## Outcome Focus
 
-Emit rows only for the observed outcome `blocking-transactions`: a request path, consumer, producer, or scheduled job blocks, deadlocks, exhausts a resource, or holds a transaction open beyond its bounded time when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to startup failure, silent degradation, or data loss or partial processing; those outcomes belong to their own fragments.
+Emit rows only for the observed outcome `blocking-transactions`: a request path, consumer, producer, or scheduled job blocks, deadlocks, exhausts a resource, or holds a transaction open beyond its bounded time when a dependency exhibits a timeout, DNS failure, authentication failure, or partial outage. Skip any evidence that maps to startup failure or data loss or partial processing; those outcomes belong to their own fragments.
 
 Blocking-transactions discovery hints (evidence-only):
 
@@ -34,7 +34,6 @@ Blocking-transactions discovery hints (evidence-only):
 * Thread-pool, connection-pool, or WebClient connection-pool exhaustion under upstream partial outage.
 * Consumer poll loops that block indefinitely on a downstream call inside the message-processing pipeline, preventing rebalance or heartbeat.
 * Retry-with-backoff loops with no bounded maximum, no jitter cap, and no circuit breaker on a production call.
-* Distributed or database transactions whose scope covers a call to a dependency that can hang, holding locks or sessions.
 * Scheduled jobs, background workers, or reconciliation loops that queue and stall on a dependency call.
 
 Never emit a row solely because a timeout value is unknown; require positive repository evidence that a production code path can block, deadlock, or exhaust a resource under the stated dependency failure type.
@@ -49,11 +48,11 @@ Exclude tests, fixtures, samples, generated output, documentation, and local-onl
 
 For every blocking-transactions row, emit the Required Row Schema from the shared contract. Use section-scoped IDs of the form `F-5-blocking-00X`, assigned in emission order starting at `F-5-blocking-001`.
 
-Never combine zone-failure and regional-failover evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
+Never combine regional-failover and partial-outage evidence in one row. If the same dependency plus failure type plus entrypoint applies to both scenarios with materially different behavior, emit two rows.
 
 ## Output
 
-Write the fragment to `<fragmentDir>/blocking-transactions.md`, where `<fragmentDir>` is the `fragmentDir` recorded in the manifest. Begin the file with the `## 5.4 Blocking Transactions` heading followed by frontmatter recording `source-prompt: hve-resiliency-researcher-5-4-blocking-transactions`, `outcome-key: blocking-transactions`, and the fragment's terminal status. Do not modify the skeleton artifact. Do not touch any other fragment.
+Write the fragment to `<fragmentDir>/blocking-transactions.md`, where `<fragmentDir>` is the `fragmentDir` recorded in the manifest. Begin the file with the `## 5.3 Blocking Transactions` heading followed by frontmatter recording `source-prompt: hve-resiliency-researcher-5-3-blocking-transactions`, `outcome-key: blocking-transactions`, and the fragment's terminal status. Do not modify the skeleton artifact. Do not touch any other fragment.
 
 ## Completion
 

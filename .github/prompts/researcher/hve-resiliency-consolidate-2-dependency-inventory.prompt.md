@@ -15,7 +15,7 @@ Follow the [Consolidation Shared Contract](../../instructions/hve-resiliency-con
 
 ## Scope
 
-Read the frozen manifest, then read only the artifacts whose primary section is Section 2: the accepted Prompt 1a and Prompt 1b artifacts (Sections 1-3). Also apply the Section 2.1 service-finding read scope: service artifacts (8-19) contribute confirmed dependency findings to Section 2.1. Do not read artifacts outside these scopes and do not re-run discovery.
+Read the frozen manifest, then read only the artifacts whose primary section is Section 2: the accepted Prompt 1a and Prompt 1b artifacts (Sections 1-3). Also apply the Section 2.1 service-finding read scope: service artifacts (9-17) contribute confirmed dependency findings to Section 2.1. Do not read artifacts outside these scopes and do not re-run discovery.
 
 ## Fill Protocol
 
@@ -26,7 +26,7 @@ Read the frozen manifest, then read only the artifacts whose primary section is 
    * `### 2.1 Used Dependencies (Evidence Found)`: render each confirmed dependency using the Required Finding Schema with section-scoped IDs `F-2-00X`.
    * `### 2.2 Checked but Not Present`: a table with columns `Dependency | Reason Checked | Evidence Result`; include retained record IDs in `Evidence Result`.
    * `### 2.3 Not Applicable Dependency Categories`: a table with columns `Category | Reason Not Applicable`; include retained record IDs in `Reason Not Applicable`.
-5. Use only dependencies confirmed in Prompt 1a or 1b Section 1 for 2.1. Never combine zone and regional evidence in one finding.
+5. Use only dependencies confirmed in Prompt 1a or 1b Section 1 for 2.1. Never combine regional and non-regional evidence in one finding.
 
 ## Output
 

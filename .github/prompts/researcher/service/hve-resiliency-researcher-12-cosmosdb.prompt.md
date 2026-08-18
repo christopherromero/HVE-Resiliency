@@ -1,13 +1,13 @@
 ---
-description: "Assess Cosmos DB Mongo API zone and regional failover evidence with bounded repository research"
+description: "Assess Cosmos DB Mongo API regional failover evidence with bounded repository research"
 argument-hint: "prompt1aArtifactPath=... prompt1bArtifactPath=..."
 ---
 
 # Application HVE Researcher 12 Cosmos DB
 
 Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
-as supporting context. Apply every safety-critical scenario, evidence, priority, terminal, and handoff
-control in this prompt directly even when that instructions file is not auto-applied.
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
 ## Inputs
 
@@ -25,26 +25,29 @@ Execute only this Prompt 12 research workflow. Do not start another resiliency p
 perform recommendation or implementation work. Keep all repository interaction read-only. Use only
 repository evidence and report factual evidence gaps instead of assumptions.
 
-Assess only the current repository for these authoritative scenarios, one scenario per finding:
+Assess only the current repository for this authoritative scenario:
 
-* Zone failure within West US 2
-* Full regional failover from West US 2 to West US
+* Full regional failover between West US 2 and West US
 
-Treat East US, active-active or multi-region writes, Last Write Wins, the RU model, Mongo API behavior,
-and no-data-loss expectations as claims to verify or as constraints or evidence gaps. Do not assume they
-describe the production architecture. Repository evidence cannot prove unavailable runtime replication,
-acknowledgement, conflict, recovery, or global load balancer behavior.
+Cosmos DB runs a multi-region write configuration for active-active workloads. West US 2 and West US
+both accept writes, so no single write region is a point of failure. Concurrent writes to the same
+document from two regions are therefore a normal operating condition rather than an exception, and how
+the application handles them is application code.
 
-Keep the Cosmos DB scope closed to these eight assessment areas:
+Replication, acknowledgement, recovery, region failover, and global load balancer behavior belong to the
+platform and are never application-code findings. Treat the RU model, Mongo API behavior, and any
+no-data-loss expectation as claims to verify or as evidence gaps; repository evidence cannot prove
+runtime behavior.
+
+Keep the Cosmos DB scope closed to these six assessment areas:
 
 1. Preferred-region selection and avoidance of hard-coded endpoints
-2. MongoDB driver retries, timeouts, and failover configuration
+2. MongoDB driver retries and timeouts
 3. Transient write failures, 429 throttling, and region-outage handling without restart
-4. Session-token preservation and read-your-writes behavior across regions
-5. Write idempotency and conflict behavior, including Last Write Wins only when evidenced
-6. Mid-request behavior when a write region becomes unavailable
-7. Backend health-probe and global load balancer health alignment
-8. Evidence-bound data-loss exposure and any stated no-data-loss acceptance boundary
+4. Write idempotency and conflict behavior under multi-region writes
+5. `_etag` optimistic concurrency on document updates, and whether an update path reads, modifies, and
+   writes a document without a precondition
+6. Whether Cosmos DB availability is reflected in the application health endpoint
 
 Do not add assessment areas, ownership fields, recommendations, alternatives, examples, or code changes.
 
@@ -160,13 +163,11 @@ manifest. Bundle all listed terms for that family into its single invocation, ca
 result set, and never repeat a family or use a result to begin broad rediscovery.
 
 1. Cosmos binding: `cosmos`, `mongodb`, `mongo`, `ru`, client construction, connection keys, and endpoints
-2. Region and endpoint selection: preferred regions, West US 2, West US, East US, hosts, URIs, DNS, and fallback selection
+2. Region and endpoint selection: preferred regions, West US 2, West US
 3. Retry and throttling: retry, timeout, backoff, transient errors, 429, throttling, and exception handling
-4. Session behavior: session tokens, consistency, causal consistency, read concern, write concern, and read-your-writes
-5. Write safety and conflicts: idempotency, duplicate suppression, conflict resolution, Last Write Wins, versioning, and acknowledgements
-6. Mid-request failure: region unavailability, failover, reconnect, partial write, restart, fallback, and degraded behavior
-7. Health alignment: health, readiness, liveness, probes, global load balancer, routing, dependencies, and status propagation
-8. Data-loss boundary: RPO, durability, replication, recovery, data loss, no data loss, and operational constraints
+4. Write safety and conflicts: idempotency, duplicate suppression, conflict resolution, versioning, and acknowledgements
+5. Optimistic concurrency: `_etag`, etag, `If-Match`, precondition, replace, patch, upsert, read-modify-write, `findOneAndUpdate`, `replaceOne`, `updateOne`, and update filter
+6. Health alignment: health, readiness, liveness, probes, dependencies, and status propagation
 
 Read only cached hits and the minimum owning context required to classify them. Follow at most two
 evidence-backed source or configuration indirections per candidate, with depth at most 2, and only when
@@ -175,7 +176,7 @@ the destination is already in the frozen manifest. Cache each baseline file read
 Apply these hard caps:
 
 * 240 manifest files
-* 8 search invocations and 8 completed query families
+* 6 search invocations and 6 completed query families
 * 120 unique baseline file reads
 * 20 corrective rereads total, at most one per file
 * 2 indirections per candidate at depth 2
@@ -205,8 +206,7 @@ corrective reread. A citation is valid only when its sanitized content semantica
 assertion; line existence alone is insufficient. Narrow unsupported prose to the evidence. If no
 material supported assertion remains, retain an evidence-gap disposition and do not render a finding.
 
-Emit separate finding rows for every materially different failure mode and for each authoritative
-scenario when evidence supports both. Never combine zone and regional outcomes in one row. Deduplicate
+Emit separate finding rows for every materially different failure mode. Deduplicate
 only identical assertions with the same scenario, failure mode, outcome, priority, mitigations,
 constraints, and evidence owners. Preserve all merged candidate IDs.
 
@@ -225,13 +225,58 @@ citations do not replace file-and-line evidence for positive or source-local ass
 
 Classify each rendered finding with exactly one evidence-supported priority:
 
-* P0: Critical or blocking behavior that causes outage, data loss, duplicate charges, or inability to fail over safely during zone or regional failure
-* P1: Required, non-blocking behavior that materially increases application risk, data risk, or customer impact during failure
-* P2: An improvement or best practice that does not materially impact correctness during failover but weakens resilience posture or operational clarity
-* P3: Non-blocking maintainability, readability, duplication, or consistency behavior
+### P0 — Critical Resiliency Risk
+
+**Definition**: Code or configuration changes required for the application to start and operate without crashing in both regions or for the global load balancer to determine regional health accurately.
+
+**Criteria** (any of the following):
+
+* Application code or configuration prevents successful startup or causes crashes in either region.
+* Region-specific configuration values must be added, changed, or externalized.
+* A health endpoint must be created because none exists.
+* An existing health probe does not include all critical application dependencies.
+* Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
+
+### P1 — Important Resiliency Risk
+
+**Definition**: Generic, region-agnostic resiliency changes required to preserve current production behavior after multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Retry logic or circuit breakers are required.
+* Timeout tuning is required.
+* Local caching must be replaced with distributed caching.
+* Idempotency controls are required.
+* Without the change, requests may still succeed, but latency, processing, logging, or exception handling could differ from current production behavior.
+
+### P2 — Code Quality / Non-Resiliency
+
+**Definition**: A new architectural pattern, component, or redesign that improves resiliency but is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Dead-letter queue implementation.
+* Saga or outbox pattern adoption.
+* Event-sourcing introduction.
+* Replication redesign.
+* Any comparable architecture-level change.
+
+**Important**: These findings should still be reported. But they do **not** belong in the resiliency bucket and should not be prioritized above P0/P1 resiliency items. Frame them as code-quality recommendations, not resiliency risks.
+
+### P3 — Noted for Completeness
+
+**Definition**: A best-practice, hardening, maintainability, readability, duplication, or consistency improvement that is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Maintainability or readability improvements.
+* Duplicate-code removal.
+* Naming, formatting, or pattern consistency.
+* Non-blocking hardening improvements.
+* Findings that do not match P0, P1, or P2.
 
 The risk field must connect cited behavior to one named authoritative scenario and failure effect. Never
-derive priority from an unverified no-data-loss, active-active, East US, or Last Write Wins premise.
+derive priority from an unverified no-data-loss premise or from an assumed conflict-resolution mode.
 
 Use the exact field-safe value `Unknown: evidence unavailable (<evidence-gap-id>)` only in the impact,
 existing-mitigation, or constraint prose field when that field cannot be supported from repository
@@ -242,7 +287,7 @@ a non-nullable field.
 
 ## Deterministic completion and terminal status
 
-Discovery saturates only after the manifest is frozen, all eight cached query families complete, every
+Discovery saturates only after the manifest is frozen, all six cached query families complete, every
 admitted hit is read or terminally limited, every candidate has one terminal disposition, every rendered
 assertion and citation validates, and one no-change saturation review adds no candidate, mapping,
 disposition, or finding. Do not reopen discovery after saturation.
@@ -274,7 +319,7 @@ Render each valid finding once with exactly these fields and in this order:
 * Issue Description:
 * Risk Level (P0/P1/P2/P3):
 * Code location (file + line number):
-* Why this is a risk to app, zone or region failover:
+* Why this is a risk to app region failover:
 * Impact(s) if this is not changed:
 * Existing mitigations present (evidence):
 * Constraints/limitations (evidence):

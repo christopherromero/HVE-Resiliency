@@ -28,7 +28,6 @@ For each finding (do not add new findings):
 - Assign a priority (P0/P1/P2/P3) using the Priority Legend above
 - Check for hard-coded security-related values that could fail or weaken security during regional failover (e.g., secrets, API keys, connection strings with embedded credentials, certificates, private keys, client secrets, signing keys, pinned issuer/audience/tenant IDs, hard-coded Key Vault URIs, hard-coded endpoints used for token acquisition/JWKS retrieval). If found, document the risk and prescribe moving them to the appropriate secure/config mechanism (e.g., Key Vault + managed identity, workload identity, App Configuration, environment variables/secret stores), including failover-safe lookup behavior.
 
-Ordering rule: Findings in the Developer Guide must be grouped and ordered P0 first, then P1, then P2, then P3.
 
 OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
 1) Title: <repo-name> - Developer Guide (Code-Level Guidance)
@@ -38,7 +37,7 @@ OUTPUT FORMAT for <repo-name>-Developer-Guide.md (use this exact section order):
    - Finding ID: F-### (must match <repo-name>-Master.md)
    - Priority: P0/P1/P2/P3
    - Evidence reference(s):
-   - Risk explanation (what breaks during zone loss / regional failover):
+   - Risk explanation (what breaks during regional failover between West US 2 and West US):
    - Hard-coded security values check: list any hard-coded secrets/keys/certs/security endpoints or explicitly state "No hard-coded security values found for this finding."
    - Recommended pattern (named):
    - Implementation guidance (step-by-step):

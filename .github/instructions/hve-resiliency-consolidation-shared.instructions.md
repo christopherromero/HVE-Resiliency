@@ -52,7 +52,7 @@ The manifest also records the section-routing map and a frozen coverage snapshot
 
 * Primary section: each accepted artifact declares exactly one primary output section (1-8) from the section-to-source mapping below.
 * Cross-artifact read scopes (grant read access without duplicating rendering):
-  * Section 2.1 service-finding scope: service artifacts (8-19) contribute dependency findings to Section 2.1 in addition to their category section.
+  * Section 2.1 service-finding scope: service artifacts (9-17) contribute dependency findings to Section 2.1 in addition to their category section.
   * Section 7 secret sweep scope: sanitized hard-coded secret or value findings from any accepted artifact route to Section 7.
   * Section 8 residual scope: retained evidence from any artifact that maps to no other section routes to Section 8.
 * Coverage snapshot: required prompt IDs present or absent, and the applicable optional service IDs (applicability determined solely by accepted Prompt 1a and 1b Section 1 evidence).
@@ -65,23 +65,23 @@ When a prompt's manifest path input is omitted, auto-locate the frozen outer con
 
 ## Section-to-Source Mapping
 
-| Output section | Primary source artifacts |
-| --- | --- |
-| 1 Repository Context | Prompt 0, 1a Section 1, 1b Section 1 |
-| 2 Dependency Inventory | Prompt 1a, 1b (Sections 1-3) |
-| 3 Region and Zone Assumptions | Prompt 2 |
-| 4 State and Data Characteristics | Prompt 3 |
-| 5 Failure and Degraded-Mode Behavior | Prompt 4, 5 |
-| 6 Shared and Cross-Repository Dependencies | Prompt 6 |
-| 7 Hard-Coded Values or Secrets | Prompt 7 plus the secret sweep scope over any artifact |
-| 8 Other Findings | Residual scope over any artifact |
-| 9 Research Findings Index | Aggregated finding IDs from Sections 2.1 and 3-8 |
+| Output section                              | Primary source artifacts                                                                                   |
+|---------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| 1 Repository Context                        | Prompt 0; Prompt 1a Section 1; Prompt 1b Section 1                                                        |
+| 2 Dependency Inventory                      | Prompts 1a and 1b, Sections 1-3; applicable service prompts 9-17 contribute findings to Section 2.1       |
+| 3 Region Assumptions                        | Prompt 2                                                                                                   |
+| 4 State and Data Characteristics            | Prompt 4                                                                                                   |
+| 5 Failure and Degraded-Mode Behavior        | Prompt 3 and the finalized Prompt 5 artifact                                                               |
+| 6 Shared and Cross-Repository Dependencies  | Prompt 6                                                                                                   |
+| 7 Hard-Coded Values or Secrets              | Secret sweep across Prompts 0, 1a, 1b, 2-6, and applicable service prompts 9-17                           |
+| 8 Other Findings                            | Residual evidence from Prompts 0, 1a, 1b, 2-6, and applicable service prompts 9-17 that maps nowhere else |
+| 9 Research Findings Index                   | Finalize-generated index of finding IDs rendered in Sections 2.1 and 3-8                                  |
 
-Service findings (prompt IDs 8-19) render into Sections 2.1 and 3-8 by category, per the read scopes above.
+The applicable service prompts are Prompt 9 (Azure Functions), Prompt 10 (Key Vault), Prompt 11 (AKS and Istio), Prompt 12 (Cosmos DB), Prompt 13 (SQL Server), Prompt 14 (Redis), Prompt 15 (Azure Storage), Prompt 16 (Kafka Active-Active or Kafka Active-Standby on Confluent Cloud), and Prompt 17 (Microsoft Entra ID). Their findings render into Section 2.1 or Sections 3-8 by category and section precedence.
 
 ## Required and Optional Prompt IDs
 
-Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, and `7`. Service prompt IDs `8` through `19` are optional and applicable only when their dependency category or service appears in Section 1 of an accepted Prompt 1a or Prompt 1b artifact. An absent service artifact is not a conflict when that service is inapplicable.
+Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, and `6`. Service prompt IDs `9` through `17` are optional and applicable only when their dependency category or service appears in Section 1 of an accepted Prompt 1a or Prompt 1b artifact. An absent service artifact is not a conflict when that service is inapplicable.
 
 ## Sanitization
 
@@ -107,7 +107,7 @@ The source-record canonical identity tuple is an object with exactly these prope
 
 Allocate normalized-record IDs after sorting canonical tuples by their serialized bytes using ordinal comparison. Start with `NR-` plus the first 12 digest characters. For colliding prefixes from unequal tuples, extend every colliding prefix by two hexadecimal characters and repeat until unique. If full digests collide for unequal canonical tuples, stop `Blocked`. Exact canonical tuple matches are duplicates, not collisions.
 
-Deduplicate source records only on exact source-record canonical identity matches. The finite failure-mode classes are `startup failure`, `request failure`, `timeout`, `DNS failure`, `authentication failure`, `partial outage`, `data loss`, `data inconsistency`, `blocked failover`, `degraded operation`, and `unknown observed failure`. Use `unknown observed failure` only when validated evidence demonstrates an observed failure that does not map to another class; it is not a fallback for a missing failure mode. Never combine zone and regional evidence in one finding.
+Deduplicate source records only on exact source-record canonical identity matches. The finite failure-mode classes are `startup failure`, `request failure`, `timeout`, `DNS failure`, `authentication failure`, `partial outage`, `data loss`, `data inconsistency`, `blocked failover`, `degraded operation`, and `unknown observed failure`. Use `unknown observed failure` only when validated evidence demonstrates an observed failure that does not map to another class; it is not a fallback for a missing failure mode.
 
 Merge semantically equivalent source records into one rendered finding that carries every contributing retained record ID. Keep findings separate when scenario, failure-mode class, priority, ownership, impacts, existing mitigations, constraints and limitations, or evidence chain materially differs. Apply source precedence only to equivalent claims: validated file-line evidence over uncited summaries, service-specific evidence over general evidence for that service, and Prompt 1a or 1b over later prompts for dependency applicability.
 
@@ -134,7 +134,7 @@ Use this schema exactly once for every finding rendered into Sections 2.1 and 3-
 * Dependency or Category: <canonical dependency or category>
 * Priority: P0 | P1 | P2 | P3
 * Ownership: <evidence-backed owner or schema-safe value>
-* Scenario: West US 2 zone failure | West US 2 to West US regional failover
+* Scenario: Regional failover between West US 2 and West US
 * Description: <evidence-based current behavior>
 * Failure Mode and Scenario-Specific Risk: <evidence-based risk>
 * Impacts: <operational, data, financial, and customer impacts supported by evidence>
@@ -150,7 +150,7 @@ The consolidated document uses the direct Sections 1-9 structure below. Section 
 * Assessment Scope header and Notes
 * 1. Repository Context
 * 2. Dependency Inventory (2.1 Used Dependencies, 2.2 Checked but Not Present, 2.3 Not Applicable Dependency Categories)
-* 3. Region and Zone Assumptions
+* 3. Region Assumptions
 * 4. State and Data Characteristics
 * 5. Failure and Degraded-Mode Behavior
 * 6. Shared and Cross-Repository Dependencies
