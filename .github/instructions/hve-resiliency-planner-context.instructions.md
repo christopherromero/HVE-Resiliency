@@ -37,8 +37,6 @@ Responsibilities by stage:
 * **Assessment builders (`planner-3b`, `planner-3c`, `planner-3d`)** - copy `**File:**` and `**Fix:**` code from the Developer Guide faithfully, preserving exact text, line numbers, and whitespace. Do not re-read source to reconstruct a snippet unless the Developer Guide is missing it, in which case read only that one range.
 * **All stages** - keep each finding's `**File:**` citation synchronized with its restatements in the Full Finding Matrix, IaC Gap Analysis, and Microsoft Standards Alignment sections, and never insert placeholder tokens or editorial comments into a `**File:**` block.
 
-When code cannot be captured or verified during the build, run `/fix-assessment-finding` (Phase 6) afterward to reconcile citations against the repository.
-
 ## Engagement Context
 
 * **Customer**: Albertsons

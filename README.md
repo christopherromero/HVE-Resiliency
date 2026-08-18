@@ -28,7 +28,7 @@ The framework includes one workflow skill and two orchestrator agents:
   - `hve-resiliency-research` defines the complete workflow.
 - **Orchestration:**
   - **Resiliency Research Orchestrator** runs Phases 1-3.
-  - **Resiliency Planning Orchestrator** runs Phases 4-5 and the optional Phase 6 audit.
+   - **Resiliency Planning Orchestrator** runs Phases 4-5.
 
 [View a sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
 
@@ -75,9 +75,9 @@ The framework includes one workflow skill and two orchestrator agents:
 
 6. Confirm that the latest version of this prompt repository is installed in the application repository.
 7. [Run the **Resiliency Research Orchestrator**](#run-it-with-the-orchestrators-recommended) for Phases 1-3. Monitor its stage results for incomplete or blocked prompts, verification failures, abnormal errors, or network issues. Report unusual behavior to the architect and record the duration of each major stage.
-8. Review the consolidated research artifact, then run the **Resiliency Planning Orchestrator** for Phases 4-5. Use `audit=on` when the final report requires the optional Phase 6 evidence audit.
-9. Review the generated report for duplicate findings. Remove only confirmed duplicates while preserving finding IDs and cross-references.
-10. Validate code references, ordering dependencies, file paths, and line numbers. Correct any mismatches. The Phase 6 audit can perform this verification by priority tier.
+8. Review the consolidated research artifact, then run the **Resiliency Planning Orchestrator** for Phases 4-5.
+9. Review the generated report for duplicate findings. Optionally invoke `/detect-assessment-duplicates` manually. Remove only confirmed duplicates while preserving finding IDs and cross-references.
+10. Validate code references, ordering dependencies, file paths, and line numbers. Correct any mismatches.
 11. Verify that the final report matches the application and Kafka topologies confirmed by the architect. Keep the application description concise and accessible to a non-specialist audience.
 12. Perform a final sanity check and compare report coverage with the workload considerations identified by the initial repository prompt.
 13. Submit the report for SME review.
@@ -87,7 +87,7 @@ The framework includes one workflow skill and two orchestrator agents:
 
 ### Run it with the orchestrators (Recommended)
 
-The recommended path uses two **orchestrator agents**. The research orchestrator runs Phases 1-3, and the planning orchestrator runs Phases 4-5 plus the optional Phase 6 audit. Each agent dispatches individual prompts to fresh subagents, sequences dependencies, and parallelizes independent work. Select the agent in the picker, then send a plain message rather than a slash command.
+The recommended path uses two **orchestrator agents**. The research orchestrator runs Phases 1-3, and the planning orchestrator runs Phases 4-5. Each agent dispatches individual prompts to fresh subagents, sequences dependencies, and parallelizes independent work. Select the agent in the picker, then send a plain message rather than a slash command.
 
 **Research (Phases 1-3):**
 
@@ -152,9 +152,10 @@ The [platform context](.github/instructions/hve-resiliency-platform-context.inst
 | 3. Consolidation | `consolidate-0-scaffold` through `consolidate-9-finalize` | Scaffold first, section fills in parallel, verification in parallel, then final assembly. |
 | 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | Runs sequentially in fresh subagent contexts. |
 | 5. Assessment | `planner-3a` through `planner-3d` | Runs sequentially because each prompt appends to the same report. |
-| 6. Evidence Audit (optional) | `fix-assessment-finding` for P0, P1, P2, and P3 | Runs sequentially when the planning kickoff includes `audit=on`. |
 
 A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). Per-phase descriptions, workflow evolution diagrams, and the post-Phase-5 backlog import flow are covered in the guides linked from [Documentation](#documentation).
+
+The standalone `detect-assessment-duplicates` and `reorder-assessment-findings` prompts run only when invoked manually. They are not part of planning orchestration.
 
 ## Repository layout
 
