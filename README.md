@@ -96,6 +96,7 @@ The recommended path uses two **orchestrator agents**. The research orchestrator
 
    ```text
    Run the resiliency research pipeline for this repository.
+   Target deployment topology: <ACTIVE-ACTIVE or ACTIVE-STANDBY>.
    ```
 
    It runs discovery, analysis, verification, and consolidation, then writes the results to `.copilot-tracking/research/`. It pauses only when input or intervention is required.
@@ -107,9 +108,12 @@ The recommended path uses two **orchestrator agents**. The research orchestrator
 
    ```text
    Run the resiliency planning pipeline from the consolidated research.
+   Target deployment topology: <ACTIVE-ACTIVE or ACTIVE-STANDBY>.
    ```
 
    It consumes the completed consolidated research and produces the executive Master report, Developer Guide, and final **Code-Level Resiliency Assessment** under `Microsoft-Assessment/`. Planning and assessment prompts run sequentially because each output depends on the preceding artifact.
+
+Replace `Active-Active` with `Active-Standby` when that is the agreed target deployment topology.
 
 ### Manual alternative (one prompt at a time)
 
