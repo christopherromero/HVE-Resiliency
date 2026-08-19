@@ -30,15 +30,15 @@ Load the manifest, the three outcome fragment files, the skeleton artifact, and 
 3. Assemble the three fragments into the skeleton in this fixed order: 5.1 Startup Failure, 5.2 Data Loss or Partial Processing, 5.3 Blocking Transactions. Replace each `<!-- fragment placeholder ... -->` comment in the skeleton with the corresponding fragment body starting immediately after that fragment's own `## 5.<n>` heading. Preserve the skeleton's frontmatter, Scope and Assumptions section, and Task Implementation Requests section.
 4. If the verify audit's `## Cross-Fragment Findings` list reports a `cross-fragment-overlap` row-key, keep both rows in place, add a single line under the row on the newer-emission fragment: `Cross-fragment overlap: also emitted as <other-row-id> in <other-fragment>.` Do not delete either row. Do not renumber either row.
 5. Assemble the ledger section: replace the skeleton's `<!-- ledger placeholder ... -->` comment with a `## Ledger and Terminal Outcomes` table listing, per outcome fragment, the row count, the count of rows carrying any `Unknown: not found after bounded search <scope>` descriptor, and the fragment's terminal status. Include one final row for the pipeline-level status computed in step 1.
-6. Update the skeleton frontmatter: set `pipeline-stage: finalized`, set `status` to the pipeline-level status, and set `ms.date` to the current UTC date.
+6. Update the skeleton frontmatter: set `pipeline-stage: finalized`, set `status` to the pipeline-level status, and set `ms.date` to the current UTC date. When the verify audit reports any `cross-fragment-overlap` item, set `status-reason: Cross-fragment duplicates found`; otherwise omit `status-reason`.
 
 ## Status Aggregation
 
 The pipeline-level status is:
 
 * `Blocked` if any fragment status is `Blocked`, or the verify audit contains `unsafe`, `fragment-header-invalid`, `dependency-out-of-scope`, `outcome-mismatch`, `scenario-combined`, or `prohibited-content` items that were not resolved by an operator before finalize was invoked.
-* `Incomplete` otherwise if any fragment status is `Incomplete`, or the verify audit lists any `## Manual Review Required` item, or any emitted row carries `Unknown: not found after bounded search <scope>` in a nullable field.
-* `Complete` only when every fragment status is `Complete`, the verify audit's `## Manual Review Required` list is empty, and no row carries any `Unknown` descriptor.
+* `Incomplete` otherwise if any fragment status is `Incomplete`, the verify audit reports any `cross-fragment-overlap` item, the verify audit lists any `## Manual Review Required` item, or any emitted row carries `Unknown: not found after bounded search <scope>` in a nullable field.
+* `Complete` only when every fragment status is `Complete`, the verify audit reports no `cross-fragment-overlap` items, the verify audit's `## Manual Review Required` list is empty, and no row carries any `Unknown` descriptor.
 
 ## Output
 
