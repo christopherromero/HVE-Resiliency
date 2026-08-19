@@ -27,8 +27,8 @@ The framework includes one workflow skill and two orchestrator agents:
 - **Complete Workflow:**
   - `hve-resiliency-research` defines the complete workflow.
 - **Orchestration:**
-   - **Resiliency Research Orchestrator v1.0** runs Phases 1-3.
-    - **Resiliency Planning Orchestrator v1.0** runs Phases 4-5.
+  - **Resiliency Research Orchestrator v1.0** runs Phases 1-3.
+  - **Resiliency Planning Orchestrator v1.0** runs Phases 4-5.
 
 [View a sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
 
