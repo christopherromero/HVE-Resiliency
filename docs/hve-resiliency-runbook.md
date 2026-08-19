@@ -144,7 +144,7 @@ If they are missing, see [Troubleshooting: Slash commands not appearing](#troubl
 Commit the new `.github/` files so the rest of the team works from the same workflow definition:
 
 ```powershell
-git add .github/skills .github/prompts .github/instructions
+git add .github/skills .github/prompts .github/agents .github/instructions
 git commit -m "chore: install HVE Resiliency framework"
 ```
 
