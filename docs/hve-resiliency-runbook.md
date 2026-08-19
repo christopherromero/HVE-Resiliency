@@ -154,7 +154,7 @@ Phase 1 establishes the repository context and dependency inventory that all lat
 
 ### 1.1 Select the agent
 
-The recommended path is to select **Resiliency Research Orchestrator** from the agent picker: it runs Phases 1-3 in one invocation, parallelizes independent steps, and manages context automatically (no manual `/clear`). For the manual, one-prompt-per-turn path below, select a research agent (`Task Researcher` in HVE Core v3.2.2, or the current research phase agent in your HVE version); every Phase 1 prompt expects a research agent.
+The recommended path is to select **Resiliency Research Orchestrator v1.0** from the agent picker: it runs Phases 1-3 in one invocation, parallelizes independent steps, and manages context automatically (no manual `/clear`). For the manual, one-prompt-per-turn path below, select a research agent (`Task Researcher` in HVE Core v3.2.2, or the current research phase agent in your HVE version); every Phase 1 prompt expects a research agent.
 
 ### 1.2 Invoke the skill
 
@@ -171,7 +171,7 @@ The skill will ask one and only one question: which execution mode to use.
 Reply with one of:
 
 * `Mode A` for interactive, one-prompt-per-turn execution, with an optional context reset between prompts (recommended for cost, optional for correctness - durable artifacts carry context forward).
-* `Mode B` for autonomous execution that dispatches each prompt as an isolated subagent. This is now provided directly by the **Resiliency Research Orchestrator** agent, which is the recommended way to run Mode B.
+* `Mode B` for autonomous execution that dispatches each prompt as an isolated subagent. This is now provided directly by the **Resiliency Research Orchestrator v1.0** agent, which is the recommended way to run Mode B.
 
 See [Operator decision matrix](#operator-decision-matrix-mode-a-vs-mode-b) if you have not yet decided.
 
@@ -479,7 +479,7 @@ Fix: stop the run, `/clear`, and re-invoke `/hve-resiliency-research`. If it rec
 
 Symptom: a planning prompt produces forensic-only output, or a research prompt produces remediation recommendations.
 
-Fix: stop, reset context, and switch to the correct agent - the **Resiliency Research Orchestrator** (or a research phase agent) for Phases 1-3, the **Resiliency Planning Orchestrator** (or a planning phase agent) for Phases 4-5 - then re-run the affected step. Note: HVE Core has consolidated the standalone `Task Researcher` / `Task Planner` agents into the RPI lifecycle; the orchestrator agents do not depend on those specific agents.
+Fix: stop, reset context, and switch to the correct agent - the **Resiliency Research Orchestrator v1.0** (or a research phase agent) for Phases 1-3, the **Resiliency Planning Orchestrator v1.0** (or a planning phase agent) for Phases 4-5 - then re-run the affected step. Note: HVE Core has consolidated the standalone `Task Researcher` / `Task Planner` agents into the RPI lifecycle; the orchestrator agents do not depend on those specific agents.
 
 ### Consolidation times out
 

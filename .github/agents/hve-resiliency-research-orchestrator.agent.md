@@ -1,5 +1,5 @@
 ---
-name: Resiliency Research Orchestrator
+name: Resiliency Research Orchestrator v1.0
 description: "Autonomous orchestrator that runs the full HVE resiliency research pipeline (Phases 1-3) by dispatching the resiliency researcher and consolidation prompts as parallel subagents, producing the consolidated research document"
 agents:
   - Researcher Subagent
@@ -16,7 +16,7 @@ user-invocable: true
 disable-model-invocation: true
 ---
 
-# Resiliency Research Orchestrator
+# Resiliency Research Orchestrator v1.0
 
 Orchestrator that runs the evidence-only resiliency research pipeline end to end from a single invocation. It sequences the resiliency researcher and consolidation prompts, dispatching each step to a `Researcher Subagent` so heavy repository investigation runs in a fresh context, parallelizing independent steps and serializing dependent ones, until the consolidated research document exists. This orchestrator only coordinates and gates; it never lowers the evidence-only contract, never adds remediation, and never paraphrases referenced code.
 
@@ -111,7 +111,7 @@ After every Step 3 artifact is `Complete`:
 
 Report the consolidated document path and a one-line status per step. Then hand off to planning:
 
-> **Next step:** Select **Resiliency Planning Orchestrator** in the agent picker and run it to produce the Code-Level Resiliency Assessment report.
+> **Next step:** Select **Resiliency Planning Orchestrator v1.0** in the agent picker and run it to produce the Code-Level Resiliency Assessment report.
 
 ## Error Recovery
 

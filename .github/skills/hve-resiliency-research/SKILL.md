@@ -7,6 +7,8 @@ description: Use for application resiliency research covering regional failover 
 
 Use this skill when you need the full resiliency research sequence for this repository.
 
+**Prompt Suite Version:** 1.0
+
 Use [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ## Activation Guidance
@@ -21,8 +23,8 @@ When this skill is activated (via `/hve-resiliency-research` or by matching the 
 
 For a one-invocation run of each phase, use the orchestrator agents instead of running prompts one at a time:
 
-* Select **Resiliency Research Orchestrator** from the agent picker to run Phases 1-3 (produces the consolidated research document).
-* Select **Resiliency Planning Orchestrator** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report).
+* Select **Resiliency Research Orchestrator v1.0** from the agent picker to run Phases 1-3 (produces the consolidated research document).
+* Select **Resiliency Planning Orchestrator v1.0** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report).
 
 The orchestrators dispatch each step below to a fresh subagent, so they parallelize independent steps and manage context automatically. No manual `/clear` is needed when using them. The Required Workflow below is the manual, one-prompt-per-turn path.
 

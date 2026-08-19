@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Downloads the requested ref of christopherromero/HVE-Resiliency from GitHub and copies the
-    .github/skills, .github/prompts, and .github/instructions folders into the
+    .github/skills, .github/prompts, .github/agents, and .github/instructions folders into the
     current working directory's .github/ folder so GitHub Copilot Chat auto-discovers them.
 
     Requires no git client. Works on Windows PowerShell 5.1+ and PowerShell 7+ (cross-platform).
@@ -16,7 +16,7 @@
     Target repository root. Defaults to the current directory.
 
 .PARAMETER Include
-    Subfolders of .github to install. Defaults to skills, prompts, instructions.
+    Subfolders of .github to install. Defaults to skills, prompts, agents, instructions.
 
 .PARAMETER Force
     Overwrite existing files without prompting.
@@ -40,7 +40,7 @@
 param(
     [string]$Ref = 'main',
     [string]$Destination = (Get-Location).Path,
-    [string[]]$Include = @('skills', 'prompts', 'instructions'),
+    [string[]]$Include = @('skills', 'prompts', 'agents', 'instructions'),
     [switch]$Force,
     [string]$Repo = 'christopherromero/HVE-Resiliency'
 )

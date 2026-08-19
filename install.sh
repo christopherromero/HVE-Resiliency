@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Installs the HVE Resiliency Copilot skills, prompts, and instructions into the current repository.
+# Installs the HVE Resiliency Copilot skills, prompts, agents, and instructions into the current repository.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.sh | bash
@@ -12,7 +12,7 @@
 #   --repo <owner/name>  Source repository (default: christopherromero/HVE-Resiliency)
 #   --force              Overwrite existing files without prompting
 #   --include "a b c"    Space-separated subfolders of .github to install
-#                        (default: "skills prompts instructions")
+#                        (default: "skills prompts agents instructions")
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ REF="main"
 DESTINATION="$(pwd)"
 REPO="christopherromero/HVE-Resiliency"
 FORCE=0
-INCLUDE=(skills prompts instructions)
+INCLUDE=(skills prompts agents instructions)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
