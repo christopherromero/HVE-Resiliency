@@ -131,15 +131,15 @@ Never retain raw credentials, secrets, tokens, connection strings, URI user info
 values, account keys, authorization values, request or response bodies, raw logs, or PII. Retain only a
 normalized workspace-relative path and line, generalized key or symbol category, non-sensitive behavior,
 stable redacted identity derived from sanitized content, and the minimum sanitized excerpt needed to
-audit a claim. Charge the 65,536-byte evidence cap to the UTF-8 byte length of all sanitized content
-retained in caches, ledgers, candidates, evidence stores, and the artifact. Select `blocked-prerequisite`
+<!-- audit a claim. Charge the 65,536-byte evidence cap to the UTF-8 byte length of all sanitized content
+retained in caches, ledgers, candidates, evidence stores, and the artifact.  -->Select `blocked-prerequisite`
 if caller-side sanitization cannot be guaranteed before the first retention or derivation, or a
 `bounded-partial` status if sanitization fails after retained evidence collection begins.
 
 ## Immutable production manifest
 
 After the prerequisite gate, enumerate paths once and freeze one normalized, sorted, text-only production
-manifest. Admit at most 240 files from only these roots and file classes:
+manifest. Admit every eligible file from only these roots and file classes:
 
 * `pom.xml`
 * `src/main/java/**`

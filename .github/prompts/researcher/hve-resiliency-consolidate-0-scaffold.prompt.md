@@ -37,9 +37,9 @@ Exclude the following even when their filenames match a prompt ID token:
 
 When more than one candidate resolves to the same prompt ID after body confirmation, select the candidate whose normalized path has the lexicographically largest dated ancestor segment matching `YYYY-MM-DD`. If no candidate carries a dated segment, or if dated segments tie, select the candidate whose normalized path sorts last using ordinal comparison. Record every non-selected duplicate in the manifest with disposition `exact duplicate` and preserve its provenance.
 
-## Discovery Bounds
+<!-- ## Discovery Bounds
 
-Sort discovered candidates by normalized path using ordinal comparison, then process no more than 100 candidates. Reaching the cap stops new admission. Read each accepted artifact's bytes exactly once for baseline processing, then compute its sanitized `contentSha256`. Do not repeat discovery and do not reread an artifact for confidence or broader exploration.
+Sort discovered candidates by normalized path using ordinal comparison, then process no more than 100 candidates. Reaching the cap stops new admission. Read each accepted artifact's bytes exactly once for baseline processing, then compute its sanitized `contentSha256`. Do not repeat discovery and do not reread an artifact for confidence or broader exploration. -->
 
 ## Validation
 
@@ -49,7 +49,7 @@ Read each accepted artifact's bytes once and validate:
 * Conformance to the producer body schema for its prompt ID.
 * Repository relevance: identifiers, paths, and workspace references cited by the artifact belong to the current workspace.
 
-Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity. A required prompt ID (`0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, `7`) with zero admitted candidates does not block: record it as absent in the coverage snapshot and proceed, leaving its section to render bounded no evidence; finalize sets the terminal status to reflect the missing required coverage.
+Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity. A required prompt ID (`0`, `1a`, `1b`, `2`, `3`, `4`, `5`, `6`, `7`) with zero admitted candidates does not block: record it as absent in the coverage snapshot and proceed, leaving its section to render no evidence; finalize sets the terminal status to reflect the missing required coverage.
 
 Freeze the discovery result after selection. Duplicate prompt IDs are resolved by the tie-break above rather than by stopping.
 

@@ -24,7 +24,7 @@ Use evidence only. Preserve file-and-line citations, ownership boundaries, exist
 Execute this prompt as an evidence-only Prompt 6 mode that overrides conflicting Task Researcher behavior.
 
 1. Validate both prerequisite artifacts before production discovery.
-2. Build the immutable production-source manifest and complete bounded discovery.
+2. Build the immutable production-source manifest and complete discovery.
 3. Consolidate and classify retained evidence, then stop.
 4. Skip Task Researcher Phase 2 and any later recommendation or implementation phase.
 5. Do not produce alternatives, recommendations, implementation details, code or configuration examples, or remediation.
@@ -49,7 +49,7 @@ Use only dependencies from validated Prompt 1a Section 1 and Prompt 1b Section 1
 
 ### Production Manifest
 
-Build one immutable manifest of production sources before discovery. Before path normalization, hashing, or traversal, deterministically filter the enumerated source families to text files whose content type can be read as text. Record each included file once by normalized repository-relative path and source family, then traverse each included file at most once during initial discovery.
+Build one immutable manifest of production sources before discovery. Before path normalization, hashing, or traversal, deterministically filter the enumerated source families to text files whose content type can be read as text. Record each included file by normalized repository-relative path and source family. Cache sanitized reads by normalized path and reuse them during discovery.
 
 Limit the manifest to these source families:
 
@@ -62,7 +62,7 @@ Limit the manifest to these source families:
 * Documentation used only as an evidence lead
 
 Exclude generated output, vendored code, caches, and test-only references unless a test reference is directly coupled to production behavior. Exclude trust stores, certificates, keys, archives, images, compiled artifacts, and every other binary or content-type failure. Excluded extensions include `.jks`, `.p12`, `.pfx`, `.cer`, `.crt`, `.der`, `.key`, `.zip`, `.jar`, `.war`, `.class`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.webp`, `.ico`, `.tif`, `.tiff`, and `.svg`. A binary path must never enter the immutable manifest, manifest hash input, traversal, or initial-read count. Documentation alone cannot establish a finding; confirm its lead in production evidence.
-
+<!-- 
 ### Bounded Discovery
 
 Use these finite query families: validated dependency identities and aliases; imports and client construction; configuration key references; deployment and runtime bindings; infrastructure, pipeline, and shared-build integration; and evidence of ownership, mitigations, or constraints.
@@ -90,7 +90,7 @@ Stop discovery at the first applicable condition:
 
 1. Every finite source and query family is complete and every retained candidate is classified.
 2. A complete pass produces no new retained candidates and every retained candidate has a terminal disposition.
-3. A hard discovery limit is reached.
+3. A hard discovery limit is reached. -->
 
 ### Evidence Safety
 
@@ -104,15 +104,15 @@ YAML frontmatter must be the first content. Set its `title` value to exactly one
 
 * `Complete`
 * `Complete with no evidence`
-* `Incomplete: limit reached`
+* `Incomplete: source unavailable`
 * `Blocked: owner unavailable`
 * `Blocked: prerequisite incomplete`
 
 Include a frontmatter `description`, then start body content at H2. Do not repeat or paraphrase the selected status in the body.
 
-After bounded terminal work, select exactly one status using this precedence order: `Blocked: prerequisite incomplete`; `Blocked: owner unavailable`; `Incomplete: limit reached`; `Complete with no evidence`; `Complete`. Owner blocking applies only to inaccessible required ownership evidence for a retained in-scope candidate. Select the incomplete status when a hard discovery limit, candidate overflow, or unresolved retained candidate prevents complete bounded coverage. Permit `Complete with no evidence` only when every finite source and query family completed, no finding evidence was retained, and every retained candidate has a terminal disposition. Select `Complete` only when those finite families completed and all retained candidates have terminal dispositions without another higher-precedence condition.
+After bounded terminal work, select exactly one status using this precedence order: `Blocked: prerequisite incomplete`; `Blocked: owner unavailable`; `Incomplete: source unavailable`; `Complete with no evidence`; `Complete`. Owner blocking applies only to inaccessible required ownership evidence for an in-scope candidate. Select the incomplete status when required scoped source or tool becomes unavailable and prevents complete bounded coverage. Permit `Complete with no evidence` only when every finite source and query family completed, no finding evidence was retained, and every retained candidate has a terminal disposition. Select `Complete` only when those finite families completed and all retained candidates have terminal dispositions without another higher-precedence condition.
 
-Include coverage metrics for prerequisite artifacts validated, production files manifested and traversed, source families completed, query families completed, candidates retained and classified, candidate overflow count and digest hash, unresolved candidates, corrective passes used, owner reads used, indirection depth reached, and subagent rounds used.
+Include coverage metrics for prerequisite artifacts validated, production files manifested and traversed, source families completed, query families completed, candidates retained and classified, unresolved candidates, corrective work performed, owner sources read, and ownership chains resolved or unavailable.
 
 Emit one complete finding for each distinct dependency, resiliency scenario, and failure-mode evidence chain. Put the scenario and failure mode inside `Region failover risk implication`. Do not add an eighth field or another assessment area.
 
@@ -127,11 +127,11 @@ For every finding and evidence-gap record, repeat this exact seven-field schema 
 * Existing mitigations present, with evidence
 * Constraints or limitations, with evidence
 
-Within these seven fields, require every rendered citation and every substantive finding claim to reference one or more terminal retained candidate IDs. No citation or substantive claim may bypass the retained ledger. If evidence needed to support a finding claim is not retained after the cap, do not render that claim. Render the resulting evidence gap with the same seven fields, the applicable schema-safe unknown or completed-search wording, and references to the terminal retained candidate IDs that establish the bounded gap; apply the terminal status rules above.
+Within these seven fields, require every rendered citation and every substantive finding claim to reference one or more terminal retained candidate IDs. No citation or substantive claim may bypass the retained ledger. If evidence needed to support a finding claim is unavailable, do not render that claim. Render the resulting evidence gap with the same seven fields, the applicable schema-safe unknown or completed-search wording, and references to the terminal retained candidate IDs that establish the gap; apply the terminal status rules above.
 
 Use `Unknown: evidence unavailable` within the applicable required field when evidence is inaccessible or conflicting. Use `Not observed in completed searches` within the applicable field only for non-exhaustive absence. Never omit a required label.
 
-Use the priority framework from the platform context without restating its definitions. Gate exhaustive negative statements on complete bounded coverage.
+Use the priority framework from the platform context without restating its definitions. Gate exhaustive negative statements on complete coverage.
 
 End the response with the inherited next step:
 

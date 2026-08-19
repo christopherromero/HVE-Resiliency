@@ -18,7 +18,7 @@ Consolidate completed evidence-only research for the current repository into one
 
 Enter consolidation directly. Skip Task Researcher Phase 2, recommendation-oriented completion criteria, and all deeper-research handoffs. Do not introduce assessment areas or produce alternatives, recommendations, selected approaches, examples, implementation details, design changes, remediation, or advisory language.
 
-Run at most one subagent invocation total, and only when bounded citation or conflict validation cannot be completed directly. Transfer only sanitized retained normalized records and require the subagent to return citation validity or conflict disposition without recommendations.
+Use a subagent only when citation or conflict validation cannot be completed directly. Transfer only sanitized retained normalized records and require the subagent to return citation validity or conflict disposition without recommendations.
 
 ## Discovery Contract
 
@@ -38,7 +38,7 @@ Required prompt IDs are `0`, `1a`, `1b`, `2`, `3`, `4`, `5`, and `6`. Service pr
 
 When more than one candidate resolves to the same prompt ID after body confirmation, select the candidate whose normalized workspace-relative path has the lexicographically largest dated ancestor segment matching `YYYY-MM-DD`. If no candidate carries a dated segment, or if dated segments tie, select the candidate whose normalized path sorts last using ordinal comparison. Record every non-selected duplicate as a retained normalized record with disposition `exact duplicate` and preserve its provenance. Do not use file modification time.
 
-Read each accepted artifact's bytes exactly once and validate:
+Cache each accepted artifact's sanitized bytes and validate:
 
 * Presence of the expected producer heading and the artifact's completion status.
 * Conformance to the producer body schema for its prompt ID, including required sections, required field labels, and file-line citations.
@@ -50,14 +50,14 @@ Compute a lowercase SHA-256 hexadecimal digest over each accepted artifact's san
 Stop `Blocked` with no fallback when the research root is missing, unreadable, or empty of admissible artifacts; when any required prompt ID has zero admitted candidates; when an admitted candidate is malformed, unreadable, or unsafe; or when accepted candidates disagree on repository identity.
 
 Freeze the discovery result after selection. Duplicate prompt IDs are resolved by the tie-break above rather than by stopping. Never choose an artifact by filename alone and never infer coverage from an artifact whose body did not confirm its prompt ID.
-
+<!-- 
 ## Discovery and Read Bounds
 
 Sort discovered candidates by normalized workspace-relative path using ordinal comparison, then process no more than 100 candidates and retain no more than 2,000 normalized findings. Reaching either cap stops new admission but permits bounded reconciliation of already retained records.
 
 Read each accepted artifact's bytes exactly once for baseline processing. From that same in-memory buffer, parse metadata, headings, and body and compute the stable SHA-256 identity digest. Permit at most one defect-specific corrective reread per artifact tied to a named parse or citation defect and at most one owner or source indirection read for each evidence-backed dependency, at depth 1.
 
-Total owner or source indirection reads must not exceed the 2,000 normalized-record cap. Do not repeat discovery. Do not reread an artifact for confidence or broader exploration.
+Total owner or source indirection reads must not exceed the 2,000 normalized-record cap. Do not repeat discovery. Do not reread an artifact for confidence or broader exploration. -->
 
 ## Sanitization
 
@@ -96,7 +96,7 @@ Apply source precedence only to equivalent claims: validated file-line evidence 
 Apply the conflict matrix before rendering:
 
 * Required conflicts cover repository identity, required prompt coverage, dependency applicability, priority, scenario, failure mode, citation, finding or output identity, and unsafe evidence. Any unresolved required conflict stops `Blocked`.
-* Optional gaps cover only missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds, plus unresolved optional conflicts after bounded correction. Successfully accepted, validated, and rendered applicable service artifacts increase coverage and never force `Incomplete`.
+* Optional gaps cover only missing, rejected, unreadable, unresolved applicable optional artifacts or records after required core coverage succeeds, plus unresolved optional conflicts after correction. Successfully accepted, validated, and rendered applicable service artifacts increase coverage and never force `Incomplete`.
 
 Every retained record receives one terminal disposition: rendered, exact duplicate, excluded by Prompt 1a or 1b, rejected with reason, or unresolved. Every rendered finding and evidence-derived substantive claim must map to one or more retained terminal record IDs. Status reasons, coverage metrics, and schema-safe empty-state text map to the frozen discovery result and accepted artifact set and need no normalized finding ID. Do not render raw or unretained evidence.
 
@@ -108,7 +108,7 @@ Render a finding only when it has a canonical dependency or category, P0-P3 prio
 
 Permit `Unknown: evidence unavailable` only in these nullable prose fields: ownership boundary, impacts, existing mitigations, constraints and limitations, and notes or unknowns. Ownership remains nullable and a schema-safe ownership value does not block `Complete`. Preserve every field label. Retain without rendering any record missing a closed field, then select status through the conflict matrix.
 
-Use bounded `Not observed in completed sources` only in nullable prose fields under partial coverage. Reserve `None found` for complete accepted-artifact coverage validated for that scope. Permitted nullable prose values do not by themselves force `Incomplete`.
+Use `Not observed in completed sources` only in nullable prose fields under partial coverage. Reserve `None found` for complete accepted-artifact coverage validated for that scope. Permitted nullable prose values do not by themselves force `Incomplete`.
 
 ## Status and Stopping
 
@@ -116,9 +116,9 @@ Set one explicit status with reasons and coverage metrics. Status precedence is 
 
 Stop `Blocked` for a missing, unreadable, or empty research root; for any required prompt ID with zero admitted candidates; for unsafe evidence; for required artifacts that are unreadable, malformed, or fail body-schema validation; for disagreement on repository identity across accepted artifacts; or for any unresolved required conflict.
 
-Stop `Incomplete` only for missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds, or unresolved optional conflicts after bounded correction, when no `Blocked` condition exists.
+Stop `Incomplete` only for missing, rejected, unreadable, unresolved applicable optional artifacts or records after required core coverage succeeds, or unresolved optional conflicts after bounded correction, when no `Blocked` condition exists.
 
-Stop `Complete` only after the discovery result is frozen, every accepted artifact is processed once, every retained record has a terminal disposition, no conflicts remain, all citations validate, every required section and index entry reconciles, and one full bounded verification pass produces no changes. Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
+Stop `Complete` only after the discovery result is frozen, every accepted artifact is processed, every retained record has a terminal disposition, no conflicts remain, all citations validate, every required section and index entry reconciles, and full verification pass produces no changes. Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
 
 Do not continue exploring after a terminal status is established. A `Blocked` or `Incomplete` artifact remains evidence-only and must not fill gaps by inference.
 
@@ -130,7 +130,7 @@ Measure peak simultaneously retained source bytes, total sanitized source bytes,
 
 Sort retained normalized records by section number, priority from P0 through P3, dependency or category, scenario, normalized evidence path and line, and record ID. Assign stable sequential `F-00X` IDs after sorting.
 
-Render once from the sorted retained normalized records. Permit at most one corrective render total for a named verification defect. Include schema version, status, reasons, coverage metrics, accepted prompt coverage, rejected artifact counts by reason, citation totals, conflict totals, hard-limit state, normalized-record totals, peak simultaneously retained source bytes, sanitized source bytes, and post-release retained normalized-record bytes in the assessment scope and notes. Do not add assessment domains or additional numbered sections.
+Render from the sorted retained normalized records. Correct every named verification defect, then repeat verification until a complete pass produces no changes. Include schema version, status, reasons, coverage metrics, accepted prompt coverage, rejected artifact counts by reason, citation totals, conflict totals, completion state, normalized-record totals, peak simultaneously retained source bytes, sanitized source bytes, and post-release retained normalized-record bytes in the assessment scope and notes. Do not add assessment domains or additional numbered sections
 
 Use schema version `hve-resiliency-consolidation/v1` and the following direct Sections 1-9 structure.
 
@@ -149,7 +149,7 @@ Assessment Scope:
 * Consolidation Status: Blocked | Incomplete | Complete
 * Status Reasons: <sanitized reasons>
 * Coverage: <accepted>/<required>, <accepted>/<applicable optional>, <rejected by reason>
-* Processing Metrics: <candidates>, <accepted>, <normalized>, <rendered>, <duplicates>, <citation results>, <conflicts>, <hard-limit state>, <peak retained source bytes>, <sanitized source bytes>, <post-release retained normalized-record bytes>
+* Processing Metrics: <candidates>, <accepted>, <normalized>, <rendered>, <duplicates>, <citation results>, <conflicts>, <completion state>, <peak retained source bytes>, <sanitized source bytes>, <post-release retained normalized-record bytes>
 
 Notes:
 
@@ -232,6 +232,6 @@ Use this schema exactly once for every finding in Sections 2.1 and 3-8:
 
 ## Verification
 
-Perform at most two verification passes total: one initial pass and, only after the single permitted corrective render, one post-correction pass. Confirm that discovery ran only under the resolved research root; the discovery result is frozen after selection; every required prompt ID has at least one accepted artifact with a body-confirmed prompt ID; each accepted artifact used one baseline byte read; sanitization preceded all retention and transfer; raw buffers and noncollision canonical serializations were released; required byte metrics reconcile; semantically equivalent claims merged with all contributing IDs while material differences remained separate; accepted service evidence and permitted nullable prose did not cause `Incomplete`; Sections 1-9 remain in order; every finding has canonical dependency or category, all required field labels, P0-P3, one allowed scenario, a material failure mode, at least one validated file-line citation, and retained record IDs; every index entry maps to one finding; no unretained evidence appears; and no prohibited recommendation or implementation content is present.
+Perform verification until a complete pass produces no changes.. Confirm that discovery ran only under the resolved research root; the discovery result is frozen after selection; every required prompt ID has at least one accepted artifact with a body-confirmed prompt ID; each accepted artifact was processed from sanitized cached bytes; sanitization preceded all retention and transfer; raw buffers and noncollision canonical serializations were released; required byte metrics reconcile; semantically equivalent claims merged with all contributing IDs while material differences remained separate; accepted service evidence and permitted nullable prose did not cause `Incomplete`; Sections 1-9 remain in order; every finding has canonical dependency or category, all required field labels, P0-P3, one allowed scenario, a material failure mode, at least one validated file-line citation, and retained record IDs; every index entry maps to one finding; no unretained evidence appears; and no prohibited recommendation or implementation content is present.
 
-If verification identifies a specific render-only defect, correct it once and repeat verification without rediscovery or source rereads. Otherwise apply the stopping rules.
+If verification identifies a specific render-only defect, correct it and repeat verification without rediscovery or source rereads. Otherwise apply the stopping rules.

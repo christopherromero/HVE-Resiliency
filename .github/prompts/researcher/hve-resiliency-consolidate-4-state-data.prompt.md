@@ -19,6 +19,8 @@ Read the frozen manifest, then read only the artifacts whose primary section is 
 
 Render evidence-backed statefulness, data access, replication, consistency, idempotency, and replay findings.
 
+When accepted Prompt 4 evidence establishes that the application caches transient data in process memory and that this behavior can cause data loss, inconsistency, unavailable state, or another material issue during regional failover, render a Section 4 finding even when the cached data is classified as transient. Do not suppress the finding because the data is nonpersistent. Describe only the evidenced current behavior and multi-region risk. Do not add a recommendation to move the logic to a distributed cache such as Redis; remediation belongs to the downstream planning and assessment stages unless an accepted source artifact provides schema-compatible evidence that can be retained without advisory language.
+
 ## Fill Protocol
 
 1. Load the manifest and confirm the Section 4 read scope.

@@ -35,7 +35,7 @@ When `assessmentManifestPath` is omitted, freeze one sanitized in-memory manifes
 
 Admit only artifacts whose frontmatter (when present) identifies a researcher producer or whose H1 matches the `HVE Resiliency Researcher` heading family. Exclude planner outputs, consolidations, sandboxes, and unrelated documents by filename or heading. Reject artifacts unrelated to the current repository by workspace-root basename.
 
-## Discovery And Read Bounds
+<!-- ## Discovery And Read Bounds
 
 Sort admitted artifact candidates by normalized path using ordinal comparison, then process at most 60 artifacts per run. Retain at most 4,000 extracted citation records total. Reaching either cap stops new admission but permits bounded reconciliation of already retained records.
 
@@ -43,7 +43,7 @@ Read each admitted researcher artifact's bytes exactly once. From that same in-m
 
 Read each referenced workspace source file at most twice per run: once for verification and once, only when needed, for a bounded corrective reread tied to a named auto-correction target. Total source reads must not exceed 600. Do not repeat discovery.
 
-Do not read a workspace source file that is outside the source scope declared in Scope And Override.
+Do not read a workspace source file that is outside the source scope declared in Scope And Override. -->
 
 ## Sanitization
 
@@ -138,7 +138,7 @@ Set exactly one status.
 
 Stop `Blocked` for any sidecar failure, missing or ambiguous required input, unsafe evidence in a researcher artifact, unreadable admitted artifact, source-scope violation, or a workspace source path outside the source scope declared above.
 
-Stop `Incomplete` when the hard-limit caps in Discovery And Read Bounds are reached before every admitted artifact is fully verified, or when any `autofix-rollback` occurred.
+Stop `Incomplete` when a required source or tool becomes unavailable before every admitted artifact is fully verified, or when any `autofix-rollback` occurred.
 
 Stop `Complete` when every admitted artifact was extracted once, every extracted record has a terminal disposition, every eligible `autofix` correction re-verifies as `citation-ok`, and the audit report was written.
 
@@ -148,7 +148,7 @@ Do not continue exploring after a terminal status is established. A `Blocked` or
 
 Before terminating, confirm:
 
-* Every admitted researcher artifact was read exactly once for baseline extraction; corrective rereads did not exceed one per artifact.
+* Every admitted researcher artifact and extracted citation record was processed; sanitized cached content was reused for equivalent checks.
 * Sanitization preceded all retention and all writes.
 * No workspace source file was written to.
 * No researcher artifact was written to in `audit` mode.
@@ -157,7 +157,7 @@ Before terminating, confirm:
 * No sidecar file was modified.
 * No SHA-256 digest was recomputed on a source file.
 
-If verification identifies a specific defect in the audit report itself, correct that defect once and repeat verification. Otherwise apply the stopping rules.
+If verification identifies a specific defect in the audit report itself, correct it and repeat verification until a complete pass produces no changes. Otherwise apply the stopping rules.
 
 ## Response Contract
 

@@ -29,7 +29,7 @@ Exclude any file whose normalized path is under `subagents/`, `validator/`, or `
 
 When more than one candidate resolves to `1a` or to `1b`, select the candidate whose normalized path has the lexicographically largest dated ancestor segment matching `YYYY-MM-DD`. If no candidate carries a dated segment, or if dated segments tie, select the candidate whose normalized path sorts last using ordinal comparison. Record every non-selected duplicate in the manifest with disposition `exact duplicate` and preserve its provenance.
 
-Process at most 100 candidates. Read each accepted artifact's bytes exactly once. Compute its sanitized `contentSha256`.
+Process every eligible candidate in deterministic normalized-path order. Cache each accepted artifact's sanitized bytes and compute its `contentSha256` from that cache.
 
 ## Eligible Dependency Extraction
 

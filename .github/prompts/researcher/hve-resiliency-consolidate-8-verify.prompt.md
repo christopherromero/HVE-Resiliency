@@ -44,9 +44,9 @@ After per-finding verification, check:
 * No duplicate finding key (canonical tuple defined by the outer Consolidation Shared Contract) inside a single sub-fragment. Record `duplicate-finding-key`.
 * Cross-fragment overlap where the same canonical tuple appears in more than one sub-fragment. This should not occur because group routing is disjoint; record `cross-fragment-overlap` on the sub-fragment whose emission-order-derived finding ID sorts higher and leave both records in place. The nested finalize prompt preserves both; the outer finalize resolves overlaps by section precedence.
 
-## Bounds
+<!-- ## Bounds
 
-Process at most 400 provisional findings across all sub-fragments. Read each sub-fragment file's bytes exactly once. Read each routed accepted source artifact at most twice: once for verification and once, only when needed, for a bounded corrective reread against a named record. Total source reads must not exceed 400. Reaching either cap stops new admission but permits reconciliation of already-admitted records.
+Process at most 400 provisional findings across all sub-fragments. Read each sub-fragment file's bytes exactly once. Read each routed accepted source artifact at most twice: once for verification and once, only when needed, for a bounded corrective reread against a named record. Total source reads must not exceed 400. Reaching either cap stops new admission but permits reconciliation of already-admitted records. -->
 
 ## Audit Report
 

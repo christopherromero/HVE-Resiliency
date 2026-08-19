@@ -38,11 +38,11 @@ Blocking-transactions discovery hints (evidence-only):
 
 Never emit a row solely because a timeout value is unknown; require positive repository evidence that a production code path can block, deadlock, or exhaust a resource under the stated dependency failure type.
 
-## Bounded Discovery
+  <!-- ## Bounded Discovery
 
-Apply the bounded-discovery limits in the shared contract per eligible dependency and per this outcome only. Counters do not carry over from another outcome fill and cannot be reset by aliases, environments, or wording.
+  Apply the bounded-discovery limits in the shared contract per eligible dependency and per this outcome only. Counters do not carry over from another outcome fill and cannot be reset by aliases, environments, or wording.
 
-Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points there. Stop when repository-free ledger review adds nothing.
+  Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points there. Stop when repository-free ledger review adds nothing. -->
 
 ## Row Emission
 
@@ -56,6 +56,6 @@ Write the fragment to `<fragmentDir>/blocking-transactions.md`, where `<fragment
 
 ## Completion
 
-Report the row count, the count of rows carrying any `Unknown: not found after bounded search <scope>` descriptor, the fragment path, and the terminal fragment status.
+Report the row count, the count of rows carrying any `Unknown: not found after search <scope>` descriptor, the fragment path, and the terminal fragment status.
 
 > **Next step:** Run `/hve-resiliency-researcher-5-verify`

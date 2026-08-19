@@ -56,7 +56,7 @@ Identify repository code paths where dependency timeouts, DNS failures, authenti
 
 The authoritative platform scenario is regional failover between West US 2 and West US.
 
-## Bounded Discovery (inherited by every fill prompt)
+<!-- ## Bounded Discovery (inherited by every fill prompt)
 
 Limits are per confirmed dependency and per outcome class. Aliases, environments, wording, questions, repeated research, and delegated actions cannot reset or transfer a counter.
 
@@ -69,7 +69,7 @@ Limits are per confirmed dependency and per outcome class. Aliases, environments
 * Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points there.
 * Stop when repository-free ledger review adds nothing.
 
-Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward.
+Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward. -->
 
 ## Row Identity and Deduplication
 

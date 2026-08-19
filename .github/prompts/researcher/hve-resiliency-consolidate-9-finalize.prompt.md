@@ -27,12 +27,12 @@ Compute the full reconciliation plan first, then apply it to the scaffold **one 
 3. Sort retained findings by section number, then priority P0 through P3, then dependency or category, scenario, normalized evidence path and line, and record ID. Reconcile section-scoped IDs (`F-<section>-00X`) into the authoritative sequential `F-00X` scheme in this sorted order.
 4. Apply the conflict matrix, then determine exactly one terminal status by precedence:
    * `Blocked` for a missing, unreadable, or empty research root; unsafe evidence; required artifacts that are unreadable, malformed, or fail body-schema validation; disagreement on repository identity; or any unresolved required conflict.
-   * `Incomplete` for any required prompt ID with zero admitted candidates; for missing, rejected, unreadable, unresolved, or hard-limit-truncated applicable optional artifacts or records after required core coverage succeeds; or for unresolved optional conflicts; when no `Blocked` condition exists.
+   * `Incomplete` for any required prompt ID with zero admitted candidates; for missing, rejected, unreadable, unresolved, or for unresolved optional conflicts; when no `Blocked` condition exists.
    * `Complete` only after every fragment is assembled, every retained record has a terminal disposition, no conflicts remain, all citations validate, and the Section 9 index reconciles.
    Accepted applicable service artifacts and permitted nullable prose values remain compatible with `Complete`.
 5. Apply the plan with Incremental Assembly: replace each section placeholder (Sections 1-8) in the scaffold with its reconciled, renumbered fragment content, one section per separate edit, in Section 1-8 order.
 6. Build the Section 9 Research Findings Index with columns `Finding ID | Priority | Category | Short Description | Evidence (File:Line)`; include source record IDs in the `Evidence (File:Line)` cell. Every index entry maps to exactly one rendered finding. Replace the Section 9 placeholder in its own separate edit.
-7. Update the Assessment Scope header in its own separate edit: set `Consolidation Status`, `Status Reasons`, `Coverage`, and `Processing Metrics` (candidates, accepted, normalized, rendered, duplicates, citation results, conflicts, hard-limit state).
+7. Update the Assessment Scope header in its own separate edit: set `Consolidation Status`, `Status Reasons`, `Coverage`, and `Processing Metrics` (candidates, accepted, normalized, rendered, duplicates, citation results, conflicts, completion state).
 8. Run one final bounded verification pass; permit at most one corrective render for a named defect, then stop.
 
 ## Incremental Assembly

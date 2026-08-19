@@ -15,7 +15,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 ## Direct Invocation and Prerequisite
 
 * Run only the verify stage. Do not run any outcome fill or the finalize behavior.
-* Require the manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Manifest Sidecar Contract. If it is missing, unreadable, or structurally invalid, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not write an audit report. If the manifest is well-formed but lists zero eligible dependencies, do not block: write a bounded audit report with no findings and a terminal `Complete` verify status.
+* Require the manifest produced by the scaffold step to exist, be readable, and be well-formed per the Frozen Manifest Sidecar Contract. If it is missing, unreadable, or structurally invalid, a prior step failed or ran out of order: stop `Blocked` per Status and Failure Semantics and do not write an audit report. If the manifest is well-formed but lists zero eligible dependencies, do not block: write an audit report with no findings and a terminal `Complete` verify status.
 <!-- * Require all three fragment files (`startup-failure.md`, `data-loss-partial-processing.md`, `blocking-transactions.md`) to exist under the manifest's `fragmentDir`. Missing fragments are reported as `fragment-missing`; verification continues on the present fragments. -->
 
 ## Read Scope
@@ -43,16 +43,16 @@ After per-row verification, check:
 * No duplicate row-key (dependency + failure type + entrypoint + scenario) inside a single fragment. Record `duplicate-row-key`.
 * Cross-fragment row overlap where the same row-key appears in more than one fragment. Record `cross-fragment-overlap` on the newer-emission fragment and leave both rows in place; the finalize prompt resolves overlaps.
 
-## Bounds
+<!-- ## Bounds
 
-Process at most 400 rows across all fragments. Read each fragment file's bytes exactly once. Read each referenced source file at most twice: once for verification and once, only when needed, for a bounded corrective reread against a named row. Total source reads must not exceed 400. Reaching either cap stops new admission but permits reconciliation of already-admitted rows.
+Process at most 400 rows across all fragments. Read each fragment file's bytes exactly once. Read each referenced source file at most twice: once for verification and once, only when needed, for a bounded corrective reread against a named row. Total source reads must not exceed 400. Reaching either cap stops new admission but permits reconciliation of already-admitted rows. -->
 
 ## Audit Report
 
 Write exactly one audit report to `<fragmentDir>/verify-audit.md`. The audit report contains exactly these sections in this order:
 
 * Frontmatter with `producer: hve-resiliency-researcher-5-verify`, `manifestPath`, `status`, and `ms.date`.
-* `## Summary` with counts by disposition, fragments audited, source files read, rows processed, and hard-limit state.
+* `## Summary` with counts by disposition, fragments audited, source files read, rows processed, and completion state.
 * `## Rows` table with columns `rowId`, `fragment`, `dependency`, `scenario`, `disposition`, and `notes`. One row per verified fragment row.
 * `## Cross-Fragment Findings` list of `duplicate-row-key` and `cross-fragment-overlap` items with row-key and involved fragments.
 * `## Manual Review Required` list of row IDs with disposition `quote-mismatch`, `citation-ambiguous`, `path-unresolved`, `line-out-of-range`, `outcome-mismatch`, `dependency-out-of-scope`, `scenario-combined`, `prohibited-content`, `schema-incomplete`, `fragment-header-invalid`, or `unsafe`, each with a one-sentence sanitized note.

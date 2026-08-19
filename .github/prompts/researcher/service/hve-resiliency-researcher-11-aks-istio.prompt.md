@@ -34,7 +34,7 @@ evidenced.
 3. Retry idempotency and safety
 4. Assumptions that a dependency is always available
 5. Readiness probes reflecting real dependency health rather than process liveness
-
+<!-- 
 ## Bounded Evidence Protocol
 
 Apply this protocol only to dependencies confirmed by the inherited service
@@ -81,7 +81,7 @@ exclusion rule.
 
 Track counters cumulatively in execution state, but omit tool calls, counters,
 search narration, file-analysis narration, and repeated evidence from the
-authoritative research artifact. Read only the smallest relevant line ranges.
+authoritative research artifact. Read only the smallest relevant line ranges. -->
 
 ## Evidence and Output Contract
 

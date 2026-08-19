@@ -11,7 +11,7 @@ Use [Application Platform Context](../../instructions/hve-resiliency-platform-co
 
 Establish the repository context frame: architecture, application flow, observed behavior, assumptions, constraints, mitigations, and each evidence-backed resiliency risk, rationale, and impact.
 
-## Bounded Execution
+<!-- ## Bounded Execution
 
 Keep compact root, transition, boundary, owner, finding, and evidence-gap ledgers. Capture citations on first read.
 
@@ -21,7 +21,7 @@ Keep compact root, transition, boundary, owner, finding, and evidence-gap ledger
 * Give an unresolved symbol or artifact at most two exact checks. Record the question and checks in the evidence-gap ledger, then stop that branch.
 * After coverage evaluation, allow at most one corrective scoped search for the uncovered production path or root family. Never restart broad discovery.
 
-Merge only identical risk mechanisms with the same owner, failure scenario, and impact. Preserve affected flows and evidence. Impose no finding count or priority quota; retain every distinct evidence-backed finding and limit only repetition.
+Merge only identical risk mechanisms with the same owner, failure scenario, and impact. Preserve affected flows and evidence. Impose no finding count or priority quota; retain every distinct evidence-backed finding and limit only repetition. -->
 
 ## Completion Criteria
 

@@ -199,7 +199,7 @@ the service. A library or import requires a second binding signal.
 Unsupported values become field-safe `Unknown` or evidence gaps. Do not substitute
 Azure defaults, product documentation, common architecture, or operator knowledge
 for repository evidence.
-
+<!-- 
 ## Hard Run Caps
 
 Enforce every cap across the entire Prompt 15 run, not separately per research
@@ -232,7 +232,7 @@ irreversibly to `Bounded partial` immediately when usage reaches the cap while
 required work remains, or before the next operation would exceed it. Stop all
 new inventory, searches, reads, candidate creation, and finding creation at that
 event; preserve only already validated results. Exact cap usage can complete
-only when no required work remains. Do not evict evidence to make room.
+only when no required work remains. Do not evict evidence to make room. -->
 
 ## Trusted Transient Evidence Boundary
 

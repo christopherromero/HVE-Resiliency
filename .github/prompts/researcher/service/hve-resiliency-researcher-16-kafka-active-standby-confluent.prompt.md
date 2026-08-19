@@ -137,7 +137,7 @@ Evaluate exactly these three areas for every eligible Kafka dependency. Do not a
 1. DNS-based connection. The application connects through DNS rather than region-specific endpoints. Record a finding where a hard-coded broker, a cached IP address, a region-specific bootstrap setting, or a pinned regional endpoint is evidenced.
 2. Bootstrap re-resolution. Bootstrap DNS stays authoritative. Record a finding where `advertised.listeners` metadata or learned broker addresses are cached or persisted in a way that bypasses re-resolution, since DNS redirection is how this strategy fails over. A running client re-resolves the bootstrap DNS name only when it repeats the bootstrap process, so also record a finding where `metadata.recovery.strategy` is absent or bound to `none` on a client whose resolved version does not default it to `rebootstrap`, and where `metadata.recovery.rebootstrap.trigger.ms` is left at its `300000` default against a shorter stated failover target. Treat an unavailable deployment or control-plane value as an evidence gap rather than a finding.
 3. Direct and transitive Apache Kafka client version 3.8 or later. The threshold is what makes re-bootstrap available rather than what enables it: `metadata.recovery.strategy` does not exist below 3.8, and clients resolving below 4.0 default it to `none`. Record the resolved version and the effective `metadata.recovery.strategy` value together, and do not treat the version alone as satisfying area 2.
-
+<!-- 
 ## Bounded Discovery And Read Protocol
 
 Create one bundled query family for each assessment area using only terms already named by that area and confirmed repository identifiers. Search each area family exactly once against the immutable manifest, cache the result, and reuse that cache. Use one additional bundled dependency query for Kafka client declarations and resolved runtime versions. Do not perform broad rediscovery, synonym expansion, or repeated searches.
@@ -158,7 +158,7 @@ Enforce these run-wide hard caps:
 
 Round 1 executes the cached query families and creates candidates. Round 2 reads only owning code or configuration needed to verify Round 1 candidates and their assertion relationships. A complete round is saturated when it adds no eligible candidate and no assertion-to-evidence relationship. Stop at saturation, after Round 2, or when any cap is reached, whichever occurs first.
 
-When a threshold is reached, stop new discovery immediately, finish classification from already sanitized retained evidence, record the exact exhausted cap and unexamined manifest or candidates, and use `completed bounded partial` unless terminal-status precedence requires `blocked prerequisite/tool`. Never exceed a cap to complete a finding.
+When a threshold is reached, stop new discovery immediately, finish classification from already sanitized retained evidence, record the exact exhausted cap and unexamined manifest or candidates, and use `completed bounded partial` unless terminal-status precedence requires `blocked prerequisite/tool`. Never exceed a cap to complete a finding. -->
 
 ## Trusted Transient Processing
 

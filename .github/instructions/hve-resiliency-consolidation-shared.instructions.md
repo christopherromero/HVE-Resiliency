@@ -11,7 +11,7 @@ Use [Application Platform Context](hve-resiliency-platform-context.instructions.
 
 ## Pipeline Overview
 
-The consolidation workflow is a bounded pipeline that replaces the single monolithic consolidate prompt:
+The consolidation workflow is a pipeline that replaces the single monolithic consolidate prompt:
 
 1. Scaffold: run discovery once, emit the consolidated skeleton plus a frozen manifest sidecar.
 2. Section fill (Sections 1-8): each prompt reads only its granted scope and writes one section fragment file.

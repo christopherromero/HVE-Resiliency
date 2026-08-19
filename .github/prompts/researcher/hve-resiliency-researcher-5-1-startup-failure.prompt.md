@@ -37,11 +37,11 @@ Startup-failure discovery hints (evidence-only):
 
 Never emit a row solely because startup-related retry or fallback is absent; require positive repository evidence that a boot-time failure of the dependency produces the observed startup failure.
 
-## Bounded Discovery
+<!-- ## Bounded Discovery
 
 Apply the bounded-discovery limits in the shared contract per eligible dependency and per this outcome only. Counters do not carry over from another outcome fill and cannot be reset by aliases, environments, or wording.
 
-Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points there. Stop when repository-free ledger review adds nothing.
+Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points there. Stop when repository-free ledger review adds nothing. -->
 
 ## Row Emission
 
@@ -55,6 +55,6 @@ Write the fragment to `<fragmentDir>/startup-failure.md`, where `<fragmentDir>` 
 
 ## Completion
 
-Report the row count, the count of rows carrying any `Unknown: not found after bounded search <scope>` descriptor, the fragment path, and the terminal fragment status.
+Report the row count, the count of rows carrying any `Unknown: not found after search <scope>` descriptor, the fragment path, and the terminal fragment status.
 
 > **Next step:** Run `/hve-resiliency-researcher-5-2-data-loss-partial-processing`

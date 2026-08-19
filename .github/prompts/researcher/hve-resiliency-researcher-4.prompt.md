@@ -35,7 +35,7 @@ Analyze only these existing state and data areas:
 
 Do not add an assessment topic. Cite repository file-lines for every known characteristic, causal behavior, mitigation, constraint, limitation, and failover-risk claim.
 
-## Bounded Discovery
+<!-- ## Bounded Discovery
 
 * Apply all limits cumulatively per confirmed dependency. Aliases, environments, wording, questions, repeated research, and subagent calls cannot reset or transfer a counter.
 * Reuse one ownership traversal and its citations across the three output sections. Do not repeat traversal by field or section.
@@ -43,7 +43,7 @@ Do not add an assessment topic. Cite repository file-lines for every known chara
 * Read at most 5 candidate owner files, then follow at most 2 direct production-call hops from an entrypoint or owner.
 * Exclude tests, fixtures, samples, generated output, documentation, and local-only configuration unless cited production evidence points to them.
 * After ownership traversal, allow at most 1 negative check per unresolved `Unknown`-eligible field and 1 scoped corrective search for 1 concrete missed production path identified by the ledger.
-* Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward.
+* Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward. -->
 
 ## Terminal Outcomes And Finding Rows
 

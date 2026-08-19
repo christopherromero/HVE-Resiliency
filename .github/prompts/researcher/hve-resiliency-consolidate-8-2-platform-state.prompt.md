@@ -55,11 +55,11 @@ Apply the Residual Discipline in the shared contract. For every candidate:
 
 Do not attempt cross-section overlap resolution during fill; the outer finalize prompt applies the section-precedence tie-break.
 
-## Bounded Discovery
+<!-- ## Bounded Discovery
 
 Apply the bounded-discovery limits in the shared contract per accepted source artifact assigned to `platform-state`. Counters do not carry over from another group fill and cannot be reset by aliases, environments, or wording.
 
-Exclude any artifact whose `completionStatus` in the outer manifest is not `Complete`. Stop when repository-free ledger review adds nothing.
+Exclude any artifact whose `completionStatus` in the outer manifest is not `Complete`. Stop when repository-free ledger review adds nothing. -->
 
 ## Emission
 

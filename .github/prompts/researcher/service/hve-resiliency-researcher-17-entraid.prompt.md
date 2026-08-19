@@ -90,7 +90,7 @@ Negative claims are limited to the exact searched roots, query families, file ty
 and budgets recorded in the evidence ledger. Write `not found within the recorded
 bounded search`, never an unqualified assertion that a dependency or behavior does not
 exist.
-
+<!-- 
 ## Bounded Discovery
 
 Treat Microsoft Entra ID as one dependency and use these maximum budgets for the run:
@@ -140,7 +140,7 @@ Use one terminal status:
 * `ZERO_FINDINGS` when saturation is reached with no supported findings
 * `BUDGET_EXHAUSTED` when a numeric limit stops discovery before saturation
 * `BLOCKED_PREREQUISITES`, `NOT_APPLICABLE`, `EVIDENCE_INSUFFICIENT`, or
-   `ENTRA_PROOF_NOT_MET` as defined above
+   `ENTRA_PROOF_NOT_MET` as defined above -->
 
 
 ## Research Artifact

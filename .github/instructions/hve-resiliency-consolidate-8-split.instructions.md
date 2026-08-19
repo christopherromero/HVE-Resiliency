@@ -13,7 +13,7 @@ The nested pipeline replaces the retired single-shot `hve-resiliency-consolidate
 
 ## Pipeline Overview
 
-The split Consolidate 8 workflow is a bounded sub-pipeline that fills Section 8 (Other Findings Not Categorized Above) of the consolidated resiliency research document:
+The split Consolidate 8 workflow is a sub-pipeline that fills Section 8 (Other Findings Not Categorized Above) of the consolidated resiliency research document:
 
 1. Scaffold (`-8-0-scaffold`): validate the outer consolidation manifest once, freeze the Section 8 group-routing table derived from the outer manifest's accepted artifacts, emit an empty Section 8 sub-skeleton fragment file plus a Section 8 sub-manifest sidecar. No provisional findings are rendered.
 2. Group fill (`-8-1-core-context`, `-8-2-platform-state`, `-8-3-failure-crossrepo`, `-8-4-services`): each prompt reads only the Section 8 sub-manifest, the outer manifest, and the accepted source artifacts routed to its group; emits Section 8 provisional findings for exactly one artifact group; and writes them to its own sub-fragment file. The four fills may run in any order and never edit each other's sub-fragments or the sub-skeleton.
@@ -83,7 +83,7 @@ Every finding emitted by a group-fill prompt is a PROVISIONAL residual candidate
 
 The outer verify-5-8 prompt applies its `provisional-ok` disposition to entries carrying this marker. The outer finalize prompt drops any provisional candidate whose canonical tuple appears in a finding retained by Sections 1-7 and preserves the remainder in the assembled consolidated document.
 
-## Bounded Discovery
+<!-- ## Bounded Discovery
 
 Limits are per accepted source artifact within a group and per group-fill prompt. Aliases, environments, wording, questions, repeated research, and delegated actions cannot reset or transfer a counter.
 
@@ -93,7 +93,7 @@ Limits are per accepted source artifact within a group and per group-fill prompt
 * At most 1 bounded corrective reread per named defect during finalize.
 * Exclude any artifact whose `completionStatus` in the outer manifest is not `Complete`.
 
-Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward.
+Treat every reached numeric limit as source exhaustion. Do not broaden, reword, or repeat that discovery route afterward. -->
 
 ## Finding Identity and Deduplication
 
@@ -151,8 +151,8 @@ The nested finalize prompt writes `sections/section-8.md`. It never modifies the
 
 Every stage sets exactly one terminal status on its own output:
 
-* `Blocked`: outer manifest missing, unreadable, drifted, or malformed; sub-manifest missing or malformed; unsafe evidence encountered; a hard limit was reached before the stage could establish a coherent output; or a required outer prompt ID is absent from the outer manifest's accepted artifact set.
-* `Incomplete`: bounded discovery exhausted with at least one accepted source artifact contributing zero considered candidates due to hard-limit truncation, or one or more sub-fragments carry `Incomplete` at finalize time.
+* `Blocked`: outer manifest missing, unreadable, drifted, or malformed; sub-manifest missing or malformed; unsafe evidence encountered; a required tool fails before the stage can establish a coherent output; or a required outer prompt ID is absent from the outer manifest's accepted artifact set.
+* `Incomplete`: discovery cannot complete because an assigned artifact or required tool becomes unavailable, or one or more sub-fragments carry `Incomplete` at finalize time.
 * `Complete`: every accepted source artifact in the group was scanned to a terminal ledger outcome and every emitted provisional finding conforms to the Required Finding Schema and the residual discipline.
 
 The nested-pipeline status is set exclusively by the nested finalize prompt on the assembled `sections/section-8.md`, based on the terminal status of each of the four sub-fragments plus the nested verify report. The outer consolidation pipeline's overall status remains the responsibility of the outer finalize prompt (`hve-resiliency-consolidate-9-finalize`).
