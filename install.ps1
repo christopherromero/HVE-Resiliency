@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Installs the HVE Resiliency Copilot skills, prompts, and instructions into the current repository.
+    Installs the HVE Resiliency Copilot skills, prompts, agents, and instructions into the current repository.
 
 .DESCRIPTION
     Downloads the requested ref of christopherromero/HVE-Resiliency from GitHub and copies the
