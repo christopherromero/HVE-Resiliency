@@ -2,16 +2,13 @@
 name: Resiliency Planning Orchestrator v1.0
 description: "Autonomous orchestrator for the HVE resiliency planning pipeline"
 agents:
-  - Researcher Subagent
+  - HVE Resiliency Step Runner
 tools:
   - agent
-  - execute/runInTerminal
-  - search/codebase
-  - search/fileSearch
-  - search/textSearch
-  - read/readFile
-  - edit/createFile
-  - edit/createDirectory
+  - execute
+  - search
+  - read
+  - edit
 user-invocable: true
 disable-model-invocation: true
 ---
@@ -45,14 +42,14 @@ Confirm exactly one completed consolidated research document exists. If none exi
 
 ## Dispatch Contract
 
-Execute every planner step by dispatching `Researcher Subagent` with the `agent` tool. Give each subagent this task:
+Execute every planner step by dispatching `HVE Resiliency Step Runner` with the `agent` tool. Give each subagent this task:
 
 > Execute the workflow defined in `<prompt-file-path>` exactly, following that prompt and every instruction file whose `applyTo` matches it. Consolidated research document: `<consolidatedDoc>`. Write output per that prompt's own rules. Do not delegate further. Return: output artifact path, completion status (`Complete`, `Incomplete`, or `Blocked`), and any blocking reason.
 
 Rules:
 
 * Run steps strictly sequentially. The Stage 2 assessment sections are append-only to one report file and must never run in parallel.
-* Check `Researcher Subagent` availability before dispatching. If unavailable, tell the operator to enable the subagent (`agent`/`task`) capability and stop.
+* Check `HVE Resiliency Step Runner` availability before dispatching. If unavailable, tell the operator to enable the repository agent and the subagent (`agent`/`task`) capability and stop.
 * A step that returns `Incomplete` or `Blocked` stops the pipeline; surface the artifact and reason before continuing.
 * Never paraphrase referenced code. Keep every code reference accurate to the file it comes from, matching path, line numbers, and exact text, and ensure any proposed fix builds on exactly that code.
 
@@ -62,7 +59,7 @@ Rules:
 
 1. Read the Skill Reference Contract files in one parallel block.
 2. Resolve `consolidatedDoc` and verify the Preconditions.
-3. Confirm `Researcher Subagent` is available.
+3. Confirm `HVE Resiliency Step Runner` is available.
 
 ### Step 2: Planning (Phase 4)
 
@@ -93,6 +90,6 @@ Report the paths of the Master report, Developer Guide, and Code-Level Assessmen
 ## Error Recovery
 
 * If the consolidated research document is missing or incomplete, stop and direct the operator to the Research Orchestrator.
-* If `Researcher Subagent` is unavailable, stop and tell the operator to enable the subagent capability.
+* If `HVE Resiliency Step Runner` is unavailable, stop and tell the operator to enable the repository agent and the subagent capability.
 * If a planner step returns `Incomplete` or `Blocked`, stop, surface the artifact and reason, and let the operator resolve it before continuing.
 * If a subagent returns clarifying questions, surface them, collect answers, and re-dispatch that one step with the answers.

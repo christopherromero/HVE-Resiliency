@@ -28,6 +28,53 @@ For a one-invocation run of each phase, use the orchestrator agents instead of r
 
 The orchestrators dispatch each step below to a fresh subagent, so they parallelize independent steps and manage context automatically. No manual `/clear` is needed when using them. The Required Workflow below is the manual, one-prompt-per-turn path.
 
+### Copilot CLI
+
+Copilot CLI discovers this skill, the repository instructions, and the agents
+from their existing `.github` locations. Start the research workflow from the
+assessment repository with:
+
+```powershell
+copilot --agent hve-resiliency-research-orchestrator
+```
+
+Then provide the run inputs in the first request:
+
+```text
+Run the complete resiliency research workflow.
+researchRoot=.copilot-tracking/research/
+autonomy=autonomous
+kafkaStrategy=Active-Standby
+```
+
+Omit `kafkaStrategy` only when Kafka is not confirmed. The orchestrator must
+ask for the agreed strategy when Kafka is confirmed and no strategy was
+provided.
+
+For a non-interactive run, preapprove the tools exposed by the constrained
+agent profile:
+
+```powershell
+copilot -C . `
+  --agent hve-resiliency-research-orchestrator `
+  --prompt "Run the complete resiliency research workflow. researchRoot=.copilot-tracking/research/ autonomy=autonomous kafkaStrategy=Active-Standby" `
+  --autopilot `
+  --allow-all-tools `
+  --no-ask-user
+```
+
+After research completes, start planning with:
+
+```powershell
+copilot --agent hve-resiliency-planning-orchestrator
+```
+
+The `.prompt.md` files remain the authoritative step definitions. Copilot CLI
+does not register them as slash commands. The orchestrators pass each prompt
+path and its explicit inputs to `HVE Resiliency Step Runner`, which executes
+that one step in an isolated subagent context. The manual slash-command path
+below remains available in VS Code.
+
 ## Context Management
 
 A context reset (`/clear` or a new chat) is a clarity and cost tool, not a correctness requirement: durable artifacts in `.copilot-tracking/research/` carry context forward between prompts. In the manual workflow below, a reset before each prompt keeps the input scoped to the prior artifact plus the current prompt (the Mode A cost optimization); it is recommended for cost and optional for correctness. At minimum, reset at phase boundaries and when switching agents. When using the orchestrator agents, context is managed automatically and no manual reset is needed.
