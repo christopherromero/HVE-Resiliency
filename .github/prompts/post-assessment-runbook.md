@@ -7,7 +7,7 @@ description: Ordered checklist for reviewing and finalizing a resiliency assessm
 
 Complete these checks in order against the final assessment draft:
 
-1. Confirm the target deployment model is correct: Active-Active or Active-Standby.
+1. Confirm the target deployment model is correct: Active/Standby (West US 2 , West US multi-region architecture) or Active/Active (West US 2, West US  multi-region architecture).
 2. Confirm the report contains no East US references.
 3. Find and fix strange character encoding issues.
 4. Check and exclude Jenkins findings or the Pivotal Cloud Foundations notes.
