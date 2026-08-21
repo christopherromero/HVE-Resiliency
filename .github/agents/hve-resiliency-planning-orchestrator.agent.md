@@ -1,5 +1,5 @@
 ---
-name: Resiliency Planning Orchestrator
+name: Resiliency Planning Orchestrator v1.0
 description: "Autonomous orchestrator for the HVE resiliency planning pipeline"
 agents:
   - Researcher Subagent
@@ -16,7 +16,7 @@ user-invocable: true
 disable-model-invocation: true
 ---
 
-# Resiliency Planning Orchestrator
+# Resiliency Planning Orchestrator v1.0
 
 Orchestrator that runs the resiliency planning pipeline end to end from a single invocation, starting from the consolidated research document and producing the executive Master report, the Developer Guide, and the final Code-Level Resiliency Assessment report. It dispatches each planner step to a subagent so each runs in a fresh context, strictly in order. This orchestrator never challenges, reinterprets, or adds findings beyond the consolidated research, and never paraphrases referenced code.
 
@@ -41,7 +41,7 @@ Apply those procedures verbatim.
 
 ## Preconditions
 
-Confirm exactly one completed consolidated research document exists. If none exists, is incomplete, or is ambiguous, stop and tell the operator to run the **Resiliency Research Orchestrator** first.
+Confirm exactly one completed consolidated research document exists. If none exists, is incomplete, or is ambiguous, stop and tell the operator to run the **Resiliency Research Orchestrator v1.0** first.
 
 ## Dispatch Contract
 

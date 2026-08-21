@@ -74,6 +74,8 @@ Build the report with in-place edits, never a single oversized write that is pro
 
 **Version:** {semver}
 
+**Prompt Suite Version:** 1.0
+
 ---
 ```
 

@@ -27,8 +27,8 @@ The framework includes one workflow skill and two orchestrator agents:
 - **Complete Workflow:**
   - `hve-resiliency-research` defines the complete workflow.
 - **Orchestration:**
-  - **Resiliency Research Orchestrator** runs Phases 1-3.
-   - **Resiliency Planning Orchestrator** runs Phases 4-5.
+  - **Resiliency Research Orchestrator v1.0** runs Phases 1-3.
+  - **Resiliency Planning Orchestrator v1.0** runs Phases 4-5.
 
 [View a sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
 
@@ -74,8 +74,8 @@ The framework includes one workflow skill and two orchestrator agents:
     ```
 
 6. Confirm that the latest version of this prompt repository is installed in the application repository.
-7. [Run the **Resiliency Research Orchestrator**](#run-it-with-the-orchestrators-recommended) for Phases 1-3. Monitor its stage results for incomplete or blocked prompts, verification failures, abnormal errors, or network issues. Report unusual behavior to the architect and record the duration of each major stage.
-8. Review the consolidated research artifact, then run the **Resiliency Planning Orchestrator** for Phases 4-5.
+7. [Run the **Resiliency Research Orchestrator v1.0**](#run-it-with-the-orchestrators-recommended) for Phases 1-3. Monitor its stage results for incomplete or blocked prompts, verification failures, abnormal errors, or network issues. Report unusual behavior to the architect and record the duration of each major stage.
+8. Review the consolidated research artifact, then run the **Resiliency Planning Orchestrator v1.0** for Phases 4-5.
 9. Review the generated report for duplicate findings. Optionally invoke `/detect-assessment-duplicates` manually. Remove only confirmed duplicates while preserving finding IDs and cross-references.
 10. Validate code references, ordering dependencies, file paths, and line numbers. Correct any mismatches.
 11. Verify that the final report matches the application and Kafka topologies confirmed by the architect. Keep the application description concise and accessible to a non-specialist audience.
@@ -91,7 +91,7 @@ The recommended path uses two **orchestrator agents**. The research orchestrator
 
 **Research (Phases 1-3):**
 
-1. In Copilot Chat, open the **agent picker** at the top of the chat panel and select **Resiliency Research Orchestrator**.
+1. In Copilot Chat, open the **agent picker** at the top of the chat panel and select **Resiliency Research Orchestrator v1.0**.
 2. Send exactly:
 
    ```text
@@ -103,7 +103,7 @@ The recommended path uses two **orchestrator agents**. The research orchestrator
 
 **Planning (Phases 4-5):**
 
-1. Switch the **agent picker** to **Resiliency Planning Orchestrator** (start a new chat when switching agents).
+1. Switch the **agent picker** to **Resiliency Planning Orchestrator v1.0** (start a new chat when switching agents).
 2. Send exactly:
 
    ```text

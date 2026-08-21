@@ -57,6 +57,8 @@ Create a **new file** at `Microsoft Assessment/{serviceName}-Code-Level-Resilien
 
 **Version:** {semver}
 
+**Prompt Suite Version:** 1.0
+
 ---
 ```
 
