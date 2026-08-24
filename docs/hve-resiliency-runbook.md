@@ -382,12 +382,17 @@ This writes the report header, table of contents, and Assessment Overview to `Mi
 /hve-resiliency-assessment-builder-3
 ```
 
-### 5.5 Phase 5 exit criteria
+### 5.5 Post-assessment review
+
+After the Planner prompts complete, switch to **HVE Task Reviewer** and run `.github/prompts/post-assessment-runbook.md` against the completed assessment report. Complete every checklist item in order, including duplicate detection and finding reordering, before sign-off.
+
+### 5.6 Phase 5 exit criteria
 
 Phase 5 is complete when:
 
 * The assessment markdown exists at `Microsoft-Assessment/<serviceName>-Code-Level-Resiliency-Assessment.md`.
 * All six sections are present (Overview, Resilient-focused, Non-Resilient-focused, IaC Gap, Full Finding Matrix, Microsoft Standards Alignment).
+* The post-assessment review checklist is complete.
 * A qualified engineer has reviewed and signed off on the full report before it is shared with the customer.
 
 A worked example is at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](../Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
