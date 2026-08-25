@@ -14,7 +14,7 @@ Run only one checklist item at a time. After an item changes the report, save th
 3. Find and fix strange character encoding issues.
 4. Check and exclude Jenkins findings or the Pivotal Cloud Foundations notes.
 5. Check proper usage of resiliency and non-resiliency titles and that findings are in their correct place.
-6. Remove findings that require Platform changes. The Platform is already set up, and the assessment must focus on Application changes.
+6. Minimize findings that require Platform changes. The Platform is already set up, and the assessment must focus on Application changes. We can note them in Notes sections, but try not to make findings for them.
 7. Run the [duplicate finding detector](detect-assessment-duplicates.prompt.md), then remove confirmed duplicate findings before continuing.
 8. Remove or consolidate out-of-scope findings.
 9. Verify correct cited line numbers and File section code snippets are verbatim.
