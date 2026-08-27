@@ -135,6 +135,11 @@ Before finalizing, confirm the **entire report** across all sections:
 * All Back to Top links use `#top`.
 * No hardcoded service names appear in H2, H3, or Repo(s) columns.
 * No references to "East US" or any East region variant appear anywhere in the report.
+* The report uses only `PX-NNN` finding IDs; no research or Developer Guide `F-XXX` (or `F-NNN`) ID appears anywhere. An `F-XXX` reference means an upstream finding was not converted; replace it with its `PX-NNN` mapping.
+* No character-encoding corruption (mojibake, replacement characters, or broken multi-byte sequences) appears, especially inside `**File:**` and `**Fix:**` code blocks.
+* No strictly platform-recommended change is prioritized above P3; a platform change embedded in an application-fix finding is recorded in that finding's Notes, not driving its priority.
+* No out-of-scope item is rendered as an in-scope finding, including Jenkins pipeline definitions, Pivotal Cloud Foundry (PCF) notes, and findings owned by another repository.
+* No exposed agent internals or process narration appear (for example "I searched", "the agent found", "reordered to", "according to the prompt"). Keep the `Prompt Suite Version:` line.
 * IaC Gap Analysis has both "Available to Review" and "Not Available" tables.
 
 If validation finds discrepancies (e.g., Section 1 counts do not match actual finding counts), fix them in place.

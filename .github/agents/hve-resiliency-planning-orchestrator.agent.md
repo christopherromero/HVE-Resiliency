@@ -31,6 +31,7 @@ The canonical step sequence and classification rules are defined by the skill an
 
 * [hve-resiliency-research skill](../skills/hve-resiliency-research/SKILL.md) (Phase 4 and Phase 5 Required Workflow)
 * [Resiliency Task Planner Context](../instructions/hve-resiliency-planner-context.instructions.md) (engagement framing, litmus test, P0-P3 classification, architectural constraints, region-agnostic output, code fidelity, output file naming)
+* [hve-resiliency-eval skill](../skills/hve-resiliency-eval/SKILL.md) (Per-Step Blind Local Checker: local check subset, blindness, and gate policy)
 
 Apply those procedures verbatim.
 
@@ -38,6 +39,7 @@ Apply those procedures verbatim.
 
 * `${input:consolidatedDoc}`: (Optional) Workspace-relative path to the consolidated research document. When omitted, locate the most recent completed consolidated document under `.copilot-tracking/research/`.
 * `${input:autonomy:autonomous}`: (Optional) `autonomous` or `checkpointed`, per the Autonomy section.
+* `${input:checkerGate:stage}`: (Optional) Blind local checker cadence: `stage` (default, gate at each stage's verification point) or `step` (gate every planner step and append). The phase-boundary evaluation runs regardless.
 
 ## Preconditions
 
@@ -56,6 +58,20 @@ Rules:
 * A step that returns `Incomplete` or `Blocked` stops the pipeline; surface the artifact and reason before continuing.
 * Never paraphrase referenced code. Keep every code reference accurate to the file it comes from, matching path, line numbers, and exact text, and ensure any proposed fix builds on exactly that code.
 
+## Blind Local Checker Gate
+
+After a planner stage completes, and before the next stage consumes its output, apply the Per-Step Blind Local Checker defined in the [hve-resiliency-eval skill](../skills/hve-resiliency-eval/SKILL.md).
+
+By default (`checkerGate=stage`) the gate runs at each stage's verification point: the Developer Guide in Step 2 (the single code-verification point) and the final report append in Step 3, where an unchecked defect would compound into the assembled report. Set `checkerGate=step` to gate every planner step and every append. Either cadence still runs the mandatory phase-boundary evaluation in Step 4.
+
+* **Blind dispatch:** dispatch a separate `Researcher Subagent` as the checker for the artifact the step produced. The planner step never learns a checker exists; never pass the checker the rubric, the scores, or another step's reasoning. Give the checker this task:
+
+  > Evaluate the artifact at `<artifact-path>` against the Local Check Subset in `.github/skills/hve-resiliency-eval/SKILL.md`. Re-open every cited `path:Lx-Ly` and confirm the range exists and any quoted code matches the source bytes verbatim. Never edit the artifact and never reproduce a secret value. Return each local check as `Pass` or `Fail` with severity, the re-verified evidence for each `Fail`, and the governing contract each `Fail` violates.
+
+* **Scope:** run only the Local Check Subset (citation presence and re-verification, secret sanitization, status semantics, priority present, and code-fidelity of `**File:**`/`**Fix:**` snippets against their cited source). Cross-artifact checks (region-agnostic output, report-adds-no-finding, matrix traceability, citation sync) run later in the full evaluation, not per step.
+* **Auto-rerun once, then pause:** if the checker reports no `Critical` local finding, proceed. If it reports a `Critical` local finding, re-dispatch the planner step exactly once, passing only the contract-grounded defect, never the rubric or the fact that a checker ran. If the second attempt still reports a `Critical` local finding, stop, surface the artifact, the defect, and the governing contract, and do not dispatch the next append.
+* **Record:** note each gate result (pass, auto-rerun, or paused) so a later full evaluation can fold it into the numeric rollup.
+
 ## Required Steps
 
 ### Step 1: Bootstrap
@@ -73,6 +89,8 @@ Dispatch in order, each after the previous returns `Complete`:
 3. `.github/prompts/planner/hve-resiliency-planner-0.prompt.md` again (re-establish evidence lock-in before the developer guide).
 4. `.github/prompts/planner/hve-resiliency-planner-2.prompt.md` (Developer Guide with code-level remediation).
 
+Apply the Blind Local Checker Gate to the Developer Guide before any Stage 3 append consumes it; it is the single code-verification point (gate each Stage 2 artifact when `checkerGate=step`).
+
 If `autonomy=checkpointed`, pause for review before Step 3.
 
 ### Step 3: Code-Level Assessment Report (Phase 5)
@@ -84,13 +102,25 @@ Dispatch in order, each after the previous returns `Complete`. These append to t
 3. `.github/prompts/planner/hve-resiliency-planner-3c.prompt.md` (P2/P3 resiliency findings and Non-Resilient Focused Recommendations - Section 2 completion plus Section 3).
 4. `.github/prompts/planner/hve-resiliency-planner-3d.prompt.md` (IaC Gap Analysis, Full Finding Matrix, Microsoft Standards Alignment - Sections 4-6, with final validation).
 
+Apply the Blind Local Checker Gate to the report after the final append, before Step 4 (after each append when `checkerGate=step`).
+
 If `autonomy=checkpointed`, pause after each append for operator review.
 
-### Step 4: HVE Task Reviewer Handoff
+### Step 4: Phase-Boundary Evaluation
 
-After planner 3d returns `Complete`, do not dispatch the post-assessment review through `Researcher Subagent`. Report the paths of the Master report, Developer Guide, and unreviewed Code-Level Assessment report, with a one-line status per planning stage.
+After planner 3d returns `Complete`, dispatch a full evaluation of the assessment report tier (T3) before the HVE Task Reviewer handoff. This is the phase-boundary gate from the [hve-resiliency-eval skill](../skills/hve-resiliency-eval/SKILL.md); it runs the entire T3 catalog, which automates the 12-item post-assessment runbook.
 
-Ask the operator to switch to **HVE Task Reviewer** and run `.github/prompts/post-assessment-runbook.md` against the completed Code-Level Assessment report. Include the exact assessment report path in the handoff. State that the checklist must run strictly in order because each item uses the report produced by the previous item.
+1. Dispatch a blind checker `Researcher Subagent` to evaluate the Code-Level Assessment report against the eval skill and the contracts and runbook it cites. Include the cross-artifact checks (traceability into the Full Finding Matrix, `PX-NNN` scheme and `F-XXX` leakage, ordering, dedup, region-agnostic output) the per-append gate could not run. The checker re-verifies every citation and never edits the report.
+2. Have the checker return per-dimension scores, the weighted overall score, the gated band, and every non-pass finding with re-verified evidence.
+3. Write the evaluation report to `.copilot-tracking/eval/<repo-name>-assessment-eval.md` per the skill's Output Contract.
+
+**Gate:** if the band is `Fail` (any `Critical` finding, or overall below 60), stop and surface the report, route each finding to its producing planner step (`3a`-`3d`) or the runbook tool (`detect-assessment-duplicates`, `reorder-assessment-findings`), and do not present the handoff. On any higher band, record the score and proceed.
+
+### Step 5: HVE Task Reviewer Handoff
+
+After the phase-boundary evaluation clears, do not dispatch the post-assessment review through `Researcher Subagent`. Report the paths of the Master report, Developer Guide, the evaluation report with its overall score and band, and the unreviewed Code-Level Assessment report, with a one-line status per planning stage.
+
+Ask the operator to switch to **HVE Task Reviewer** and run `.github/prompts/post-assessment-runbook.md` against the completed Code-Level Assessment report. Include the exact assessment report path in the handoff. State that the phase-boundary evaluation already scored the runbook items automatically, so the manual pass confirms and resolves any findings the report flagged. State that the checklist must run strictly in order because each item uses the report produced by the previous item.
 
 Stop after presenting the handoff. State that planning is complete and post-assessment review is pending. Do not state that the full resiliency workflow or final report review is complete.
 

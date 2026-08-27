@@ -29,6 +29,9 @@ The framework includes one workflow skill and two orchestrator agents:
 - **Orchestration:**
   - **Resiliency Research Orchestrator v1.0** runs Phases 1-3.
   - **Resiliency Planning Orchestrator v1.0** runs Phases 4-5.
+- **Evaluation:**
+  - `hve-resiliency-eval` defines the quality rubric and blind checker.
+  - **Resiliency Eval Orchestrator v1.0** grades the pipeline outputs against that rubric.
 
 [View a sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
 
@@ -115,6 +118,17 @@ The recommended path uses two **orchestrator agents**. The research orchestrator
 
 Replace `Active-Active` with `Active-Standby` when that is the agreed target deployment topology.
 
+**Evaluation (optional quality gate):**
+
+The two orchestrators already run a blind per-step checker after each producing step: a fresh subagent that re-verifies cited evidence and gates the pipeline before a defect propagates. For a standalone grade of the finished artifacts, select **Resiliency Eval Orchestrator v1.0** in the agent picker (start a new chat when switching agents) and send:
+
+```text
+Evaluate the resiliency pipeline outputs for this repository.
+Tiers: all.
+```
+
+It dispatches a blind checker per artifact, re-verifies every citation against the workspace source, and writes a weighted numeric rubric score with a pass/fail finding list to `.copilot-tracking/eval/`. The producing prompts never learn the rubric, so they cannot optimize for the score. See [.github/skills/hve-resiliency-eval/SKILL.md](.github/skills/hve-resiliency-eval/SKILL.md) for the rubric definition.
+
 ### Manual alternative (one prompt at a time)
 
 Prefer to drive each step yourself? Run `/hve-resiliency-research` in Chat and follow the numbered prompt sequence in the skill. A context reset between prompts is optional - see below.
@@ -161,9 +175,10 @@ The standalone `detect-assessment-duplicates` and `reorder-assessment-findings` 
 
 | Path | Purpose |
 | ---- | ------- |
-| [.github/agents/](.github/agents/) | Research and planning orchestrators |
+| [.github/agents/](.github/agents/) | Research, planning, and evaluation orchestrators |
 | [.github/prompts/](.github/prompts/) | Research, consolidation, planning, assessment, and audit prompts |
 | [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/) | Manual workflow definition |
+| [.github/skills/hve-resiliency-eval/](.github/skills/hve-resiliency-eval/) | Evaluation rubric and blind checker |
 | [.github/instructions/](.github/instructions/) | Platform context and evidence rules |
 | [docs/](docs/) and [Microsoft-Assessment/](Microsoft-Assessment/) | Guides and example outputs |
 | [install.ps1](install.ps1) and [install.sh](install.sh) | Framework installers |

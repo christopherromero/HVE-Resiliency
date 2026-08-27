@@ -215,6 +215,10 @@ If a finding is **not itself a resiliency issue** but is a **required prerequisi
 * Classify it at the same priority as the dependent resiliency finding.
 * Note in the description: *"This is a prerequisite for [dependent finding ID/title]. The code change required here enables the resiliency fix described in that finding."*
 
+### Special Case: Platform-Recommended Changes
+
+If a finding is a strictly platform-recommended change (handled by the GLB, ingress, service mesh, or another platform layer rather than the application code), classify it **P3** whether or not it is resiliency-framed. When a platform change appears inside a finding that also recommends an application fix, keep the finding at its application-fix priority and record the platform change in that finding's **Notes** rather than letting it drive the priority.
+
 ## Ordering Rule
 
 Any list of findings or remediation items must be grouped and ordered P0 first, then P1, then P2, then P3.
@@ -231,6 +235,15 @@ When writing findings and recommendations, keep the following system topology in
    * The app must report health of its **own** region AND awareness of whether the **failover-target region** is healthy, so the GLB can make informed decisions.
 3. **Dependencies must exist in both regions**: If a dependency is only deployed in the primary region, failover to the secondary region gains nothing for that dependency path. Flag any single-region dependency as P0.
 4. **Use abstracted endpoints**: Recommendations should direct toward region-agnostic connection patterns. SQL Server uses failover group listener name, not individual server FQDNs. Do **not** recommend putting both region-specific values in config; recommend the single abstracted value that routes to whichever region is active.
+
+## Scope Exclusions
+
+Some evidence is out of scope for this resiliency assessment and must never be rendered as an in-scope finding:
+
+* CI/CD platform artifacts are out of scope, including Jenkins pipeline definitions and Pivotal Cloud Foundry (PCF) notes. Do not create findings from them.
+* Items owned by another repository are out of scope for this repository's report. Consolidate or exclude them rather than rendering them as in-scope findings; where useful, note the owning boundary.
+
+Excluding an out-of-scope item is not a finding and never blocks the run.
 
 ## Output File Naming Rule
 
