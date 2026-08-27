@@ -1,82 +1,229 @@
 ---
-description: Run Prompt 16 Kafka Active-Active resiliency analysis
-agent: Task Researcher
+description: "Run Prompt 16 Kafka Active-Active resiliency analysis"
+agent: "Task Researcher"
+argument-hint: "kafkaStrategy=Active-Active|Active-Standby (this prompt requires Active-Active)"
 ---
 
 # HVE Resiliency Researcher 16 Kafka Active-Active
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
-```text
-You are analyzing an application that produces to and/or consumes from Kafka deployed in a multi-region active-active architecture with:
-- Independent Kafka clusters per region
-- Each region hosts its own writable topic (region-local writes in steady state)
-- Each region's writable topic is mirrored one-way into the peer region as a mirror topic via Cluster Linking (topic mirror)
-- A feature flag (FF) is at the consumer level while reading from mirrored topics; it governs regional cutover by controlling the consumer read source. Writes always take place to the respective region-local writable topic, not the mirror topic
-- In steady state: producers write to their region-local writable topic; consumers do a primary read from the region-local writable topic and read the peer region's mirror topic for the cross-region view
-- On regional failover the feature flag is flipped: consumers switch to the mirror read (FF) of the failed region's mirror topic (hosted in the surviving region); producers redirected to the surviving region write to that region's region-local writable topic, not the mirror or promoted topic
-- DNS-based bootstrap for cluster connectivity
-- GLB routing policy with health-probe checks
-- Client reconnect required on failover
+Kafka runs on Confluent Cloud; treat that as a confirmed platform fact and do not ask the operator which Kafka provider or environment is in use.
 
-Analyze this codebase and configuration for region resiliency.
+## Inputs
 
-The mirror topic model plus the feature flag are the central design details. Every finding must be evaluated against these invariants:
-- Code that ignores the flag or hard-codes a single topic/region for the current state is a violation
-- Producers write to their region-local writable topic in steady state; a producer writing cross-region outside the flag-driven cutover is a violation
-- Consumers must read both the region-local writable topic (primary read) and the peer region's mirror topic (mirror read, FF) so no events are missed across the cutover; consuming only one source when the flag requires both is a completeness gap
-- Consumer offsets differ between a source writable topic and its mirror (and its promoted form); offset handling must account for the mirror topic, topic promotion, and consumer-group offset synchronization across regions
-- Reading across the writable topic and the mirror/promoted topic during a flag transition must not cause duplicate business processing
+* `${input:kafkaStrategy}`: (Required) The Kafka strategy for this application, agreed by
+  the development, architecture, and application teams before the assessment starts.
+  Accepted values are `Active-Active` and `Active-Standby`. Match the supplied value
+  case-insensitively after trimming surrounding whitespace, and treat any value outside
+  that pair as unrecognized rather than resolving it by synonym or inference. This prompt
+  runs only for `Active-Active`; `Active-Standby` selects
+  `hve-resiliency-researcher-16-kafka-active-standby-confluent` instead.
 
-Your output MUST include:
-1) Gaps vs Active-Active Mirror-Topic + Feature-Flag Design
-- Identify violations of the Kafka active-active mirror-topic model and its feature-flag-driven cutover
-- Call out hard-coded brokers, single-topic/single-region assumptions, consumer read source that ignores the feature flag, producer writes targeting a mirror or promoted topic, or missing mirror-topic consumption
-- Highlight feature-flag handling, producer routing, consumer completeness, offset management, and duplicate-processing risks
-2) Remediation Recommendations
-- Provide concrete, Kafka-specific fixes aligned to THIS active-active mirror-topic + feature-flag architecture
-- Reference exact configs, files, or code paths where possible
-- Include examples (feature-flag-gated consumer read-source selection, region-local write path, dual-topic consumer subscription, offset sync, idempotent/deduplicated consumption)
+## Eligibility And Scope
 
-Focus specifically on:
-- Kafka bootstrap and DNS usage
-- Feature flag (FF) handling: is the consumer read source (mirror read) driven by the feature flag, and does the app cut over correctly when it flips?
-- Producer routing: producers always write to their region-local writable topic in steady state and after failover redirection, never a mirror or promoted topic (region affinity in steady state is REQUIRED, not a defect)
-- Mirror topic write path: producers never write to a mirror or promoted topic; any producer write targeting a mirror topic is a defect (writes always target the region-local writable topic)
-- Mirror topic consumption: does the consumer read both the local writable topic and the peer mirror topic as required by the feature flag?
-- Consumer offset handling across writable, mirror, and promoted topics, including consumer-group offset synchronization between regions
-- Duplicate/idempotent processing when consuming across writable and mirror/promoted sources during and after a feature-flag cutover
-- Promotion/failover behavior when a region is lost and its mirror is promoted to the surviving read source for consumers
-- Producer idempotence and retry safety
-- Consumer replay tolerance and rebalance behavior
-- Assumptions about a single active region, a single topic name, or a static topic target that ignores the feature flag
-- Cross-region replication dependencies: identify dependencies on near-real-time cross-region replication and describe the changes required to tolerate replication lag, stale mirror topics, delayed mirror-topic delivery, or temporary mirror-topic unavailability
-- Event ordering dependencies: identify business workflows, state transitions, or transactional flows that depend on strict event ordering and describe the changes required to tolerate delayed, replayed, or out-of-order events
-- Non-idempotent operations: identify business operations that are not idempotent and describe the changes required to prevent duplicate business outcomes when events are replayed, replicated, retried, or consumed more than once
-- Runtime cutover readiness: identify producer or consumer routing configuration that is loaded only at startup or cached for the lifetime of the process and describe the changes required to support runtime cutover without application restart
-- Failback and regional recovery: analyze failback and regional recovery behavior after a failed region is restored, including producer routing, consumer routing, offset synchronization, mirror-topic rebuild, replay handling, backlog processing, and restoration of normal active-active processing
-- Are health probes aligned between GLB and backend services?
+Run Prompt 16 directly and only when the provided Prompt 1 output meets both entry
+conditions before any repository traversal or discovery action:
 
-For each finding/issue:
-Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
-   - Provide an explanation why this is an issue, why each issue is rated at that level
-- Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
+1. Prompt 1 Section 1 confirms Kafka as used.
+2. `${input:kafkaStrategy}` is supplied and equals `Active-Active`.
 
-OUTPUT FORMAT (repeat per issue):
-- Issue Description:
-- Risk Level (P0/P1/P2/P3):
-- Code location (file + line number):
-- Why this is a risk to app, zone or region failover:
-- Impact(s) if this is not changed:
-- Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
-```
+Never infer the Kafka strategy. Do not derive it from the confirmed database model, from
+the Database-to-Kafka Pairing Standard, or from any repository signal. If
+`${input:kafkaStrategy}` is absent, ambiguous, or anything other than `Active-Active`,
+stop at round 0 with no discovery actions and record the eligibility block in the concise
+scope summary and terminal-outcome summary. Do not search for substitute eligibility evidence
+or fall back to Prompt 0, another prompt, or conditional skill behavior.
 
+A wrongly detected strategy invalidates the whole run. If the strategy is later found to
+be wrong, rerun this prompt in full against the correct strategy rather than amending its
+findings.
 
-## Output Review
+Apply the inherited service exclusion rule. Analyze only Kafka dependencies confirmed
+as used in Prompt 1 Section 1. Treat dependencies classified as Checked But Not Present
+or Not Applicable as excluded.
 
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
+For every eligible Kafka dependency, assess readiness for regional failover between West US 2 and West US.
+
+## Task Researcher Boundary
+
+Execute Task Researcher Phase 1 only as evidence-only research. Do not enter or produce
+Phase 2. This local boundary controls over inherited requests for alternatives,
+recommendations, selected approaches, implementation details or steps, implementation
+guidance, remediation, code examples, configuration examples, or next-step suggestions.
+Do not produce any of those materials.
+
+## Active-Active Architecture Invariants
+
+Evaluate every concern and finding against this single authoritative architecture
+contract:
+
+* Each region has an independent Kafka cluster and owns a region-local writable topic.
+  Cluster Linking mirrors that topic one-way into the peer region.
+* The consumer-level feature flag controls regional read cutover at runtime. Consumers
+  read the local writable topic and the peer mirror topic whenever the flag requires
+  both so events remain complete across cutover.
+* Producers write only to the current region-local writable topic in steady state and
+  after regional redirection. Producers never write to a mirror or promoted topic.
+* Offset handling and consumer-group offset synchronization cover source writable,
+  mirror, and promoted topics across regions.
+* Feature-flag transitions, dual-source reads, retries, replication, replay, and
+  rebalances must not create duplicate business processing.
+* DNS bootstrap, `advertised.listeners` broker metadata, GLB health routing, backend
+  probes, and client reconnect behavior remain effective through broker restart, regional failover.
+
+Region affinity in steady state is required and is not a defect. On regional failover,
+consumers use the feature flag to select the failed region's mirror topic in the
+surviving region. Redirected producers continue writing to the surviving region's
+region-local writable topic, not to the mirror or promoted topic.
+
+## Assessment Concerns
+
+Cluster provisioning, Cluster Linking configuration, mirror creation and promotion,
+offset synchronization between clusters, global load balancer routing, and failback of
+the platform are infrastructure and are never application-code findings.
+
+Evaluate exactly these seven areas for every eligible Kafka dependency. Record a
+finding wherever the expected behavior is not evidenced.
+
+1. Producer topic targeting: the producer writes only to the current region's writable
+   topic. Record a finding where a cross-region topic, a hardcoded topic endpoint, or a
+   write to a mirror or promoted topic is evidenced.
+2. Consumer read source: the consumer reads only from the current region's topic in
+   steady state, and from the mirror topic within the current region during failover.
+   Record a finding where this pattern is not implemented.
+3. Steady-state mirror read control: a feature flag blocks mirror topic reads in steady
+   state. Record a finding where no such control is present.
+4. Kafka client version: the application uses Apache Kafka client 3.8 or later, direct
+   or transitive. Record a finding where an earlier version is evidenced.
+5. Duplicate and out-of-order processing across cutover: reading the writable topic and
+   the mirror topic around a flag transition can deliver the same event twice or out of
+   order. Record a finding where consumption, business workflows, or state transitions
+   are not idempotent, or assume strict ordering, and where producer retries can write
+   duplicates.
+6. Runtime effect of the cutover control: the read source must change at runtime.
+   Record a finding where producer or consumer routing is resolved once at startup and
+   cached, so flipping the feature flag has no effect without a restart.
+7. Broker bootstrap: bootstrap DNS stays authoritative. Record a finding where code
+   persists or hard-codes broker host and port values learned from
+   `advertised.listeners`, which prevents reconnection after regional failover.
+
+For each evidence-backed issue, classify the failure risk as P0, P1, P2, or P3 under
+the Application Platform Context. Explain why the classification applies and cite the
+smallest supporting file and line range. Unknown status alone does not establish a
+finding.
+
+## Cumulative Discovery Limits
+
+For each eligible Kafka dependency, initialize these action counters to zero:
+
+* At most 2 repository searches
+* At most 3 file reads, each restricted to the smallest relevant line range
+* At most 2 repository traversal hops
+* At most 1 focused follow-up
+
+Apply each dependency's counters cumulatively across aliases, all seven areas,
+environments, both rounds, repeated research, delegated work, and subagent calls.
+Increment a counter immediately after its action. Never reset, transfer, duplicate, or
+reassign a counter. Reuse one action's evidence for every concern it answers.
+
+Use one prompt-wide round counter for the entire invocation. Start at 0. Transition
+from 0 to 1 before the first discovery action. Transition from 1 to 2 before the first
+focused follow-up or other second-pass action. Increment only at those transitions.
+Never reset the round counter and never start round 3.
+
+## Sources And Exhaustion
+
+Repository discovery is limited to the current repository by default. Production
+discovery is prohibited unless the user supplies or approves every element of a bounded
+production-source contract:
+
+* A named production source
+* A read-only access method
+* A query limit
+* A result limit
+* A time window
+* A follow-up limit
+
+Do not invent any production-contract value. Do not inspect live systems, telemetry,
+credentials, or endpoints without all approval elements. When approval is complete,
+stay within its bounds and the remaining cumulative dependency counters. Otherwise,
+record a named external evidence gap in an existing schema field.
+
+One source is one unique repository search result or one user-approved external
+artifact. A named repository source class is exhausted only when every result from the
+permitted bounded searches has been read within the file-read limit or explicitly left
+unread because that limit is exhausted, and no search, read, traversal hop, or focused
+follow-up remains. Results from the final permitted search may still be processed
+within the remaining limits. After exhaustion, do not broaden or repeat a query,
+revisit a source, add a hop, or reset a counter.
+
+## Terminal Outcomes And Stopping
+
+Assign exactly one terminal outcome to every eligible Kafka dependency and concern
+pair:
+
+* Cited file-and-line evidence
+* Unknown after exhausting a named repository source class
+* Not applicable under the inherited service exclusion rule
+* Unknown because a named external evidence gap blocks the value
+
+Stop when every eligible pair has exactly one terminal outcome or round 2 is exhausted,
+whichever occurs first. Do not perform confidence-improvement research or any other
+research after a terminal outcome.
+
+At the round limit, serialize every unresolved value in an existing schema field
+exactly as `Unknown: two-round prompt budget exhausted`. No other round-limit value is
+valid. Keep every other Unknown value inside an existing schema field and name the
+exhausted repository source class or external evidence gap. Never invent evidence,
+locations, mitigations, constraints, impacts, rationales, or priorities.
+
+## Pre-Consolidation Validation
+
+Before consolidation, use only already-read evidence to verify that every cited file
+exists, every cited range was read, and every dependency remains eligible under Prompt
+1 Section 1. This validation consumes no action, cannot start a round, and does not
+change any counter. Reject or correct invalid delegated content without more discovery.
+Consolidation fails until every eligible dependency and concern pair has exactly one
+terminal outcome and every unresolved round-limit value uses the exact required text.
+
+## Authoritative Artifact
+
+Write the research artifact to `.copilot-tracking/research/` using the repository name
+as the output filename prefix. The artifact contains exactly these three section
+classes:
+
+1. A concise scope summary
+2. A terminal-outcome summary
+3. Canonical seven-field issue rows
+
+When eligibility fails at round 0, record the block in the first two section classes
+and produce no issue row without evidence. Keep action counters, round state, tool
+calls, searches, reads, traversal details, file-analysis narration, discovery
+narration, and repeated evidence outside the artifact. Add no other authoritative
+section class.
+
+Emit a separate issue row for every independently actionable Kafka failure mode, even
+when rows share a dependency, location, priority, or risk level. Start every `Issue
+Description:` value with
+`KAFKA-<dependency-slug>-<failure-mode-slug>: <description>`. Normalize and reuse the
+same dependency and failure-mode slugs across runs.
+
+The following local schema controls over inherited generic or conditional templates.
+Repeat these labels exactly and in this order for every issue:
+
+* Issue Description:
+* Risk Level (P0/P1/P2/P3):
+* Code location (file + line number):
+* Why this is a risk to app or regional failover:
+* Impact(s) if this is not changed:
+* Existing mitigations present (evidence):
+* Constraints/limitations (evidence):
+
+Use exactly these seven fields. `Impact(s) if this is not changed:` is the sole impact
+requirement. Do not add an ID field, remediation field, or any other field. Every issue
+requires file-and-line evidence. Produce no alternatives, selected approaches,
+implementation content, remediation, examples, or artifact next steps.
+

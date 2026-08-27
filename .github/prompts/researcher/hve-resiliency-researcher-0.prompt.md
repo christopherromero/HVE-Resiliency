@@ -1,53 +1,47 @@
 ---
-description: Run Prompt 0 repository context frame for resiliency research
+description: Establish bounded repository context for application resiliency research
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 0
+# Application Resiliency Researcher 0 Optimized
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md) as the sole authority for failure scenarios, priorities, evidence-only and no-remediation boundaries, file-line citations, and artifact location.
 
-```text
-# HVE Task Researcher Prompt - Repository Context
+## Objective
 
-You are acting as a Senior Cloud Application Architect performing a resiliency context assessment for a microservice.
+Establish the repository context frame: architecture, application flow, observed behavior, assumptions, constraints, mitigations, and each evidence-backed resiliency risk, rationale, and impact.
 
-## OBJECTIVE
-Systematically examine the repository's source code, configuration files, infrastructure-as-code templates, and dependency manifests to understand the application's architecture and resiliency posture.
+## Bounded Execution
 
-Region context (name the two active/active regions; do not use primary/secondary role labels):
-- **West US** - one of the two active/active regions (currently the production region)
-- **West US 2** - the other active/active region (the peer being added)
-- The application is transitioning from an active-passive (DR) posture - a single-region production deployment in West US with West US 2 as a passive disaster recovery target - to an active/active deployment across West US and West US 2. Failover is symmetric: either region can absorb the other's traffic.
+Keep compact root, transition, boundary, owner, finding, and evidence-gap ledgers. Capture citations on first read.
 
-Validate readiness for:
-- Zone failure within either region
-- Full active/active regional failover between West US and West US 2 in either direction (West US to West US 2 and West US 2 to West US)
+* Run one inventory pass over production source, build, configuration, and deployment paths, then one production-root discovery pass for startup, HTTP, message, event, and background roots.
+* Trace at most four application-owned transitions per flow. Stop at a boundary, repeated owner, third-party implementation, repository exit, or evidence gap.
+* Analyze every shared owner, helper, configuration source, and boundary once; reuse its evidence across flows and assess its degraded behavior and controls.
+* Give an unresolved symbol or artifact at most two exact checks. Record the question and checks in the evidence-gap ledger, then stop that branch.
+* After coverage evaluation, allow at most one corrective scoped search for the uncovered production path or root family. Never restart broad discovery.
 
-Begin by analyzing the application architecture for this code base, then characterize current implementation behavior, application flow, assumptions, constraints, the risks, why each is a risk to application resiliency during a zone or region failover, and the impacts if not changed.
+Merge only identical risk mechanisms with the same owner, failure scenario, and impact. Preserve affected flows and evidence. Impose no finding count or priority quota; retain every distinct evidence-backed finding and limit only repetition.
 
-Analyze region, zone, and application failover risk for each gap/finding:
-- P0 - Blocking/Critical Risk
-- P1 - High Priority (Potential for Blocking)
-- P2 - Improvement/Best Practice (Non-Blocking)
-- P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
-- Provide an explanation why each issue is rated at that level
-- Identify the area in the code where the issue is located (file + line #)
+## Completion Criteria
 
-Capture existing mitigations already present (retries/timeouts/fallbacks/feature flags/runbooks), with evidence (file + line).
-Capture constraints/limitations that affect failover (platform constraints, dependency capabilities, configuration constraints, operational constraints), with evidence (file + line) when present.
-If the repository does not contain infrastructure-as-code or deployment configuration, explicitly note which resiliency aspects cannot be assessed from the codebase alone and flag them as requiring external validation.
-Do not recommend changes.
+Stop after all roots resolve to boundaries or evidence gaps, every boundary is assessed, every finding is complete, and one full queue pass adds no new root, boundary, transition, owner, or risk mechanism. Two recorded exact checks complete an unresolved branch.
 
-## OUTPUT FORMAT
-Produce the output as the following numbered sections, in this order:
-1. Architecture Overview - application walkthrough and high-level architecture for this microservice.
-2. Findings - table with columns: ID, Description, Priority (P0-P3), File, Line, Explanation.
-3. Existing Mitigations - table with columns: ID, Mitigation, File, Line, Notes.
-4. Constraints/Limitations - table with columns: ID, Constraint, Category, File, Line, Notes. Include rows for aspects that cannot be assessed from the codebase alone (mark Category as "External validation required").
-```
+## Output Contract
 
+Use this section order:
 
-## Output Review
+1. Scope
+2. High-Level Architecture
+3. Application Flow
+4. Observed Implementation Behavior
+5. Assumptions and Constraints
 
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
+Use one concise entry per unique component, boundary, or flow family. Put the evidence-gap ledger in Assumptions and Constraints. Each substantive finding includes:
+
+* Priority and rationale
+* Observed behavior
+* Risk and failover impact
+* Existing mitigations, with evidence when present
+* Constraints or limitations, with evidence when present
+* File and line-level evidence

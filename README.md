@@ -3,10 +3,9 @@
 ## Table of Contents
 
 * [Overview](#overview)
-* [Quick start](#quick-start)
+* [Setup](#setup)
+* [Assessment process](#assessment-process)
 * [Documentation](#documentation)
-* [Problem statement](#problem-statement)
-* [Scope](#scope)
 * [Customization and extensibility](#customization-and-extensibility)
 * [Workflow phases](#workflow-phases)
 * [Repository layout](#repository-layout)
@@ -19,51 +18,108 @@
 
 ## Overview
 
-HVE Resiliency is an **AI-assisted analysis framework** that evaluates application source code and infrastructure (IaC) to identify resiliency gaps and generate a **prioritized remediation plan (P0–P3)**.
-
-Unlike traditional architecture reviews, this framework:
-
-- Works directly on **source code and infrastructure definitions**
-- Produces **evidence-based findings with file and line references**
-- Translates findings into **actionable, backlog-ready remediation plans**
-- Focuses on **real failure scenarios** (zone failure and regional failover)
+HVE Resiliency is an **AI-assisted analysis framework** that evaluates application source code and infrastructure (IaC) to identify resiliency gaps and generate a **prioritized assessment report and remediation plan (P0–P3)**.
 
 It is designed for engineering teams building or operating systems in Azure, especially those targeting **high availability and multi-region resiliency**.
 
-The framework ships as a set of Copilot skills:
+The framework includes one workflow skill and two orchestrator agents:
 
-- `hve-resiliency-research`: runs the five-phase research-to-assessment workflow.
-- `hve-resiliency-telemetry-report`: turns a completed run into an executive ROI report.
-- `hve-resiliency-workitem-export`: converts assessment findings into an ADO or Jira import CSV.
-- `hve-resiliency-workitem-import`: bulk-creates Azure DevOps work items from that CSV.
-- `hve-resiliency-workitem-jira-import`: bulk-creates Jira Cloud issues from that CSV.
+- **Complete Workflow:**
+  - `hve-resiliency-research` defines the complete workflow.
+- **Orchestration:**
+  - **Resiliency Research Orchestrator v1.0** runs Phases 1-3.
+  - **Resiliency Planning Orchestrator v1.0** runs Phases 4-5.
+
+[View a sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
+
+
 
 ---
 
-## Quick start
-
-1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the `Task Researcher` and `Task Planner` agents are available in Copilot Chat.
+## Setup
+1. Install the [HVE Core VS Code extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) so the shared `Researcher Subagent` worker (used by the orchestrator agents) and the HVE agents are available in Copilot Chat.
 2. Install this framework into the **root** of the codebase you want to assess. From your target repo's root:
 
    ```powershell
    # PowerShell (Windows / macOS / Linux)
-   irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/main/install.ps1 | iex
+   irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/feature/orchestration/install.ps1 | iex
    ```
 
-   The installer copies `.github/skills/`, `.github/prompts/`, and `.github/instructions/` into your `.github/` folder. Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then commit the `.github/` additions so the rest of your team gets the same workflow.
-3. In Chat, run `/hve-resiliency-research`.
-4. Choose an execution mode when prompted:
+   The installer copies `.github/skills/`, `.github/prompts/`, `.github/agents/`,  and `.github/instructions/` into your `.github/` folder. Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then commit the `.github/` additions so the rest of your team gets the same workflow.
+3. Reload VS Code so the new agents appear in the picker: **Developer: Reload Window**.
 
-   - **Mode A (Interactive).** One prompt per turn, with an optional `/clear` between prompts.
-   - **Mode B (Autonomous).** Each prompt runs as an isolated subagent.
-5. **Switch the active agent in Copilot Chat to match each phase**: select `Task Researcher` for Phases 1-3 (research and consolidation), and `Task Planner` for Phases 4-5 (planning and assessment). Each prompt's frontmatter declares the agent it expects; mismatched agents will produce off-spec output.
-6. Follow the phase sequence: Core Research → Service Research → Consolidation → Planning → Assessment.
+---
 
-After a completed run, produce an executive ROI report with `/hve-resiliency-telemetry-report`. See the [Telemetry Report Workflow](docs/telemetry-report-workflow.md) cheatsheet for the fast path.
+## Assessment Process
 
-### Purpose of `/clear` between prompts
 
-Running `/clear` between prompts is optional but recommended. It will not confuse the agent: this workflow carries state through the artifacts on disk (research docs, plans, the assessment), not through chat history. Each prompt re-reads the artifacts it needs from `.copilot-tracking/` before doing its work, so a cleared context still has everything required to continue. Clearing simply drops the accumulated prior turns that would otherwise grow the context window, raise cost, and risk context degradation. Mode B achieves the same isolation by running each prompt as a fresh subagent.
+1. Review the Confluence document and discovery recording to understand the overall application architecture.
+2. Create a branch from `master` using the naming convention `fb-RegionalResiliency-MMDDYY`.
+3. Confirm the application topology with the architect: Active-Passive (Standby) or Active-Active.
+4. If Kafka applies, confirm its topology with the architect: Active-Active or Active-Passive (Standby). Provide the agreed topology when the research orchestrator requests it. Do not infer Kafka topology from the database architecture.
+5. Run the following initial repository prompt to establish the workload considerations that must be verified in the final report:
+
+    ```text
+    Analyze this repository and provide:
+
+    * Workload type (API, backend job, event-driven service, and so on)
+    * Application flow and key components and dependencies
+    * Solution and architecture structure
+    * Key changes required to deploy the workload from single-region to
+       multi-region, covering application state, database, Kafka or messaging,
+       cache, external dependencies, networking, and configuration
+
+    Provide only a concise checklist of potential multi-region changes for
+    later verification. Do not make any code changes.
+    ```
+
+6. Confirm that the latest version of this prompt repository is installed in the application repository.
+7. [Run the **Resiliency Research Orchestrator v1.0**](#run-it-with-the-orchestrators-recommended) for Phases 1-3. Monitor its stage results for incomplete or blocked prompts, verification failures, abnormal errors, or network issues. Report unusual behavior to the architect and record the duration of each major stage.
+8. Review the consolidated research artifact, then run the **Resiliency Planning Orchestrator v1.0** for Phases 4-5.
+9. Review the generated report for duplicate findings. Optionally invoke `/detect-assessment-duplicates` manually. Remove only confirmed duplicates while preserving finding IDs and cross-references.
+10. Validate code references, ordering dependencies, file paths, and line numbers. Correct any mismatches.
+11. Verify that the final report matches the application and Kafka topologies confirmed by the architect. Keep the application description concise and accessible to a non-specialist audience.
+12. Perform a final sanity check and compare report coverage with the workload considerations identified by the initial repository prompt.
+13. Submit the report for SME review.
+
+
+
+
+### Run it with the orchestrators (Recommended)
+
+The recommended path uses two **orchestrator agents**. The research orchestrator runs Phases 1-3, and the planning orchestrator runs Phases 4-5. Each agent dispatches individual prompts to fresh subagents, sequences dependencies, and parallelizes independent work. Select the agent in the picker, then send a plain message rather than a slash command.
+
+**Research (Phases 1-3):**
+
+1. In Copilot Chat, open the **agent picker** at the top of the chat panel and select **Resiliency Research Orchestrator v1.0**.
+2. Send exactly:
+
+   ```text
+   Run the resiliency research pipeline for this repository.
+   Target deployment topology: <ACTIVE-ACTIVE or ACTIVE-STANDBY>.
+   ```
+
+   It runs discovery, analysis, verification, and consolidation, then writes the results to `.copilot-tracking/research/`. It pauses only when input or intervention is required.
+
+**Planning (Phases 4-5):**
+
+1. Switch the **agent picker** to **Resiliency Planning Orchestrator v1.0** (start a new chat when switching agents).
+2. Send exactly:
+
+   ```text
+   Run the resiliency planning pipeline from the consolidated research.
+   Target deployment topology: <ACTIVE-ACTIVE or ACTIVE-STANDBY>.
+   ```
+
+   It consumes the completed consolidated research and produces the executive Master report, Developer Guide, and final **Code-Level Resiliency Assessment** under `Microsoft-Assessment/`. Planning and assessment prompts run sequentially because each output depends on the preceding artifact.
+
+Replace `Active-Active` with `Active-Standby` when that is the agreed target deployment topology.
+
+### Manual alternative (one prompt at a time)
+
+Prefer to drive each step yourself? Run `/hve-resiliency-research` in Chat and follow the numbered prompt sequence in the skill. A context reset between prompts is optional - see below.
+
+> [!NOTE] `/clear` is optional for manual prompts and unnecessary with the orchestrator agents.
 
 See [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md) for the authoritative workflow definition.
 
@@ -76,183 +132,51 @@ Start here before running the framework end-to-end. These two guides are the pri
 | Guide                                                                             | Read this when you want to                                                                                                                                                 |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[Resiliency Researcher Workflow](docs/resiliency-researcher-workflow.md)** | Understand the five-phase research-to-assessment workflow, per-phase prompt sequence, mode selection (interactive vs autonomous), and the workflow evolution diagrams.     |
-| **[Work Item Skills Guide](docs/workitem-skills-guide.md)**                  | Turn a finished assessment into a real backlog in Azure DevOps or Jira Cloud via the export and import skills, including hierarchy options, dry runs, and troubleshooting. |
-| **[Telemetry Report Workflow](docs/telemetry-report-workflow.md)**           | See the end-to-end diagrams: the resiliency workflow that produces the assessment, and the telemetry report that measures a completed run and turns it into an executive ROI report. |
 
-The authoritative skill definitions live alongside the skills themselves at [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md), [.github/skills/hve-resiliency-telemetry-report/SKILL.md](.github/skills/hve-resiliency-telemetry-report/SKILL.md), [.github/skills/hve-resiliency-workitem-export/SKILL.md](.github/skills/hve-resiliency-workitem-export/SKILL.md), [.github/skills/hve-resiliency-workitem-import/SKILL.md](.github/skills/hve-resiliency-workitem-import/SKILL.md), and [.github/skills/hve-resiliency-workitem-jira-import/SKILL.md](.github/skills/hve-resiliency-workitem-jira-import/SKILL.md).
-
----
-
-## Problem statement
-
-### Background
-
-Manual resiliency assessments tend to be inconsistent across teams and engagements, slow to repeat as code evolves, infrastructure-first rather than code-aware, and disconnected from engineering backlogs. This framework addresses those gaps with standardized, AI-assisted workflows that produce a traceable evidence chain from research to a prioritized P0-P3 remediation plan, reviewed by a qualified engineer before delivery.
-
-### What this skill solves
-
-Manual resiliency assessments are often:
-
-- Inconsistent across teams and engagements
-- Time-consuming to repeat as code evolves
-- Focused on infrastructure, ignoring code-level risks
-- Difficult to translate into actionable backlog work
-
-This skill standardizes and automates resiliency analysis across repositories.
-
-#### Expected impact
-
-Using this framework, teams can:
-
-- Reduce assessment time (hours instead of days)
-- Increase consistency across projects
-- Identify **code-level failure paths** not visible in architecture diagrams
-- Maintain full traceability from finding → code → remediation
-- Generate **prioritized, backlog-ready actions**
-
-### Finding prioritization (P0–P3)
-
-Findings are classified based on their potential impact:
-
-| Priority                | Description                                       |
-| ----------------------- | ------------------------------------------------- |
-| **P0 (Critical)** | Risk of full system failure or data loss          |
-| **P1 (High)**     | Significant service degradation or partial outage |
-| **P2 (Medium)**   | Resiliency gaps affecting recovery or stability   |
-| **P3 (Low)**      | Improvements or optimizations                     |
-
-This prioritization enables teams to focus on **failover-blocking risks first**.
-
-### What you get as output
-
-After running the workflow, you will obtain:
-
-- Evidence-based research artifacts (file + line references)
-- Consolidated resiliency findings
-- Prioritized remediation plan (P0–P3)
-- Developer guidance for issue resolution
-- Backlog-ready resiliency assessment aligned with Microsoft frameworks
-
-Example:
-[View sample assessment](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md)
-
----
-
-## Scope
-
-### Applicability
-
-Use this skill when:
-
-- Preparing a system for **production readiness**
-- Validating resiliency before a **major release**
-- Migrating to **multi-region or active/active architectures**
-- Converting resiliency risks into **engineering backlog items**
-- Performing **code-level resiliency analysis**
-
-#### Typical use cases
-
-- Pre go-live validation
-- Architecture and resiliency reviews
-- Cloud migration readiness
-- Continuous resiliency checks
-- Engineering quality improvements
-
-### What this framework does NOT do
-
-This skill is intended for **design-time and code-level analysis**.
-
-It does **not**:
-
-- Execute or simulate failover scenarios
-- Perform chaos engineering or load testing
-- Automatically fix issues in the codebase
-- Analyze runtime telemetry or production behavior
-- Replace engineering review or decision-making
-
-A qualified engineer must validate all findings before implementation.
+The authoritative workflow definition is [.github/skills/hve-resiliency-research/SKILL.md](.github/skills/hve-resiliency-research/SKILL.md).
 
 ---
 
 ## Customization and extensibility
 
-The framework is context-driven, not static. Its default behavior comes from two instruction files:
-
-- [.github/instructions/hve-resiliency-platform-context.instructions.md](.github/instructions/hve-resiliency-platform-context.instructions.md)
-- [.github/instructions/hve-resiliency-planner-context.instructions.md](.github/instructions/hve-resiliency-planner-context.instructions.md)
-
-Edit these to match your engagement: target and failover architecture (active/passive vs active/active), what qualifies as a resiliency finding and which failure scenarios matter, the P0-P3 priority model, architectural assumptions, and output format. Re-run `/hve-resiliency-research` and the agents pick up the updated context automatically.
-
-Treat the instruction files as part of the product and evolve them as the system changes. The quality of findings depends on how well the context reflects your architecture, the failure scenarios that matter, and your business goals.
+The [platform context](.github/instructions/hve-resiliency-platform-context.instructions.md), [planner context](.github/instructions/hve-resiliency-planner-context.instructions.md), and prompts can be customized for your architecture and use case.
 
 ---
 
 ## Workflow phases
 
-The framework follows an application-centric, evidence-first flow built on HVE Core's `Task Researcher` and `Task Planner` agents:
-
-1. **Source code and IaC** in the target repository serve as primary evidence.
-2. **Task Researcher** runs Phase 1-2 prompts to produce per-area research artifacts (architecture, dependencies, failure paths, per-service findings), citing file and line for every claim.
-3. **Phase 3 consolidation** merges those artifacts into a single evidence document, deduplicating findings and normalizing terminology.
-4. **Task Planner** reads the consolidated document under evidence-lock-in rules and produces a prioritized P0-P3 plan plus a code-level resiliency assessment.
-5. **Outputs** include forensic research artifacts, a Master plan and Developer Guide, and a backlog-ready assessment report with Microsoft Standards Alignment.
-
-| Phase               | Prompts                                                          | Notes                                       |
-| ------------------- | ---------------------------------------------------------------- | ------------------------------------------- |
-| 1. Core Research    | `researcher-0` … `researcher-7-logging`                     | Sequential. Mode-aware.                     |
-| 2. Service Research | `researcher/service/*` (8-19, filtered to applicable services) | Mode B allows up to 3 concurrent subagents. |
-| 3. Consolidation    | `researcher-consolidate-0`, `-1`, `-2`                        | User-gated,`/clear` between steps.        |
-| 4. Planning         | `planner-0`, `planner-1`, `planner-0`, `planner-2`       | User-gated,`/clear` between steps.        |
-| 5. Assessment       | `assessment-builder-0` … `assessment-builder-3`             | User-gated,`/clear` between steps.        |
+| Phase | Prompts | Orchestration |
+| ----- | ------- | ------------- |
+| 1. Core Research | `researcher-0`, `-1a`, and `-1b`; then `-2` through `-6` | Discovery is sequential. Independent analyses run concurrently after scope is frozen. Prompt 5 runs its scaffold, parallel fills, verify, and finalize sub-pipeline. |
+| 2. Service Research | Applicable prompts `researcher/service/9` through `17` | Runs concurrently with the Phase 1 analysis fan-out, filtered to dependencies confirmed by Prompts 1a and 1b. |
+| 3. Consolidation | `consolidate-0-scaffold` through `consolidate-9-finalize` | Scaffold first, section fills in parallel, verification in parallel, then final assembly. |
+| 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | Runs sequentially in fresh subagent contexts. |
+| 5. Assessment | `planner-3a` through `planner-3d` | Runs sequentially because each prompt appends to the same report. |
 
 A worked example output lives at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md). Per-phase descriptions, workflow evolution diagrams, and the post-Phase-5 backlog import flow are covered in the guides linked from [Documentation](#documentation).
 
+The standalone `detect-assessment-duplicates` and `reorder-assessment-findings` prompts run only when invoked manually. They are not part of planning orchestration.
+
 ## Repository layout
 
-| Path                                                                                                      | Purpose                                                                                                                                                                              |
-| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/)                         | Skill that orchestrates the full research workflow.                                                                                                                                  |
-| [.github/skills/hve-resiliency-telemetry-report/](.github/skills/hve-resiliency-telemetry-report/)         | Skill that turns a completed workflow run into an executive ROI and telemetry report, comparing the research, planning, and assessment phases against a manual baseline.             |
-| [.github/prompts/researcher/](.github/prompts/researcher/)                                                 | Phase 1 (core) and Phase 2 (per-service) research prompts, plus the consolidation prompt.                                                                                            |
-| [.github/prompts/planner/](.github/prompts/planner/)                                                       | Phase 4 planning prompts.                                                                                                                                                            |
-| [.github/prompts/assessment-builder/](.github/prompts/assessment-builder/)                                 | Phase 5 assessment authoring prompts.                                                                                                                                                |
-| [.github/prompts/telemetry-report/](.github/prompts/telemetry-report/)                                     | Slash command that generates the executive ROI and telemetry report from a completed run.                                                                                           |
-| [.github/prompts/workitem-export/](.github/prompts/workitem-export/)                                       | Backlog export prompt for converting assessment findings into ADO or Jira import CSV files.                                                                                          |
-| [.github/prompts/workitem-import/](.github/prompts/workitem-import/)                                       | Bulk-import prompts for posting an export CSV directly into Azure DevOps or Jira Cloud.                                                                                              |
-| [.github/skills/hve-resiliency-workitem-export/](.github/skills/hve-resiliency-workitem-export/)           | Skill that converts assessment findings into ADO or Jira import CSV files.                                                                                                           |
-| [.github/skills/hve-resiliency-workitem-import/](.github/skills/hve-resiliency-workitem-import/)           | Skill that bulk-creates ADO work items from an export CSV via REST API, with optional parent Epic, priority-grouped User Stories, rich HTML descriptions, and assessment attachment. |
-| [.github/skills/hve-resiliency-workitem-jira-import/](.github/skills/hve-resiliency-workitem-jira-import/) | Skill that bulk-creates Jira Cloud issues from an export CSV via REST API v3, with optional parent Epic, priority-grouped Stories, ADF descriptions, and assessment attachment.      |
-| [.github/instructions/](.github/instructions/)                                                             | Platform context and evidence-only rules applied to researcher and planner prompts.                                                                                                  |
-| [docs/](docs/)                                                                                             | Workflow overview and reference documentation — see the[Documentation](#documentation) section above.                                                                                |
-| [Microsoft-Assessment/](Microsoft-Assessment/)                                                             | Worked example assessment output.                                                                                                                                                    |
-| [install.ps1](install.ps1) / [install.sh](install.sh)                                                       | One-line bootstrap installers that copy the skills, prompts, and instructions into another repository (no`git` required).                                                          |
+| Path | Purpose |
+| ---- | ------- |
+| [.github/agents/](.github/agents/) | Research and planning orchestrators |
+| [.github/prompts/](.github/prompts/) | Research, consolidation, planning, assessment, and audit prompts |
+| [.github/skills/hve-resiliency-research/](.github/skills/hve-resiliency-research/) | Manual workflow definition |
+| [.github/instructions/](.github/instructions/) | Platform context and evidence rules |
+| [docs/](docs/) and [Microsoft-Assessment/](Microsoft-Assessment/) | Guides and example outputs |
+| [install.ps1](install.ps1) and [install.sh](install.sh) | Framework installers |
 
 ## Token consumption estimates
 
-Approximate token usage for a full end-to-end workflow run, sized by the *target* codebase being assessed (after exclusions like `node_modules`, `bin`, `obj`, and generated code). Phase 2 cost scales with the number of in-scope Azure services, not raw lines of code.
-
-| Sizing dimension                                  | Small                | Medium               | Large                  | Very Large           |
-| ------------------------------------------------- | -------------------- | -------------------- | ---------------------- | -------------------- |
-| Example                                           | Single microservice  | 5-service platform   | 15-20 service platform | Enterprise monorepo  |
-| In-scope files                                    | <100                 | 100-500              | 500-2,000              | 2,000+               |
-| In-scope lines of code                            | <5K                  | 5K-30K               | 30K-150K               | 150K+                |
-| In-scope Azure services                           | 1-3                  | 4-7                  | 7-10                   | 10-12                |
-| Total prompts run                                 | ~21                  | ~24                  | ~27                    | ~30                  |
-| Phase 1 input/prompt                              | 8K-15K               | 20K-35K              | 60K-120K               | 150K-300K            |
-| Phase 2 input/prompt (per service)                | 8K-15K               | 12K-25K              | 20K-40K                | 30K-60K              |
-| Phase 3 consolidation input                       | 40K-70K              | 70K-120K             | 120K-200K              | 180K-300K            |
-| Phase 4-5 input/prompt                            | 25K-50K              | 35K-70K              | 50K-90K                | 70K-120K             |
-| Output tokens/prompt (typical)                    | 4K-15K               | 5K-25K               | 6K-30K                 | 8K-35K               |
-| **Total tokens, Mode A (`/clear`-gated)** | **~550K-950K** | **~1.0M-1.7M** | **~1.9M-3.2M**   | **~3.1M-5.4M** |
-| **Total tokens, Mode B (autonomous)**       | **~700K-1.3M** | **~1.4M-2.4M** | **~2.7M-4.5M**   | **~4.4M-7.5M** |
-
-Mode B totals are 30-50% higher because the orchestrating agent retains conversation context across phases, even though each prompt runs as an isolated subagent. Estimates are per-prompt averages; individual prompts can spike 2-3x on unusually large source files or repos with deep tool-call iteration.
+(COMING SOON)
 
 ## Alignment with Microsoft frameworks
 
 | Microsoft framework                                                                                        | How this framework aligns                                                                                                                                                                                                                             |
 | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)                     | Reliability pillar: availability, resiliency, and recovery. Phase 5 assessment maps every P0-P3 finding to WAF reliability patterns (see[`assessment-builder-3`](.github/prompts/assessment-builder/hve-resiliency-assessment-builder-3.prompt.md)). |
+| [Azure Well-Architected Framework](https://learn.microsoft.com/azure/well-architected/)                     | Reliability pillar: availability, resiliency, and recovery. Phase 5 assessment maps every P0-P3 finding to WAF reliability patterns (see [`planner-3d`](.github/prompts/planner/hve-resiliency-planner-3d.prompt.md)). |
 | [Azure Proactive Resiliency Library (APRL)](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/) | Design-time and detection-time resiliency guidance for Azure services, used as a reference for per-service findings in Phase 2.                                                                                                                       |
 | [Cloud Adoption Framework (CAF)](https://learn.microsoft.com/azure/cloud-adoption-framework/)               | Application readiness for cloud scale and reliability, supporting the transition to active/active multi-region operation.                                                                                                                             |
 

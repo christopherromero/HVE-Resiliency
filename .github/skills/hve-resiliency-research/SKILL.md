@@ -1,160 +1,114 @@
 ---
 name: hve-resiliency-research
-description: Use for resiliency research covering zone failure within either region and active/active regional failover between two regions with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
+description: Use for application resiliency research covering regional failover between West US 2 and West US with the task-researcher workflow, evidence-only outputs, and P0-P3 priority classification.
 ---
 
 # HVE Resiliency Research
 
 Use this skill when you need the full resiliency research sequence for this repository.
 
+**Prompt Suite Version:** 1.0
+
 Use [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
 ## Activation Guidance
 
-Auto-load this skill only for requests that explicitly mention one or more of the following: Azure zone failure, Azure availability zone resiliency, regional failover, multi-region active/active, zone survivability, the `/hve-resiliency-research` command, or a request to run the resiliency researcher workflow on this repository. Do not auto-load for general reliability, performance, or unrelated Azure questions.
+Auto-load this skill for requests related to resiliency, Azure regional failover survivability research.
 
 ## Activation Behavior
 
-When this skill is activated (via `/hve-resiliency-research` or by matching the Activation Guidance), the agent MUST follow this fixed startup sequence:
+When this skill is activated (via `/hve-resiliency-research` or by matching the activation guidance), the agent MUST immediately begin executing the Required Workflow starting at Phase 1, Prompt 0. Do not prompt the user for which prompt to run. Do not skip to service-specific prompts (9-17) without completing Prompts 0-6 first.
 
-1. Ask the user one question only: which execution mode to use (Mode A or Mode B, see Execution Modes below). This is the sole permitted user-facing question at activation.
-2. After receiving the mode selection, begin executing the Required Workflow starting at Phase 1, Prompt 0, in the order defined by the Phase 1 Sequence.
-3. Do not ask the user to choose which workflow prompt to run, do not offer prompt-selection menus, and do not skip ahead to service-specific prompts (8-19) without completing Prompts 0-7 first. Recommending the single next prompt in a Mode A stop message (per the Phase 1 / Phase 2 Mode A Rules) is required and does not count as a selection menu.
+## Automated Orchestration (Recommended)
 
-### Execution Modes (Phase 1 and Phase 2)
+For a one-invocation run of each phase, use the orchestrator agents instead of running prompts one at a time:
 
-Before starting Phase 1, the agent MUST ask the user to pick one of the following modes. The same mode applies to both Phase 1 and Phase 2 unless the user requests otherwise.
+* Select **Resiliency Research Orchestrator v1.0** from the agent picker to run Phases 1-3 (produces the consolidated research document).
+* Select **Resiliency Planning Orchestrator v1.0** to run Phases 4-5 (produces the Code-Level Resiliency Assessment report).
 
-* **Mode A - Interactive (`/clear`-gated, default).** The agent runs one prompt at a time. After each prompt completes, the agent presents a short summary of the produced artifact and STOPS the turn with an instruction for the user to run `/clear` and then either re-invoke the skill or send `proceed` to continue with the next prompt. This mode preserves a clean context window between prompts and lets the user review each artifact.
-* **Mode B - Autonomous (no `/clear`).** The agent runs every prompt in the phase end-to-end without pausing. To replicate the context-isolation benefit of `/clear`, the agent dispatches each prompt as an isolated subagent invocation. This mode is faster but skips per-prompt user review.
+The orchestrators dispatch each step below to a fresh subagent, so they parallelize independent steps and manage context automatically. No manual `/clear` is needed when using them. The Required Workflow below is the manual, one-prompt-per-turn path.
 
-In both modes, the agent MUST stop between Phase 1 and Phase 2, and between Phase 2 and Phase 3. Phases 3-5 are always user-gated by `/clear` regardless of the selected mode.
+## Context Management
+
+A context reset (`/clear` or a new chat) is a clarity and cost tool, not a correctness requirement: durable artifacts in `.copilot-tracking/research/` carry context forward between prompts. In the manual workflow below, a reset before each prompt keeps the input scoped to the prior artifact plus the current prompt (the Mode A cost optimization); it is recommended for cost and optional for correctness. At minimum, reset at phase boundaries and when switching agents. When using the orchestrator agents, context is managed automatically and no manual reset is needed.
 
 ## Required Workflow
 
-Phases are strictly sequential: each phase must complete before the next phase begins, and the agent must not start a later phase while any prompt of the current phase is still pending. Within a single phase, the agent may dispatch multiple prompts in parallel only when the phase's mode rules explicitly allow it (currently only Phase 2 Mode B, up to three concurrent subagents). Cross-phase parallelism is never permitted.
+Phases are strictly sequential. Each phase must complete before the next phase begins.
 
-### Workflow Quick Reference
+### Phase 1: Core Research (Prompts 0-7) — Start Here
 
-Use this table as the authoritative summary of per-phase behavior. The detailed rules below take precedence if any conflict appears.
+Phase 1 is mandatory and sequential. Always begin with Prompt 0.
 
-| Phase | Prompts | Mode A behavior | Mode B behavior | Stop at end of phase? | `/clear` required between phases? |
-|-------|---------|-----------------|-----------------|-----------------------|-----------------------------------|
-| 1. Core Research | 0-7 (sequential) | One prompt per turn; summarize, then stop with next-prompt recommendation | All prompts run back-to-back as isolated subagents | Yes | Yes |
-| 2. Service Research | 8-19 (filtered to applicable services) | One prompt per turn; summarize, then stop with next-prompt recommendation | Up to 3 concurrent subagents per batch | Yes (never auto-dispatch Phase 3) | Yes |
-| 3. Consolidation | `consolidate-0`, `consolidate-1`, `consolidate-2` (sequential) | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
-| 4. Planning | `planner-0`, `planner-1`, `planner-0`, `planner-2` | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
-| 5. Assessment | `assessment-builder-0` through final | User-gated only (no mode split) | User-gated only (no mode split) | Yes | Yes (between each step) |
+1. Run `/hve-resiliency-researcher-0` first to establish the repository context frame.
+2. Review the resulting research artifact in `.copilot-tracking/research/`.
+3. Run `/hve-resiliency-researcher-1a`, review its Section 1 Azure services, then run `/hve-resiliency-researcher-1b` and review its Section 1 external dependencies.
+4. Treat the combined Prompt 1a and Prompt 1b Section 1 entries as the evidence-confirmed dependency set. Exclude every dependency classified only in either artifact's Section 2 or Section 3 from subsequent prompts.
+5. Run `/hve-resiliency-researcher-2`.
+6. Run `/hve-resiliency-researcher-3`.
+7. Run `/hve-resiliency-researcher-4`.
+8. Prompt 5 has been split into a bounded pipeline. Run these in order:
+    1. `/hve-resiliency-researcher-5-0-scaffold` (validates Prompt 1a and 1b Section 1, freezes the eligible-dependency inventory, emits skeleton + manifest sidecar).
+    2. `/hve-resiliency-researcher-5-1-startup-failure`.
+    3. `/hve-resiliency-researcher-5-2-data-loss-partial-processing`.
+    4. `/hve-resiliency-researcher-5-3-blocking-transactions`.
+    5. `/hve-resiliency-researcher-5-verify` (audits the three fragments against the manifest and workspace source).
+    6. `/hve-resiliency-researcher-5-finalize` (assembles fragments into the single Prompt 5 artifact consumed by consolidation).
+    * The three outcome fills are disjoint and may run in parallel chats when time-boxing allows; only the scaffold must precede them and only verify + finalize must follow.
+    * `/hve-resiliency-researcher-5` is retained as a deprecated redirect to the scaffold entry point.
+9. Run `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
 
-Key invariants:
+### Phase 2: Service-Specific Research (Prompts 9-17, Circumstantial)
 
-* Mode selection only affects Phases 1 and 2. Phases 3-5 are always user-gated by `/clear`.
-* The agent must never skip ahead to service-specific prompts (8-19) without completing Prompts 0-7.
-* The agent must never auto-dispatch Phase 3 from Phase 2 (the consolidation prompts are long-running and time out under autonomous orchestration).
+Phase 2 runs only after Phase 1 is complete. Run only the prompts matching dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b. Skip services found only in Sections 2-3 or not found. Recommend applicable prompts from the combined Prompt 1a and Prompt 1b results.
 
-### Phase 1: Core Research (Prompts 0-7) - Start Here
-
-Phase 1 runs in the execution mode the user selected during activation (see Execution Modes above).
-
-#### Phase 1 Mode A Rules (Interactive, `/clear`-gated)
-
-* The agent runs exactly one Phase 1 prompt per turn, in the order listed in the Phase 1 Sequence below.
-* The agent executes the prompt directly (or via a single subagent invocation) and writes the artifact to `.copilot-tracking/research/`.
-* After the prompt completes, the agent presents a short inline summary of the produced artifact and STOPS the turn with an explicit next-prompt recommendation in this exact form: "Run `/clear`, then reply `proceed` (or re-invoke `/hve-resiliency-research`) to continue with `<next-prompt-slug>` (`<short description>`)." The `<next-prompt-slug>` MUST be the immediately following entry in the Phase 1 Sequence (for example, after `/hve-resiliency-researcher-1b` the recommendation is `/hve-resiliency-researcher-2`). If the just-completed prompt is the last in the sequence, follow the Phase 1 Sequence step 12 stop instead.
-* The agent MUST NOT dispatch the next Phase 1 prompt in the same turn.
-* If a prompt fails or produces no artifact, the agent retries once with a more explicit instruction; if it fails again, surface the error and stop Phase 1.
-* After Prompt 7 completes, present the Phase 1 completion summary and STOP per the Phase 1 Sequence step 12.
-
-#### Phase 1 Mode B Rules (Autonomous, no `/clear`)
-
-* The agent MUST execute all Phase 1 prompts in order without prompting the user and without inserting `/clear` between them.
-* To replicate the context-isolation benefit of `/clear`, the agent MUST dispatch each Phase 1 prompt as an isolated subagent invocation (one subagent per prompt). The subagent reads the relevant prompt file under `.github/prompts/researcher/` and executes it, writing its output artifact to `.copilot-tracking/research/`.
-* After each subagent completes, the orchestrating agent reads the produced artifact, summarizes the result inline (one short paragraph), then immediately dispatches the next subagent.
-* If a subagent fails or produces no artifact, the orchestrating agent retries once with a more explicit instruction; if it fails again, surface the error and stop Phase 1.
-* The user is informed at the start that Phase 1 will run autonomously and at the end with a Phase 1 completion summary that lists every artifact produced.
-
-#### Phase 1 Sequence
-
-1. Dispatch subagent for `/hve-resiliency-researcher-0` (repository context frame).
-2. Dispatch subagent for `/hve-resiliency-researcher-1a`.
-3. Dispatch subagent for `/hve-resiliency-researcher-1b`.
-4. Lock in Section 1 dependencies from the 1a/1b artifacts. Section 2 and Section 3 entries are excluded from all subsequent prompts.
-5. Dispatch subagent for `/hve-resiliency-researcher-2`.
-6. Dispatch subagent for `/hve-resiliency-researcher-3`.
-7. Dispatch subagent for `/hve-resiliency-researcher-4`.
-8. Dispatch subagent for `/hve-resiliency-researcher-5`.
-9. Dispatch subagent for `/hve-resiliency-researcher-6` when shared dependency risk analysis is needed.
-10. Dispatch subagent for `/hve-resiliency-researcher-7-logging`.
-11. After Prompt 7 completes, present the Phase 1 completion summary listing every artifact produced.
-12. **STOP and wait for user confirmation before starting Phase 2.** End the turn with a Phase 2 readiness summary that lists the applicable Phase 2 prompts (computed by mapping Section 1 dependencies to the Phase 2 Prompt-to-Service Map) and explicitly recommends the first one in this form: "Reply `proceed` to begin Phase 2 starting with `<first-applicable-phase-2-slug>` (`<service name>`), or run `/clear` first if you want a fresh context." Do not auto-dispatch any Phase 2 prompt in the same turn as the Phase 1 summary.
-
-### Phase 2: Service-Specific Research (Prompts 8-19, Circumstantial) - Runs After User Confirmation
-
-Phase 2 runs only after Phase 1 is complete **and the user has confirmed in a subsequent turn** (per Phase 1 Sequence step 12). Run only the prompts matching dependencies confirmed in Prompt 1 Section 1. Skip services not found.
-
-Phase 2 is triggered by an affirmative user reply (e.g., `proceed`, `yes`, `continue`, `go`, or by re-invoking the skill after `/clear`). Once triggered, Phase 2 runs in the same execution mode the user selected for Phase 1 unless the user requests a different mode at the confirmation step.
-
-In both modes, the agent MUST first compute the applicable prompt set by mapping each Section 1 dependency from the Prompt 1a/1b artifacts to the corresponding service-specific prompt below. Skip every prompt whose service is not in Section 1.
-
-#### Phase 2 Mode A Rules (Interactive, `/clear`-gated)
-
-* The agent runs exactly one applicable Phase 2 prompt per turn, in the order of the Phase 2 Prompt-to-Service Map below (filtered to applicable services).
-* The agent executes the prompt directly (or via a single subagent invocation) and writes the artifact to `.copilot-tracking/research/`.
-* After the prompt completes, the agent presents a short inline summary of the produced artifact and STOPS the turn with an explicit next-prompt recommendation in this exact form: "Run `/clear`, then reply `proceed` (or re-invoke `/hve-resiliency-research`) to continue with `<next-prompt-slug>` (`<service name>`)." The `<next-prompt-slug>` MUST be the next applicable entry from the filtered Phase 2 Prompt-to-Service Map. If no applicable prompts remain, follow the Phase 2 Stop Rule instead.
-* The agent MUST NOT dispatch the next Phase 2 prompt in the same turn.
-* If a prompt fails or produces no artifact, retry once with a more explicit instruction; if it fails again, surface the error, skip that service, and continue on the next user turn with the remaining applicable prompts.
-* After the final applicable prompt completes, present a Phase 2 completion summary listing every artifact produced and every service skipped (with reason), then STOP per the Phase 2 stop rule below.
-
-#### Phase 2 Mode B Rules (Autonomous, no `/clear`)
-
-* The agent MUST execute all applicable Phase 2 prompts without prompting the user and without inserting `/clear` between them.
-* The agent MUST dispatch each applicable prompt as an isolated subagent invocation (one subagent per prompt) to preserve context isolation in lieu of `/clear`. Where service-specific prompts are independent (no shared state), the agent MAY dispatch up to three subagents in parallel.
-* After each subagent completes, the orchestrating agent reads the produced artifact, summarizes the result inline (one short paragraph), then dispatches the next.
-* If a subagent fails or produces no artifact, retry once with a more explicit instruction; if it fails again, surface the error, skip that service, and continue with the remaining applicable prompts.
-* Present a Phase 2 completion summary listing every artifact produced and every service skipped (with reason).
-
-#### Phase 2 Stop Rule (Both Modes)
-
-* **STOP at the end of Phase 2.** Do not auto-dispatch Phase 3 (`/hve-resiliency-researcher-consolidate-0`) - the consolidation prompts are long-running and time out under autonomous orchestration. End the turn with the explicit next-step recommendation: "Run `/clear`, then `/hve-resiliency-researcher-consolidate-0` to begin Phase 3 (Consolidation)."
-
-#### Phase 2 Prompt-to-Service Map
-
-* `/hve-resiliency-researcher-8-appgw` (App Gateway)
-* `/hve-resiliency-researcher-9-functions` (Azure Functions)
-* `/hve-resiliency-researcher-10-keyvault` (Key Vault)
-* `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
-* `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
-* `/hve-resiliency-researcher-13-sql` (SQL Server)
-* `/hve-resiliency-researcher-14-redis` (Redis)
-* `/hve-resiliency-researcher-15-storage` (Azure Storage)
-* `/hve-resiliency-researcher-16-kafka` (Kafka - active-passive design) **or** `/hve-resiliency-researcher-16-kafka-active-active` (Kafka - active-active mirror-topic + feature-flag design). Select exactly one Kafka prompt per assessment based on the target architecture; do not run both in the same pass.
-* `/hve-resiliency-researcher-17-networking` (Networking)
-* `/hve-resiliency-researcher-18-entraid` (Entra ID)
-* `/hve-resiliency-researcher-19-apim` (APIM)
+10. Run `/hve-resiliency-researcher-9-functions` (Azure Functions)
+11. Run `/hve-resiliency-researcher-10-keyvault` (Key Vault)
+12. Run `/hve-resiliency-researcher-11-aks-istio` (AKS and Istio)
+13. Run `/hve-resiliency-researcher-12-cosmosdb` (Cosmos DB)
+14. Run `/hve-resiliency-researcher-13-sql` (SQL Server)
+15. Run `/hve-resiliency-researcher-14-redis` (Redis)
+16. Run `/hve-resiliency-researcher-15-storage` (Azure Storage)
+17. Run the Kafka prompt that matches the explicitly provided Kafka strategy. The strategy is agreed by the development, architecture, and application teams before the assessment starts and is never inferred from the database model (see [Resiliency Research Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md)). Kafka runs on Confluent Cloud; do not ask which Kafka provider is in use.
+    * `kafkaStrategy=Active-Active` -> Run `/hve-resiliency-researcher-16-kafka-active-active`
+    * `kafkaStrategy=Active-Standby` -> Run `/hve-resiliency-researcher-16-kafka-active-standby-confluent`
+    * No strategy provided -> Do not auto-select and do not derive one from the database model; ask for the agreed strategy before proceeding
+18. Run `/hve-resiliency-researcher-17-entraid` (Entra ID)
 
 ### Phase 3: Consolidation
 
-Phase 3 is split into three sequential, user-gated passes so the consolidation never times out. Run each after a `/clear`:
+Consolidation has been split into a bounded pipeline. Run these in order:
 
-* Run `/clear`, then `/hve-resiliency-researcher-consolidate-0` - reads all Phase 1 and Phase 2 artifacts, deduplicates findings, assigns the authoritative logical finding IDs into a findings manifest, and writes the research file header and Repository Context.
-* Run `/clear`, then `/hve-resiliency-researcher-consolidate-1` - appends Sections 2-5 (Dependency Inventory, Region and Zone Assumptions, State and Data, Failure and Degraded-Mode) using the manifest IDs.
-* Run `/clear`, then `/hve-resiliency-researcher-consolidate-2` - appends Sections 6-8 and the authoritative Research Findings Index, then runs the quality bar. Produces the completed consolidated research document at `.copilot-tracking/research/`.
+19. Run `/hve-resiliency-consolidate-0-scaffold` (enumerates accepted researcher artifacts, emits the consolidated skeleton and the frozen manifest sidecar).
+20. Run each section-fill prompt against the manifest emitted in step 19. Fills write to independent fragment files under `<consolidatedDocDir>/sections/` and may run in parallel chats:
+    * `/hve-resiliency-consolidate-1-repository-context`
+    * `/hve-resiliency-consolidate-2-dependency-inventory`
+    * `/hve-resiliency-consolidate-3-region-zone`
+    * `/hve-resiliency-consolidate-4-state-data`
+    * `/hve-resiliency-consolidate-5-failure-degraded`
+    * `/hve-resiliency-consolidate-6-shared-cross-repo`
+    * `/hve-resiliency-consolidate-7-secrets`
+    * `/hve-resiliency-consolidate-8-other`
+21. Run `/hve-resiliency-consolidate-verify-1-4` to audit Sections 1-4 fragments against routed source artifacts (report-only).
+22. Run `/hve-resiliency-consolidate-verify-5-8` to audit Sections 5-8 fragments against routed source artifacts (report-only).
+23. Run `/hve-resiliency-consolidate-9-finalize` to assemble the fragments, run index-level dedup and section precedence, reconcile finding IDs into the authoritative `F-00X` scheme, and build the Section 9 index.
+24. Review the consolidated report at `.copilot-tracking/research/`.
 
 ### Phase 4: Planning
 
-* Run `/clear`, then `/hve-resiliency-planner-0` (planning context frame).
-* Run `/hve-resiliency-planner-1` (produces `<repo-name>-Master.md` in `.copilot-tracking/plans/`).
-* Inspect or modify the Master report before continuing if needed.
-* Run `/clear`, then `/hve-resiliency-planner-0` again (re-establish planning context).
-* Run `/hve-resiliency-planner-2` (produces `<repo-name>-Developer-Guide.md` in `.copilot-tracking/plans/`).
+25. Run `/hve-resiliency-planner-0` to lock in evidence constraints from the consolidated research.
+26. Run `/hve-resiliency-planner-1` to create the Executive / Master Resiliency Report.
+27. Run `/hve-resiliency-planner-0` again to re-establish evidence lock-in.
+28. Run `/hve-resiliency-planner-2` to create the Developer Guide with code-level remediation.
 
 ### Phase 5: Code-Level Resiliency Assessment Report
 
-* Run `/clear`, then `/hve-resiliency-assessment-builder-0` (header, TOC, Assessment Overview).
-* Run `/clear`, then `/hve-resiliency-assessment-builder-1` (P0 and P1 resiliency findings).
-* Run `/clear`, then `/hve-resiliency-assessment-builder-2` (P2/P3 resiliency and Non-Resiliency sections).
-* Run `/clear`, then `/hve-resiliency-assessment-builder-3` (IaC Gap Analysis, Full Finding Matrix, Microsoft Standards Alignment, validation).
-* Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
+29. Run `/hve-resiliency-planner-3a` to create the report header, Table of Contents, and Assessment Overview (Section 1).
+30. Run `/hve-resiliency-planner-3b` to append P0 and P1 Resilient Focused Recommendations (Section 2, partial).
+31. Run `/hve-resiliency-planner-3c` to append P2/P3 resiliency findings and Non-Resilient Focused Recommendations (Sections 2 completion + Section 3).
+32. Run `/hve-resiliency-planner-3d` to append IaC Gap Analysis, Full Finding Matrix, and Microsoft Standards Alignment (Sections 4-6) with final validation.
+33. Switch to **HVE Task Reviewer**, then run `.github/prompts/post-assessment-runbook.md` against the completed Code-Level Resiliency Assessment report.
+34. Review the completed report at `Microsoft Assessment/{serviceName}-Code-Level-Resiliency-Assessment.md`.
 
 ## Execution Rules
 
@@ -163,14 +117,357 @@ Phase 3 is split into three sequential, user-gated passes so the consolidation n
 * Do not include code examples in research phases
 * Classify every finding using P0 / P1 / P2 / P3 priorities
 * Cite file and line-level evidence for every substantive claim
-* Write each research output to `.copilot-tracking/research/` and use the repository name as the prefix for all output files
-* Planning outputs (Phase 4 and 5) may include remediation and code examples
-* Do not use em dashes (`—`) in any generated artifact, heading, label, table cell, or prose. Use a hyphen (`-`) or restructure the sentence with a comma, colon, or parentheses instead. This rule applies to all phases and all output files.
+* Write each research output to `.copilot-tracking/research/` and use the repository name as the prefix for all output files (e.g., `<repo-name>-research-output.md`).
+* Planning outputs (Phase 4) may include remediation and code examples
 
-## Priority Definitions
+## Priority Legend
 
-See [platform context](../../instructions/hve-resiliency-platform-context.instructions.md) for researcher phases and [planner context](../../instructions/hve-resiliency-planner-context.instructions.md) for planning phases.
+Use this consistently in all outputs:
 
-## Output Review
+* P0: Blocking/Critical Risk
+* P1: High Priority
+* P2: Improvement/Best Practice (Non-Blocking)
+* P3: Non-Blocking Code Consistency (Best Practices / Maintainability)
 
-> **Review notice:** Every artifact produced by this workflow - research outputs, consolidated reports, planning documents, and the final assessment - must be reviewed by a qualified engineer before it is shared, acted on, or treated as authoritative. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified priorities, fabricated citations, or internal inconsistencies across phases. Validate every claim against the cited file and line references, confirm dependency scoping decisions, reconcile contradictions between artifacts, and correct any errors before advancing to the next phase or delivering results.
+### P0 — Critical Resiliency Risk
+
+**Definition**: Code or configuration changes required for the application to start and operate without crashing in both regions or for the global load balancer to determine regional health accurately.
+
+**Criteria** (any of the following):
+
+* Application code or configuration prevents successful startup or causes crashes in either region.
+* Region-specific configuration values must be added, changed, or externalized.
+* A health endpoint must be created because none exists.
+* An existing health probe does not include all critical application dependencies.
+* Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
+
+### P1 — Important Resiliency Risk
+
+**Definition**: Generic, region-agnostic resiliency changes required to preserve current production behavior after multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Retry logic or circuit breakers are required.
+* Timeout tuning is required.
+* Local caching must be replaced with distributed caching.
+* Idempotency controls are required.
+* Without the change, requests may still succeed, but latency, processing, logging, or exception handling could differ from current production behavior.
+
+### P2 — Code Quality / Non-Resiliency
+
+**Definition**: A new architectural pattern, component, or redesign that improves resiliency but is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Dead-letter queue implementation.
+* Saga or outbox pattern adoption.
+* Event-sourcing introduction.
+* Replication redesign.
+* Any comparable architecture-level change.
+
+**Important**: These findings should still be reported. But they do **not** belong in the resiliency bucket and should not be prioritized above P0/P1 resiliency items. Frame them as code-quality recommendations, not resiliency risks.
+
+### P3 — Noted for Completeness
+
+**Definition**: A best-practice, hardening, maintainability, readability, duplication, or consistency improvement that is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Maintainability or readability improvements.
+* Duplicate-code removal.
+* Naming, formatting, or pattern consistency.
+* Non-blocking hardening improvements.
+* Findings that do not match P0, P1, or P2.
+
+## Service Exclusion Rule
+
+* After Prompts 1a and 1b complete, dependencies classified only in Section 2 (Checked But Not Present) or Section 3 (Not Applicable) are dropped from scope
+* Prompts 2-7, service-specific prompts (9-17), and the consolidation report analyze only dependencies confirmed in Section 1 of Prompt 1a or Prompt 1b
+* In Phase 2, run only the service-specific prompts for dependencies found in either producer's Section 1
+
+## Deliverable Templates
+
+Use these templates as the expected output shape per prompt.
+
+### Prompt 0 Deliverable Template
+
+```text
+# Prompt 0 Research Output
+
+## Scope
+- Repository and bounded focus area
+
+## Observed Implementation Behavior
+- Finding
+  - Priority: P0 / P1 / P2 / P3
+  - Evidence: <file path>:<line>
+  - Existing mitigations: <if any, with evidence>
+  - Constraints/limitations: <if any, with evidence>
+
+## Application Flow
+- Finding
+  - Priority: P0 / P1 / P2 / P3
+  - Evidence: <file path>:<line>
+  - Existing mitigations: <if any, with evidence>
+
+## Assumptions and Constraints
+- Finding
+  - Priority: P0 / P1 / P2 / P3
+  - Evidence: <file path>:<line>
+  - Constraints/limitations: <if any, with evidence>
+```
+
+### Prompt 1a Deliverable Template
+
+```text
+---
+source-prompt: hve-resiliency-researcher-1a
+schema-version: 1
+status: current
+---
+
+## Section 1 - Used Azure Services (Evidence Confirmed)
+- Service name:
+- Azure service category:
+- Evidence class: Explicit Use or Implicit Dependency
+- Evidence (file path + line number):
+- Brief description of how it is used:
+- Region / failover sensitivity (Yes/No/Unclear + evidence-only rationale):
+
+## Section 2 - Checked but Not Present
+- Service / trigger name:
+- Result: Bounded negative or Unconfirmed trigger
+- Reason it was evaluated or trigger evidence (file path + line number):
+- Checked scope and indicator families:
+- Confirmation gap or terminal label:
+
+## Section 3 - Not Applicable
+- Service / Category name:
+- Evidence (file path + line number):
+- Reason it does not apply:
+```
+
+### Prompt 1b Deliverable Template
+
+```text
+---
+source-prompt: hve-resiliency-researcher-1b
+schema-version: 1
+status: current
+---
+
+## Section 1 — Used External Dependencies (Evidence Confirmed)
+- Service / Dependency name:
+- Evidence (file path + line number):
+- Brief description of how it is used:
+- Whether it materially impacts region failover:
+- Existing mitigations present (if any), with evidence:
+- Health check present for this dependency?:
+- How health is determined, with evidence:
+- Is dependency health surfaced to GLB health evaluation?:
+- What GLB probes or upstream probes hit, with evidence:
+- Constraints/limitations (if any), with evidence:
+
+## Section 2 — Checked but Not Present
+- Service / Dependency name:
+- Reason it was evaluated:
+- Explicit statement: No references found in code, config, IaC, or pipelines
+
+## Section 3 — Not Applicable
+- Service / Category name:
+- Reason it does not apply:
+```
+
+### Prompt 2 Deliverable Template
+
+```text
+# Prompt 2 Research Output
+
+## Region Assumptions
+- Assumption:
+- Priority: P0 / P1 / P2 / P3
+- Failover relevance (between West US 2 and West US):
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+- Constraints/limitations (if any): with evidence
+```
+
+### Prompt 3 Deliverable Template
+
+```text
+# Prompt 3 Research Output
+
+## Dependency Survivability Findings
+- Service:
+- Priority: P0 / P1 / P2 / P3
+- Region assumption in endpoint/credential/identity:
+- Fallback or multi-region logic present:
+- Health check present / health-to-GLB linkage:
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+- Constraints/limitations (if any): with evidence
+```
+
+### Prompt 4 Deliverable Template
+
+```text
+# Prompt 4 Research Output
+
+## State and Data Characteristics
+- Characteristic:
+- Priority: P0 / P1 / P2 / P3
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+- Constraints/limitations (if any): with evidence
+
+## Data Loss Potential (Facts Only)
+- Where loss could occur:
+- Failure condition (regional failover/partial outage):
+- Writes/messages/records at risk:
+- Priority: P0 / P1 / P2 / P3
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+
+## Failover Risk Observations
+- Observation:
+- Priority: P0 / P1 / P2 / P3
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+- Constraints/limitations (if any): with evidence
+```
+
+### Prompt 5 Deliverable Template
+
+The Prompt 5 pipeline emits three outcome fragments plus a manifest sidecar, and finalize assembles them into a single artifact with three subsections. The Required Row Schema is defined in the [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md) and applies uniformly to every rendered row.
+
+Outputs produced by the pipeline:
+
+* Skeleton and final artifact: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.md`
+* Manifest sidecar: `<researchRoot>/YYYY-MM-DD/<repo-name>-hve-resiliency-researcher-5-research.manifest.md`
+* Fragments: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/{startup-failure,data-loss-partial-processing,blocking-transactions}.md`
+* Verify audit: `<researchRoot>/YYYY-MM-DD/prompt-5-fragments/verify-audit.md`
+
+Row shape (each row is emitted with an outcome-scoped ID such as `F-5-startup-001`, `F-5-data-loss-001`, or `F-5-blocking-001`):
+
+```text
+### F-5-<outcome>-00X
+
+- Failure mode:
+- Priority: P0 / P1 / P2 / P3
+- Triggering dependency + failure type (timeout / DNS failure / authentication failure / partial outage):
+- Scenario: Between West US 2 and West US regional failover
+- Code path / entrypoint:
+- Observed behavior (startup failure / data loss or partial processing / blocking transactions):
+- User or customer-visible impact:
+- Business impact:
+- Blast radius:
+- Data loss potential:
+- Data consistency risk:
+- Detection signals:
+- Existing mitigations present (evidence):
+- Constraints or limitations (evidence):
+- Manual ops workaround (references):
+- Evidence citations (files + line numbers):
+```
+
+Finalized artifact structure (assembled by `/hve-resiliency-researcher-5-finalize`):
+
+```text
+# <repo-name> Failure and Degraded Mode Behavior (Researcher 5)
+
+## Scope and Assumptions
+## Task Implementation Requests
+## 5.1 Startup Failure
+## 5.2 Data Loss or Partial Processing
+## 5.3 Blocking Transactions
+## Ledger and Terminal Outcomes
+```
+
+### Prompt 6 Deliverable Template
+
+```text
+# Prompt 6 Research Output
+
+## Shared and Cross-Repository Dependencies
+- Dependency:
+- Priority: P0 / P1 / P2 / P3
+- Ownership boundary or entrypoint:
+- Evidence-backed causal chain of repository facts and deterministic code-semantics inferences:
+- Regional failover risk implication:
+- Evidence: <file path>:<line>
+- Existing mitigations present (if any): with evidence
+- Constraints/limitations (if any): with evidence
+```
+
+### Service-Specific Prompts (9-17) Deliverable Template
+
+```text
+# Prompt N Research Output — <Service Name>
+
+(repeat per issue)
+- Issue Description:
+- Risk Level (P0/P1/P2/P3):
+- Code location (file + line number):
+- Why this is a risk to app, regional failover:
+- Impact(s) if this is not changed:
+- Existing mitigations present (evidence):
+- Constraints/limitations (evidence):
+- Remediation guidance: None (HVE Task Researcher role is evidence-only)
+```
+
+### Consolidated Report Deliverable Template
+
+The consolidated report is produced by the split consolidation pipeline (scaffold, section-fill, verify, finalize). The Required Finding Schema for Sections 2.1 and 3-8 is defined in the [Consolidation Shared Contract](../../instructions/hve-resiliency-consolidation-shared.instructions.md); finalize reconciles section-scoped finding IDs into the authoritative `F-00X` scheme.
+
+```text
+# HVE Task Research - <repo-name>
+
+Assessment Scope:
+
+* Repository: <repo-name>
+* Focus: Regional failover between West US 2 and West US
+* Regions Evaluated: West US 2 and West US
+* Assessment Date: YYYY-MM-DD
+* Generated By: HVE Task Researcher
+* Schema Version: hve-resiliency-consolidation/v1
+
+## 1. Repository Context
+
+## 2. Dependency Inventory
+### 2.1 Used Dependencies (Evidence Found)
+### 2.2 Checked but Not Present
+### 2.3 Not Applicable Dependency Categories
+
+## 3. Region Assumptions
+
+## 4. State and Data Characteristics
+
+## 5. Failure and Degraded-Mode Behavior
+
+## 6. Shared and Cross-Repository Dependencies
+
+## 7. Hard-Coded Values or Secrets in Code or Files
+
+## 8. Other Findings Not Categorized Above
+
+## 9. Research Findings Index (Authoritative)
+```
+
+Each rendered finding under Sections 2.1 and 3-8 uses the Required Finding Schema:
+
+```text
+### Finding F-00X
+
+* Dependency or Category:
+* Priority: P0 | P1 | P2 | P3
+* Ownership:
+- Scenario: Between West US 2 and West US regional failover
+* Description:
+* Failure Mode and Scenario-Specific Risk:
+* Impacts:
+* Evidence: <normalized-path>:L<start>-L<end>
+* Source Record IDs:
+* Existing Mitigations:
+* Constraints and Limitations:
+```
+

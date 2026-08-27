@@ -1,59 +1,29 @@
 ---
-description: Run Prompt 5 failure and degraded mode behavior for resiliency research
+description: Deprecated - the monolithic Prompt 5 has been split into a scaffold-fill-verify-finalize pipeline. Redirects to the new scaffold entry point.
 agent: Task Researcher
 ---
 
-# HVE Resiliency Researcher 5
+# Application HVE Researcher 5 (Deprecated Redirect)
 
-Use [Resiliency Research Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md).
+The single monolithic `hve-resiliency-researcher-5` prompt has been replaced with a bounded, staged pipeline that mirrors the split consolidation pipeline. Run the new pipeline instead. Do not attempt to reconstruct the prior schema or run any evidence collection from this file.
 
-```text
-# HVE Task Researcher Prompt - Failure & Degraded-Mode Behavior
+## Pipeline Entry
 
-You are acting as a Senior Cloud Application Architect performing a resiliency assessment for a microservice.
+The new pipeline is:
 
-## OBJECTIVE
-Identify code paths where dependency failures (timeouts, DNS failures, authentication errors, partial outages) would result in:
-- Application startup failure
-- Silent functional degradation
-- Data loss or partial processing
-- Blocking transactions
+1. `/hve-resiliency-researcher-5-0-scaffold` - validate Prompt 1a and 1b Section 1 prerequisites, freeze the eligible-dependency inventory, emit the Prompt 5 skeleton and a frozen manifest sidecar.
+2. `/hve-resiliency-researcher-5-1-startup-failure` - fill the startup-failure fragment.
+3. `/hve-resiliency-researcher-5-2-data-loss-partial-processing` - fill the data-loss / partial-processing fragment.
+4. `/hve-resiliency-researcher-5-3-blocking-transactions` - fill the blocking-transactions fragment.
+5. `/hve-resiliency-researcher-5-verify` - audit the three outcome fragments against the manifest and workspace source.
+6. `/hve-resiliency-researcher-5-finalize` - assemble the fragments into the single Prompt 5 research artifact consumed by `hve-resiliency-consolidate-5-failure-degraded`.
 
-When assessing timeouts, cover all layers, not just application/HTTP timeouts. Explicitly check transport/TCP-layer behavior that dominates failover: connect timeouts, TCP keepalive, stale pooled connections pinned to a failed region, pool eviction, and DNS TTL/caching. Treat missing keepalive or non-evicting pools as failover failure modes in their own right.
+The shared contract for the split pipeline is defined in [Researcher 5 Split Contract](../../instructions/hve-resiliency-researcher-5-split.instructions.md). Platform inheritance is unchanged and continues to come from [Application Platform Context](../../instructions/hve-resiliency-platform-context.instructions.md).
 
-Focus on outage conditions affecting either region (West US or West US 2) or zonal degradation.
+Do not render failure-mode rows from this file. Do not read Prompt 1a or Prompt 1b from this file. Do not modify any downstream fragment, manifest, skeleton, or verify audit from this file.
 
-For each failure mode, capture impact fields (facts only; no prioritization):
-- User/customer-visible impact (what the caller experiences)
-- Business impact (e.g., auth fails, transactions cannot be processed, refunds delayed)
-- Blast radius (which endpoints/workflows/features are affected)
-- Data loss potential (what could be lost, where, and under what failure condition)
-- Data consistency risk (loss/duplication/replay/out-of-order) and where it can occur
-- Detection signals (logs/metrics/traces/health probes that would show the failure)
-- Existing mitigations already present (retries/timeouts/fallbacks/feature flags), with evidence
-- Constraints/limitations (dependency/platform/operational): factors that limit failover correctness or recovery speed, with evidence or references when present
-- Manual ops workaround (runbooks/scripts/toggles) if it exists, with references
+## Completion
 
-Always cite file + line evidence for both the failure behavior and the impact statement.
+Report that the monolithic Prompt 5 is deprecated and direct the operator to the pipeline entry point.
 
-OUTPUT FORMAT (repeat per failure mode):
-- Failure mode:
-- Triggering dependency + failure type (timeout/DNS/auth/partial outage; for timeouts, specify layer: application/HTTP vs transport/TCP connect vs TCP keepalive/stale pooled connection):
-- Code path / entrypoint:
-- Observed behavior (startup fail/degrade/data loss/blocking):
-- User/customer-visible impact:
-- Business impact:
-- Blast radius:
-- Data loss potential:
-- Data consistency risk:
-- Detection signals:
-- Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
-- Manual ops workaround (references):
-- Evidence citations (files + line numbers):
-```
-
-
-## Output Review
-
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
+> **Next step:** Run `/hve-resiliency-researcher-5-0-scaffold`

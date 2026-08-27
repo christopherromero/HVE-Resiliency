@@ -144,7 +144,7 @@ If they are missing, see [Troubleshooting: Slash commands not appearing](#troubl
 Commit the new `.github/` files so the rest of the team works from the same workflow definition:
 
 ```powershell
-git add .github/skills .github/prompts .github/instructions
+git add .github/skills .github/prompts .github/agents .github/instructions
 git commit -m "chore: install HVE Resiliency framework"
 ```
 
@@ -154,7 +154,7 @@ Phase 1 establishes the repository context and dependency inventory that all lat
 
 ### 1.1 Select the agent
 
-In Copilot Chat, switch the active agent to **Task Researcher**. Every Phase 1 prompt expects this agent.
+The recommended path is to select **Resiliency Research Orchestrator v1.0** from the agent picker: it runs Phases 1-3 in one invocation, parallelizes independent steps, and manages context automatically (no manual `/clear`). For the manual, one-prompt-per-turn path below, select a research agent (`Task Researcher` in HVE Core v3.2.2, or the current research phase agent in your HVE version); every Phase 1 prompt expects a research agent.
 
 ### 1.2 Invoke the skill
 
@@ -170,8 +170,8 @@ The skill will ask one and only one question: which execution mode to use.
 
 Reply with one of:
 
-* `Mode A` for interactive, one-prompt-per-turn execution with `/clear` between prompts.
-* `Mode B` for autonomous execution that dispatches each prompt as an isolated subagent.
+* `Mode A` for interactive, one-prompt-per-turn execution, with an optional context reset between prompts (recommended for cost, optional for correctness - durable artifacts carry context forward).
+* `Mode B` for autonomous execution that dispatches each prompt as an isolated subagent. This is now provided directly by the **Resiliency Research Orchestrator v1.0** agent, which is the recommended way to run Mode B.
 
 See [Operator decision matrix](#operator-decision-matrix-mode-a-vs-mode-b) if you have not yet decided.
 
@@ -182,7 +182,7 @@ Repeat this loop for prompts 0, 1a, 1b, 2, 3, 4, 5, 6, 7-logging (in that order)
 1. Wait for the prompt artifact to be written under `.copilot-tracking/research/`.
 2. Open the artifact and skim it. Confirm it cites file and line references for substantive claims.
 3. If the artifact is wrong or empty, retry the same prompt by re-invoking the skill before moving on.
-4. When the agent stops with a next-step recommendation, run `/clear`.
+4. When the agent stops with a next-step recommendation, optionally run `/clear` to reset context (recommended for cost).
 5. Reply `proceed` (or re-invoke `/hve-resiliency-research`) to continue with the next prompt in the sequence.
 
 After Prompt 1a and 1b complete, **review Section 1 in both artifacts before continuing**. Section 1 is the authoritative dependency list; Sections 2 and 3 are excluded from every later prompt. If Section 1 misses an in-scope service or includes a service that is not actually present, edit the artifact now before Prompt 2 starts.
@@ -223,7 +223,8 @@ Before proceeding, list the prompts the orchestrator plans to run. Cross-check e
 | `/hve-resiliency-researcher-13-sql` | Azure SQL |
 | `/hve-resiliency-researcher-14-redis` | Azure Cache for Redis |
 | `/hve-resiliency-researcher-15-storage` | Azure Storage |
-| `/hve-resiliency-researcher-16-kafka` | Kafka / Event Hubs Kafka |
+| `/hve-resiliency-researcher-16-kafka-active-active` | Kafka (Active-Active, paired with a multi-master database) |
+| `/hve-resiliency-researcher-16-kafka-active-standby-confluent` | Kafka (Active-Standby via Confluent Cluster Linking, paired with a single-master database) |
 | `/hve-resiliency-researcher-17-networking` | Networking |
 | `/hve-resiliency-researcher-18-entraid` | Entra ID |
 | `/hve-resiliency-researcher-19-apim` | API Management |
@@ -381,12 +382,17 @@ This writes the report header, table of contents, and Assessment Overview to `Mi
 /hve-resiliency-assessment-builder-3
 ```
 
-### 5.5 Phase 5 exit criteria
+### 5.5 Post-assessment review
+
+After the Planner prompts complete, switch to **HVE Task Reviewer** and run `.github/prompts/post-assessment-runbook.md` against the completed assessment report. Complete every checklist item in order, including duplicate detection and finding reordering, before sign-off.
+
+### 5.6 Phase 5 exit criteria
 
 Phase 5 is complete when:
 
 * The assessment markdown exists at `Microsoft-Assessment/<serviceName>-Code-Level-Resiliency-Assessment.md`.
 * All six sections are present (Overview, Resilient-focused, Non-Resilient-focused, IaC Gap, Full Finding Matrix, Microsoft Standards Alignment).
+* The post-assessment review checklist is complete.
 * A qualified engineer has reviewed and signed off on the full report before it is shared with the customer.
 
 A worked example is at [Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md](../Microsoft-Assessment/EXAMPLE_MACAESA-Code-Level-Resiliency-Assessment.md).
@@ -478,7 +484,7 @@ Fix: stop the run, `/clear`, and re-invoke `/hve-resiliency-research`. If it rec
 
 Symptom: a planning prompt produces forensic-only output, or a research prompt produces remediation recommendations.
 
-Fix: stop, `/clear`, switch to the correct agent (`Task Researcher` for Phases 1-3, `Task Planner` for Phases 4-5), and re-run the affected prompt.
+Fix: stop, reset context, and switch to the correct agent - the **Resiliency Research Orchestrator v1.0** (or a research phase agent) for Phases 1-3, the **Resiliency Planning Orchestrator v1.0** (or a planning phase agent) for Phases 4-5 - then re-run the affected step. Note: HVE Core has consolidated the standalone `Task Researcher` / `Task Planner` agents into the RPI lifecycle; the orchestrator agents do not depend on those specific agents.
 
 ### Consolidation times out
 

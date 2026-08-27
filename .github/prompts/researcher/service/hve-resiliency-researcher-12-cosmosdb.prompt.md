@@ -1,47 +1,346 @@
 ---
-description: Run Prompt 12 Cosmos DB RU with Mongo API resiliency analysis
-agent: Task Researcher
+description: "Assess Cosmos DB Mongo API regional failover evidence with bounded repository research"
+argument-hint: "prompt1aArtifactPath=... prompt1bArtifactPath=..."
 ---
 
-# HVE Resiliency Researcher 12 Cosmos DB
+# Application HVE Researcher 12 Cosmos DB
 
-Use [Resiliency Research Platform Context](../../../../instructions/hve-resiliency-platform-context.instructions.md).
+Use [Application Platform Context](../../../instructions/hve-resiliency-platform-context.instructions.md)
+as supporting context. Apply every safety-critical control in this prompt directly, regardless of
+whether that instructions file is auto-applied.
 
-```text
-You are a cloud resilience reviewer focusing on Cosmos DB RU with Mongo API.
+## Inputs
 
-Analyze this application's use of Azure Cosmos DB (Mongo API, RU model) with active-active multi-region writes.
+* `${input:prompt1aArtifactPath}`: (Required) Exact workspace-relative path to the completed Prompt 1a
+  Azure dependency inventory artifact under `.copilot-tracking/research/`.
+* `${input:prompt1bArtifactPath}`: (Required) Exact workspace-relative path to the completed Prompt 1b
+  external dependency inventory artifact under `.copilot-tracking/research/`.
 
-Specifically evaluate:
-1. How the app selects preferred regions and whether it avoids hard-coding endpoints.
-2. Whether MongoDB driver retries, timeouts, and failover behavior are correctly configured and enabled.
-3. How the app handles transient write failures, 429 throttling, and region outages without restart.
-4. Whether session tokens are preserved to guarantee read-your-writes across regions.
-5. If write operations are idempotent and resilient to Last Write Wins conflict resolution.
-6. What happens in code when a write region becomes unavailable mid-request.
-7. Are health probes aligned between GLB and backend services?
-8. There can be no data loss
+Use only these paths for prerequisite artifacts. Do not search, glob, select a recent file, or infer a
+prerequisite path.
 
-For each finding/issue:
-Assess failover risk for each gap:
-   - P0 - Blocking/Critical Risk
-   - P1 - High Priority (Targeted Remediation Required)
-   - P2 - Improvement/Best Practice (Non-Blocking)
-   - P3 - Non-Blocking Code Consistency (Best Practices / Maintainability)
-   - Provide an explanation why this is an issue, why each issue is rated at that level
-- Identify the area in the code, impact if not fixed, where the issue is located (File + line #)
+## Scope and execution contract
 
-OUTPUT FORMAT (repeat per issue):
-- Issue Description:
-- Risk Level (P0/P1/P2/P3):
-- Code location (file + line number):
-- Why this is a risk to app, zone or region failover:
-- Impact(s) if this is not changed:
-- Existing mitigations present (evidence):
-- Constraints/limitations (evidence):
-```
+Execute only this Prompt 12 research workflow. Do not start another resiliency prompt, delegate work, or
+perform recommendation or implementation work. Keep all repository interaction read-only. Use only
+repository evidence and report factual evidence gaps instead of assumptions.
 
+Assess only the current repository for this authoritative scenario:
 
-## Output Review
+* Full regional failover between West US 2 and West US
 
-> **Review notice:** Carefully review this prompt's output before relying on it. AI-assisted analysis may contain inaccuracies, omitted evidence, misclassified findings, or internal inconsistencies. Validate every claim against the cited file and line references, confirm priority assignments, and reconcile any contradictions before advancing to the next prompt or phase.
+Cosmos DB runs a multi-region write configuration for active-active workloads. West US 2 and West US
+both accept writes, so no single write region is a point of failure. Concurrent writes to the same
+document from two regions are therefore a normal operating condition rather than an exception, and how
+the application handles them is application code.
+
+Replication, acknowledgement, recovery, region failover, and global load balancer behavior belong to the
+platform and are never application-code findings. Treat the RU model, Mongo API behavior, and any
+no-data-loss expectation as claims to verify or as evidence gaps; repository evidence cannot prove
+runtime behavior.
+
+Keep the Cosmos DB scope closed to these six assessment areas:
+
+1. Preferred-region selection and avoidance of hard-coded endpoints
+2. MongoDB driver retries and timeouts
+3. Transient write failures, 429 throttling, and region-outage handling without restart
+4. Write idempotency and conflict behavior under multi-region writes
+5. `_etag` optimistic concurrency on document updates, and whether an update path reads, modifies, and
+   writes a document without a precondition
+6. Whether Cosmos DB availability is reflected in the application health endpoint
+
+Do not add assessment areas, ownership fields, recommendations, alternatives, examples, or code changes.
+
+## Prerequisite gate
+
+Validate both input artifacts before repository discovery:
+
+1. Normalize each path and require a regular workspace-relative file under
+   `.copilot-tracking/research/`, without traversal, absolute paths, links, or repository escape.
+2. Parse YAML frontmatter and require non-empty string fields `repository`, `assessmentId`, `revision`,
+   `status`, `generatedAt`, and `promptId`. Require the current repository name, the exact current commit
+   SHA, `status: Complete`, RFC 3339 UTC ending in `Z`, and the matching `promptId` value `1a` or `1b`.
+3. Require equal `repository`, `assessmentId`, and `revision` across the artifacts. Require timestamps no
+   more than 24 hours apart and neither later than current UTC plus five minutes. Artifact age does not
+   establish currency; exact current-revision equality does.
+4. Validate the producer body schema and every prerequisite file-line citation. Map Prompt 1a
+   `Section 1 - Used Azure Services (Evidence Confirmed)`, `Section 2 - Checked but Not Present`, and
+   `Section 3 - Not Applicable`, and Prompt 1b
+   `Section 1 — Used External Dependencies (Evidence Confirmed)`, `Section 2 — Checked but Not Present`, and
+   `Section 3 — Not Applicable`. Reject malformed or
+   conflicting mappings.
+5. Enter discovery only when Prompt 1a confirms Azure Cosmos DB through product-specific production
+   binding evidence. Generic MongoDB dependencies, names, protocols, or configuration alone do not
+   confirm Cosmos DB. Prompt 1b must not contradict repository identity, revision, run, or applicability.
+
+Parse producer bodies with this deterministic grammar:
+
+* A section begins at a level-2 heading and ends at the next level-2 heading or end of file. Normalize
+   heading whitespace and case. Require the three producer-specific headings listed above once and in
+   order. Reject duplicate sections or a missing required section.
+* Prompt 1a and Prompt 1b Section 1 mean `Confirmed`, Section 2 means `Checked But Not Present`, and
+   Section 3 means `Not Applicable`.
+* Each section contains Markdown table rows or contiguous labeled list records with exactly these
+   semantic fields: `Service`, `Classification`, `Production binding`, and `Evidence`. Accept the sole
+   marker `None` when a section has no records. Normalize field names and values by trimming, collapsing
+   internal whitespace, and comparing case-insensitively; preserve citations byte-for-byte after path
+   normalization. Reject unlabelled prose as a record.
+* `Classification` accepts only `Confirmed`, `Checked But Not Present`, or `Not Applicable` and must
+   equal the containing section meaning. `Production binding` accepts only `Confirmed`, `Not evidenced`,
+   or `Not applicable`. It must be `Confirmed` for a confirmed Cosmos DB record, `Not evidenced` for a
+   checked-but-not-present record, and `Not applicable` for a not-applicable record or a non-Cosmos
+   external dependency.
+* Normalize `Service` by trimming, collapsing whitespace, and comparing case-insensitively. Only
+   `Azure Cosmos DB`, `Cosmos DB`, `Azure Cosmos DB for MongoDB`, and `Cosmos DB Mongo API` identify
+   Cosmos DB. Do not normalize generic `MongoDB`, `Mongo`, a protocol, driver, endpoint, or configuration
+   name to Cosmos DB.
+* A confirmed Cosmos DB record requires at least one workspace-relative `path:line` citation in
+   `Evidence` that supports product-specific production binding. Citations are optional for exclusion
+   records and non-Cosmos records; validate every citation that is present. Missing required fields,
+   empty required values, unsupported values, malformed citations, or an undecidable Cosmos DB
+   classification select `blocked-prerequisite`.
+* Collapse duplicate records only when normalized service, classification, production binding, and
+   normalized citation sets are equal. Conflicting duplicates or the same normalized service in more
+   than one section select `blocked-prerequisite`. Prompt 1a is authoritative for Azure Cosmos DB.
+   Prompt 1b may neither confirm nor exclude a Cosmos DB service alias inconsistently with Prompt 1a;
+   generic MongoDB records in Prompt 1b neither confirm nor exclude Cosmos DB.
+
+Select `excluded/not-applicable` only when both valid artifacts consistently place Cosmos DB outside the
+confirmed dependency scope. Select `blocked-prerequisite` for a missing, malformed, stale, ambiguous,
+conflicting, cross-run, cross-revision, or unverifiable artifact, unavailable current revision, invalid
+citation, or absent Cosmos DB applicability decision. Do not scan the repository as a fallback.
+
+## Minimum capabilities and safety boundary
+
+Require deterministic path enumeration, bounded text search over an explicit file list, bounded file and
+line reads, current repository name and revision reads, and atomic Markdown artifact writing. Prohibit
+builds, tests, network calls, application execution, mutation of repository source, and subagent use.
+
+Select `blocked-prerequisite` when a required capability is unavailable before the manifest freezes. If a
+capability fails after evidence collection begins, stop new discovery, dispose retained work within the
+remaining bounds, and select the applicable `bounded-partial` status.
+
+Treat ordinary bounded repository search and read results as a trusted transient processing boundary.
+Raw tool output may exist only ephemerally in tool transport and the current processing step long enough
+to sanitize it. Do not copy raw output into retained ledgers, artifacts, logs, responses, caches, hashes,
+comparisons, quotations, candidates, evidence stores, or derived values. Sanitize each current result
+before any retention or derivation, retain only the sanitized form, and discard the raw response from
+further processing. Do not require a search or read tool to sanitize bytes before returning them.
+
+Never retain raw credentials, secrets, tokens, connection strings, URI user information, sensitive query
+values, account keys, authorization values, request or response bodies, raw logs, or PII. Retain only a
+normalized workspace-relative path and line, generalized key or symbol category, non-sensitive behavior,
+stable redacted identity derived from sanitized content, and the minimum sanitized excerpt needed to
+audit a claim. Charge the 65,536-byte evidence cap to the UTF-8 byte length of all sanitized content
+retained in caches, ledgers, candidates, evidence stores, and the artifact. Select `blocked-prerequisite`
+if caller-side sanitization cannot be guaranteed before the first retention or derivation, or a
+`bounded-partial` status if sanitization fails after retained evidence collection begins.
+
+## Immutable production manifest
+
+After the prerequisite gate, enumerate paths once and freeze one normalized, sorted, text-only production
+manifest. Admit at most 240 files from only these roots and file classes:
+
+* `pom.xml`
+* `src/main/java/**`
+* `src/main/resources/**`
+* `Actionsfile/**`
+* `.github/workflows/**`
+* Root `Dockerfile`, `*.sh`, `*.properties`, `*.xml`, `*.json`, `*.yml`, and `*.yaml` files
+* Existing `bicep/**`, `terraform/**`, `helm/**`, `k8s/**`, and `deploy/**` trees
+
+Exclude `.git/**`, `.copilot-tracking/**`, `.github/prompts/**`, `target/**`, tests, generated output,
+caches, vendored dependencies, reports, prior research, documentation, local-only profiles, certificates,
+keys, trust stores, binaries, archives, and files outside the current repository. Tests and documentation
+may not be reintroduced as production evidence. Record an external production value, secret-resolved
+value, control-plane setting, or deployment binding unavailable from this manifest as an evidence gap.
+Do not admit files after the manifest freezes or perform another path traversal.
+
+## Finite bundled query matrix
+
+Run exactly one bounded search invocation for each query family below, in order, against the frozen
+manifest. Bundle all listed terms for that family into its single invocation, cache the complete sanitized
+result set, and never repeat a family or use a result to begin broad rediscovery.
+
+1. Cosmos binding: `cosmos`, `mongodb`, `mongo`, `ru`, client construction, connection keys, and endpoints
+2. Region and endpoint selection: preferred regions, West US 2, West US
+3. Retry and throttling: retry, timeout, backoff, transient errors, 429, throttling, and exception handling
+4. Write safety and conflicts: idempotency, duplicate suppression, conflict resolution, versioning, and acknowledgements
+5. Optimistic concurrency: `_etag`, etag, `If-Match`, precondition, replace, patch, upsert, read-modify-write, `findOneAndUpdate`, `replaceOne`, `updateOne`, and update filter
+6. Health alignment: health, readiness, liveness, probes, dependencies, and status propagation
+
+Read only cached hits and the minimum owning context required to classify them. Follow at most two
+evidence-backed source or configuration indirections per candidate, with depth at most 2, and only when
+the destination is already in the frozen manifest. Cache each baseline file read by normalized path.
+
+Apply these hard caps:
+
+* 240 manifest files
+* 6 search invocations and 6 completed query families
+* 120 unique baseline file reads
+* 20 corrective rereads total, at most one per file
+* 2 indirections per candidate at depth 2
+* 96 retained candidates
+* 48 rendered findings
+* 65,536 total bytes of retained sanitized evidence
+* Zero subagent invocations
+* One no-change saturation review
+* One corrective render and two full validation passes total
+
+Reaching a cap immediately stops new searches, reads, indirections, candidate admission, and finding
+admission governed by that cap. Complete bounded disposition and rendering for already retained records,
+then select the applicable `bounded-partial` status. Never evict an earlier record to admit a later one.
+
+## Candidate and assertion ledger
+
+Sort cached hits by normalized path, line, query family, and sanitized identity before candidate admission.
+Create each candidate ID from the deterministic tuple of assessment area, authoritative scenario,
+failure-mode class, normalized path and line, and sanitized identity. Use that same tuple as the
+deduplication key. Give every admitted candidate exactly one terminal disposition: `rendered`, `merged`,
+`validated-non-finding`, `evidence-gap`, `invalid-citation`, `insufficient-evidence`, `conflict`, or
+`unresolved-at-limit`.
+
+Maintain candidate-to-finding, finding-to-candidate, assertion-to-candidate, and candidate-to-assertion
+mappings. Validate every cited path, line, and range against a cached baseline read or the one allowed
+corrective reread. A citation is valid only when its sanitized content semantically supports the mapped
+assertion; line existence alone is insufficient. Narrow unsupported prose to the evidence. If no
+material supported assertion remains, retain an evidence-gap disposition and do not render a finding.
+
+Emit separate finding rows for every materially different failure mode. Deduplicate
+only identical assertions with the same scenario, failure mode, outcome, priority, mitigations,
+constraints, and evidence owners. Preserve all merged candidate IDs.
+
+## Evidence, priority, and field semantics
+
+Every substantive positive claim and source-local negative configuration value, including each issue,
+scenario effect, impact, mitigation, constraint, and priority rationale, requires assertion-level
+file-and-line evidence. A bounded absence claim instead requires a coverage citation tied to the frozen
+coverage ledger. Render it as `Coverage: manifest=<sanitized-manifest-id>; roots=<checked-roots>;
+classes=<checked-classes>; query-families=<completed-ids>; reads=<completed>/<required>`. Derive the
+manifest ID only from the sanitized normalized frozen manifest. The roots, classes, query families, and
+read counts must equal the immutable manifest, query, and read ledgers; incomplete coverage cannot support
+an absence claim. Never fabricate a file or line citation for absence. Use `Not observed in the checked
+manifest` rather than `not used` and include the coverage citation in the same finding field. Coverage
+citations do not replace file-and-line evidence for positive or source-local assertions.
+
+Classify each rendered finding with exactly one evidence-supported priority:
+
+### P0 — Critical Resiliency Risk
+
+**Definition**: Code or configuration changes required for the application to start and operate without crashing in both regions or for the global load balancer to determine regional health accurately.
+
+**Criteria** (any of the following):
+
+* Application code or configuration prevents successful startup or causes crashes in either region.
+* Region-specific configuration values must be added, changed, or externalized.
+* A health endpoint must be created because none exists.
+* An existing health probe does not include all critical application dependencies.
+* Prerequisites for other P0 resiliency fixes: if fixing A is required before fixing B, and B is P0, then A is also P0.
+
+### P1 — Important Resiliency Risk
+
+**Definition**: Generic, region-agnostic resiliency changes required to preserve current production behavior after multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Retry logic or circuit breakers are required.
+* Timeout tuning is required.
+* Local caching must be replaced with distributed caching.
+* Idempotency controls are required.
+* Without the change, requests may still succeed, but latency, processing, logging, or exception handling could differ from current production behavior.
+
+### P2 — Code Quality / Non-Resiliency
+
+**Definition**: A new architectural pattern, component, or redesign that improves resiliency but is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Dead-letter queue implementation.
+* Saga or outbox pattern adoption.
+* Event-sourcing introduction.
+* Replication redesign.
+* Any comparable architecture-level change.
+
+**Important**: These findings should still be reported. But they do **not** belong in the resiliency bucket and should not be prioritized above P0/P1 resiliency items. Frame them as code-quality recommendations, not resiliency risks.
+
+### P3 — Noted for Completeness
+
+**Definition**: A best-practice, hardening, maintainability, readability, duplication, or consistency improvement that is not required to preserve current production behavior or enable multi-region deployment.
+
+**Criteria** (any of the following):
+
+* Maintainability or readability improvements.
+* Duplicate-code removal.
+* Naming, formatting, or pattern consistency.
+* Non-blocking hardening improvements.
+* Findings that do not match P0, P1, or P2.
+
+The risk field must connect cited behavior to one named authoritative scenario and failure effect. Never
+derive priority from an unverified no-data-loss premise or from an assumed conflict-resolution mode.
+
+Use the exact field-safe value `Unknown: evidence unavailable (<evidence-gap-id>)` only in the impact,
+existing-mitigation, or constraint prose field when that field cannot be supported from repository
+evidence. In a mitigation field, `None observed in the checked manifest (<bounded scope>)` is valid only
+after complete coverage. Never use Unknown for terminal status, priority, issue or candidate identity,
+scenario, code location, citations, or required identifiers. Do not render a record that cannot satisfy
+a non-nullable field.
+
+## Deterministic completion and terminal status
+
+Discovery saturates only after the manifest is frozen, all six cached query families complete, every
+admitted hit is read or terminally limited, every candidate has one terminal disposition, every rendered
+assertion and citation validates, and one no-change saturation review adds no candidate, mapping,
+disposition, or finding. Do not reopen discovery after saturation.
+
+Select exactly one terminal status using this precedence:
+
+1. `blocked-prerequisite`: Prerequisite, initial capability, repository identity, or pre-collection sanitization failure
+2. `excluded/not-applicable`: Valid compatible prerequisite evidence excludes Cosmos DB
+3. `bounded-partial-with-findings`: A cap or post-collection failure leaves partial coverage and at least one valid finding
+4. `bounded-partial-zero-findings`: A cap or post-collection failure leaves partial coverage and no valid finding
+5. `completed-with-findings`: Applicability and all completion conditions pass with at least one valid finding
+6. `completed-zero-findings`: Applicability and all completion conditions pass with no valid finding
+
+Permit at most one corrective render. Run one full validation pass; if it changes output, run one final
+post-correction pass. A remaining invalid citation, unsupported assertion, conflict, unresolved candidate,
+or incomplete source or query family requires a `bounded-partial` status unless a higher status applies.
+
+## Output and handoff
+
+Write one sanitized artifact to
+`.copilot-tracking/research/<repository-name>-hve-resiliency-researcher-12-cosmosdb-research-output.md`,
+where `<repository-name>` is the sanitized current repository root directory name. Include the single
+terminal status, checked manifest roots and exclusions, completed query and read coverage, evidence gaps,
+hard-cap usage, compact candidate disposition and assertion-mapping counts, and zero-finding statement
+when applicable.
+
+Render each valid finding once with exactly these fields and in this order:
+
+* Issue Description:
+* Risk Level (P0/P1/P2/P3):
+* Code location (file + line number):
+* Why this is a risk to app region failover:
+* Impact(s) if this is not changed:
+* Existing mitigations present (evidence):
+* Constraints/limitations (evidence):
+
+These seven fields are the complete finding schema. Do not add fields or repeat their concepts elsewhere.
+Keep the artifact evidence-only and omit remediation guidance, recommendations, examples, and next-step
+text from the artifact.
+
+End the response, outside the artifact, with exactly one status-aware handoff. For
+`blocked-prerequisite`, route to `/hve-resiliency-researcher-1a` when Prompt 1a is missing or invalid;
+otherwise route to `/hve-resiliency-researcher-1b`. When both are missing or invalid, Prompt 1a takes
+precedence. Do not derive applicability routing from invalid artifacts. For `excluded/not-applicable`,
+select the next applicable service-specific prompt after Prompt 12 from the validated artifacts,
+beginning with `/hve-resiliency-researcher-13-sql`, or select
+`/hve-resiliency-researcher-consolidate` when none remains. Never route a blocked or excluded Prompt 12
+run to Prompt 11. For every successful or bounded-partial applicable Prompt 12 run, preserve the normal
+validated-artifact routing to the next applicable service-specific prompt beginning with Prompt 13, or
+to consolidation when no applicable service prompt remains:
+
+> **Next step:** Run `/<selected-command>`
+
+---
+
+Execute from the prerequisite gate and stop after writing the artifact and response handoff.
