@@ -15,7 +15,7 @@ Run only one checklist item at a time. After an item changes the report, save th
 4. Remove references to 'F-XXX' findings. We are working with 'P-XXX'. The 'F-XXX' refers to findings in the Developer Guide and other researc. If we see them, it means the findings in the Developer Guid and other research was not processed correctly.
 5. Check and exclude Jenkins findings or the Pivotal Cloud Foundations notes.
 6. Check proper usage of resiliency and non-resiliency titles and that findings are in their correct place.
-7. Minimize findings that require Platform changes. The Platform is already set up, and the assessment must focus on Application changes. We can note them in Notes sections, but try not to make findings for them.
+7. Locate strictly platform recommended changes. These should be moved to the P3 category whether they are Resiliency Focused or not. If a platform change is in a finding that covers a recommended application fix, we can note the platform change in the Notes sections.
 8. Run the [duplicate finding detector](detect-assessment-duplicates.prompt.md), then remove confirmed duplicate findings before continuing.
 9. Remove or consolidate out-of-scope findings.
 10. Verify correct cited line numbers and File section code snippets are verbatim.
