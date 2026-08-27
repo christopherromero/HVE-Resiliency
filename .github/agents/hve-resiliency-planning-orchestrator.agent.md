@@ -86,9 +86,13 @@ Dispatch in order, each after the previous returns `Complete`. These append to t
 
 If `autonomy=checkpointed`, pause after each append for operator review.
 
-### Step 4: Completion
+### Step 4: HVE Task Reviewer Handoff
 
-Report the paths of the Master report, Developer Guide, and Code-Level Assessment report, with a one-line status per stage. State that the resiliency workflow is complete and point the operator to the final assessment report under `Microsoft Assessment/` (or the configured output location).
+After planner 3d returns `Complete`, do not dispatch the post-assessment review through `Researcher Subagent`. Report the paths of the Master report, Developer Guide, and unreviewed Code-Level Assessment report, with a one-line status per planning stage.
+
+Ask the operator to switch to **HVE Task Reviewer** and run `.github/prompts/post-assessment-runbook.md` against the completed Code-Level Assessment report. Include the exact assessment report path in the handoff. State that the checklist must run strictly in order because each item uses the report produced by the previous item.
+
+Stop after presenting the handoff. State that planning is complete and post-assessment review is pending. Do not state that the full resiliency workflow or final report review is complete.
 
 ## Error Recovery
 
