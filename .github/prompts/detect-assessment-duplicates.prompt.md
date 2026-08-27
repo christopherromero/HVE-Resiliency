@@ -43,6 +43,8 @@ Follow these steps deterministically:
    duplicates. A candidate must have the same remediation contract and either:
    * Evidence from non-overlapping locations in the same enclosing call chain,
      such as a method and its caller or two branches of one method
+   * Evidence in the same file at different locations, even when the cited code
+     elements and line ranges differ, so long as one change closes every finding
    * Notes that link the findings through dependency or decomposition language,
      including "prerequisite", "corresponding ... change", "requires the ...
      refactor", or "variant of"
