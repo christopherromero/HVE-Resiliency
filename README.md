@@ -42,7 +42,7 @@ The framework includes one workflow skill and two orchestrator agents:
 
    ```powershell
    # PowerShell (Windows / macOS / Linux)
-   irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/feature/orchestration/install.ps1 | iex
+   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/christopherromero/HVE-Resiliency/feature/orchestrator/install.ps1))) -Ref feature/orchestrator -Include skills,prompts,agents,instructions
    ```
 
    The installer copies `.github/skills/`, `.github/prompts/`, `.github/agents/`,  and `.github/instructions/` into your `.github/` folder. Reload VS Code (**Developer: Reload Window**) so Copilot Chat re-indexes the new files, then commit the `.github/` additions so the rest of your team gets the same workflow.
