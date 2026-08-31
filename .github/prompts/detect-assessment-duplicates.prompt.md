@@ -43,13 +43,17 @@ Follow these steps deterministically:
    duplicates. A candidate must have the same remediation contract and either:
    * Evidence from non-overlapping locations in the same enclosing call chain,
      such as a method and its caller or two branches of one method
+   * Evidence of the same issue type at different locations in one file,
+     including separate methods or code elements, when the same remediation
+     pattern can correct every cited instance
    * Notes that link the findings through dependency or decomposition language,
      including "prerequisite", "corresponding ... change", "requires the ...
      refactor", or "variant of"
 5. Assign each consolidation candidate one disposition:
-   * `Consolidate` when one implementation change satisfies the recommended fix
-     for every finding and none has distinct remediation, acceptance criteria,
-     or ownership
+   * `Consolidate` when one coordinated implementation of the same remediation
+     pattern satisfies every recommended fix, even if it must modify multiple
+     methods or locations in one file, and none has distinct remediation,
+     acceptance criteria, or ownership
    * `Keep separate` when any finding requires an independent implementation
      change, validation step, acceptance criterion, or remediation owner
    * `Needs review` only when the assessment lacks enough evidence to apply
@@ -72,6 +76,9 @@ Follow these steps deterministically:
   Step 2 and verified as required by Step 3.
 * Do not collapse findings that share only a category but differ in evidence
   or remediation.
+* Do not consolidate findings merely because they occur in the same file.
+  Verify that they describe the same issue type and that one remediation
+  pattern applies to every cited instance.
 * Do not place consolidation candidates in verified duplicate clusters or use
   them to reduce the unique-root-issue count.
 * Make a disposition from the assessment evidence whenever Step 5 is

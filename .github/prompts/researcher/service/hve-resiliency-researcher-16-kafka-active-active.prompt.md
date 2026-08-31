@@ -79,13 +79,32 @@ consumers use the feature flag to select the failed region's mirror topic in the
 surviving region. Redirected producers continue writing to the surviving region's
 region-local writable topic, not to the mirror or promoted topic.
 
+## Producer And Consumer Role Determination
+
+Before evaluating the areas below, determine from repository evidence whether each
+eligible Kafka dependency has producer logic, consumer logic, or both, and cite the
+smallest supporting file and line range for each role found. A `KafkaProducer`, a
+`KafkaTemplate` send, a `send` or `publish` call, or an equivalent publish path
+evidences producer logic. A `KafkaConsumer`, a `@KafkaListener`, a `MessageListener`,
+a `subscribe` or `poll` call, or an equivalent receive path evidences consumer or
+listener logic. Derive these roles from the same bounded discovery actions used for the
+areas below; do not spend additional searches, reads, traversal hops, or focused
+follow-ups to establish roles, and reuse each action's evidence for every concern and
+role it answers.
+
+Apply the roles to scope the areas. Evaluate the producer area only where producer logic
+is evidenced. Evaluate the consumer and listener areas, including the mirror-topic
+subscription area, only where consumer or listener logic is evidenced. Where a dependency
+has no evidenced consumer or listener logic, record the consumer and listener areas as
+Not applicable under the inherited service exclusion rule rather than as findings.
+
 ## Assessment Concerns
 
 Cluster provisioning, Cluster Linking configuration, mirror creation and promotion,
 offset synchronization between clusters, global load balancer routing, and failback of
 the platform are infrastructure and are never application-code findings.
 
-Evaluate exactly these seven areas for every eligible Kafka dependency. Record a
+Evaluate exactly these eight areas for every eligible Kafka dependency. Record a
 finding wherever the expected behavior is not evidenced.
 
 1. Producer topic targeting: the producer writes only to the current region's writable
@@ -109,6 +128,16 @@ finding wherever the expected behavior is not evidenced.
 7. Broker bootstrap: bootstrap DNS stays authoritative. Record a finding where code
    persists or hard-codes broker host and port values learned from
    `advertised.listeners`, which prevents reconnection after regional failover.
+8. Consumer mirror-topic subscription: for each consumer or listener, the application
+   subscribes both to the current region's writable topic and to an additional peer
+   region mirror topic, and a configuration value controls whether that additional
+   mirror-topic subscription is active. Record a finding where consumer or listener
+   logic is evidenced but no additional peer region mirror-topic subscription exists,
+   so the surviving region cannot read the failed region's mirrored events, and record
+   a finding where the additional mirror-topic subscription is present but is not
+   governed by a configuration value that can enable or disable it. Cite the consumer
+   or listener code and the subscribed topic references, and cite the configuration
+   value where one exists.
 
 For each evidence-backed issue, classify the failure risk as P0, P1, P2, or P3 under
 the Application Platform Context. Explain why the classification applies and cite the
@@ -124,7 +153,7 @@ For each eligible Kafka dependency, initialize these action counters to zero:
 * At most 2 repository traversal hops
 * At most 1 focused follow-up
 
-Apply each dependency's counters cumulatively across aliases, all seven areas,
+Apply each dependency's counters cumulatively across aliases, all eight areas,
 environments, both rounds, repeated research, delegated work, and subagent calls.
 Increment a counter immediately after its action. Never reset, transfer, duplicate, or
 reassign a counter. Reuse one action's evidence for every concern it answers.
